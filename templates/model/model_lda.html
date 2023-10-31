@@ -1,0 +1,29 @@
+{% extends 'model/base_model.html' %}
+
+{% block model_name %}
+    <h1>Modeluj: LDA</h1>
+{% endblock %}
+
+{% block model_type_and_params %}
+    <form method="POST" id="lda_coherence">
+        {{ lda_coherence_form.hidden_tag() }}
+        {{ lda_coherence_form.start.label }} {{ lda_coherence_form.start }}
+        {{ lda_coherence_form.end.label }} {{ lda_coherence_form.end }}
+        {{ lda_coherence_form.step.label }} {{ lda_coherence_form.step }}<br>
+        {{ lda_coherence_form.no_above.label }} {{ lda_coherence_form.no_above }}<br>
+        {{ lda_coherence_form.no_below.label }} {{ lda_coherence_form.no_below }}<br>
+        {{ lda_coherence_form.submit }}
+    </form>
+{% endblock %}
+
+{% block summary %}
+    <form method="POST" id="lda_model">
+        {{ lda_model_form.hidden_tag() }}
+        {{ lda_model_form.no_above.label }} {{ lda_model_form.no_above }}<br>
+        {{ lda_model_form.no_below.label }} {{ lda_model_form.no_below }}<br>
+        {{ lda_model_form.n_iterations.label }} {{ lda_model_form.n_iterations }}<br>
+        {{ lda_model_form.n_clusters.label }} {{ lda_model_form.n_clusters }}<br>
+        {{ lda_model_form.submit }}
+    </form>
+    {{ lda_summary_html|safe }}
+{% endblock %}

@@ -1,0 +1,68 @@
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TextRabbit</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    {% block head_additional %}{% endblock %}
+</head>
+<body>
+    <div class="topbar" id="topbar">
+        <img class="logo" src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
+        <h1 class="title" id="main-title">TextRabbit</h1>
+    </div>
+    
+    <div class="sidenav" id="sidenav">
+        <a href="{{ url_for('load_data') }}">Wczytaj dane</a>
+        {% if d.is_processed %}
+        <a href="{{ url_for('preprocess') }}">Przygotuj i wyczyść</a>
+        <a href="{{ url_for('explore') }}">Eksploruj</a>
+        <a href="{{ url_for('explore_ngrams') }}">&emsp; Ngramy</a>
+        <a href="{{ url_for('explore_network') }}">&emsp; Analiza sieciowa</a>
+        <a href="{{ url_for('model') }}">Modeluj</a>
+        <a href="{{ url_for('select_model') }}">&emsp; Wybierz model</a>
+        <a href="{{ url_for('model_w2v') }}">&emsp;&emsp; word2vec</a>
+        <a href="{{ url_for('model_lda') }}">&emsp;&emsp; lda</a>
+        <a href="{{ url_for('model_nnmf') }}">&emsp;&emsp; nnmf</a>
+        <a href="{{ url_for('model_lsi') }}">&emsp;&emsp; lsi</a>
+        {% elif d.is_selected %}
+        <a href="{{ url_for('preprocess') }}">Przygotuj i wyczyść</a>
+        <a style="color: rgb(129, 129, 129) !important;">Eksploruj</a>
+        <a style="color: rgb(129, 129, 129) !important;">Modeluj</a>
+        {% else %}
+        <a style="color: rgb(129, 129, 129) !important;">Przygotuj i wyczyść</a>
+        <a style="color: rgb(129, 129, 129) !important;">Eksploruj</a>
+        <a style="color: rgb(129, 129, 129) !important;">Modeluj</a>
+        {% endif %}
+        {% if storage %}
+            <a href="{{ url_for('show_storage') }}">Ładownia &emsp;<div class="circle">{{storage.n_of_models}}</div></a>
+        {% else %}
+            <a href="{{ url_for('show_storage') }}">Ładownia</a>
+        {% endif %}
+    </div>
+    
+    <div class="content" id="content">
+        {% block content %}
+        <div class="container">
+            {% for message in get_flashed_messages() %}
+            <div class="alert alert-warning">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
+        {% endfor %}
+        {% endblock %}
+    </div>
+    
+    <script>
+        const currentLocation = window.location.pathname;
+        const paths = document.querySelectorAll("#sidenav a");
+        paths.forEach(path => {
+          if (path.getAttribute('href') === currentLocation) {
+            path.classList.add("active_path");
+          }
+        });
+    </script>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

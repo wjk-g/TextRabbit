@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    
+    <h1>Wczytaj dane</h1>
+    <p>Ta aplikacja pozwoli Ci przeanalizować nieustrukturyzowane dane tekstowe.</p>
+    <p>Mogą to być na przykład otwarte odpowiedzi respondentów w sondażu, wpisy na forum internetowym lub krótkie dokumenty.</p>
+    <p>Zacznijmy od załadowania danych.</p>
+    <div class="form-container">
+        <form method="POST" id="load_ls">
+            <h3>Wczytaj dane z LimeSurvey</h3>
+            <p>Wczytaj dane bezpośrednio z serwera LimeSurvey Stoczni. Pobranie danych może zająć od kilku do kilkunastu sekund.</p>
+            {{ data_selection_form.hidden_tag() }}
+            {{ data_selection_form.input_survey_number.label }} {{ data_selection_form.input_survey_number }}<br>
+            {{ data_selection_form.input_survey_column.label }} {{ data_selection_form.input_survey_column }}<br>
+            {{ data_selection_form.submit }}
+        </form>
+
+        <form method="POST" id="load_file" enctype="multipart/form-data">
+            <h3>Wczytaj dane z pliku</h3>
+            <p>Wczytaj dane z lokalnego pliku.</p>
+            Dopuszczalne formaty: .csv, .txt, .xlsx i .xls
+            <input name="upload_form_button" type="button" id="load_file" value="Wczytaj plik" onclick="document.getElementById('file', 'upload_form_submit').click();" />
+
+            <input name="upload_form_file" style="display:none;" type="file" id="file" name="file"/>
+            <div id="fileInfo"></div>
+            <label for="name">Wprowadź nazwę kolumny z tekstem:</label> 
+            <input type="text" name="file_column"><br>
+            <input name="upload_form_submit" type="submit" value="Zatwierdź" />
+        </form>
+
+        <script type="text/javascript" src="{{ url_for('static', filename='js/display_file_info.js') }}"></script>
+    </div>
+
+    {% if d.data in d.possible_errors %}
+        <p style="color: rgb(231 71 60);">{{ d.display_error_message() }}</p>
+    {% elif d.is_selected and not d.is_example %}
+        {{ d.display_original_text_as_html_table()|safe }}
+    {% else %}
+    {% endif %}
+
+    <form method="POST" id="example_data_form">
+        <h3>Wczytaj przykładowe dane</h3>
+        <p>Możesz również wczytać udostępniony przez nas zbiór danych. Dane opisują ... Na tym przykładzie zobaczysz, jak działa proces czyszczenia, eksploracji i modelowania danych tekstowych.</p>
+        {{ example_data_form.hidden_tag() }}
+        {{ example_data_form.submit_example }}
+    </form>
+
+    {% if d.is_selected and d.is_example %}
+    <table>
+        {{ d.display_original_text_as_html_table()|safe }}
+    </table>
+    {% else %}
+    {% endif %}
+
+{% endblock %}

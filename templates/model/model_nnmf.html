@@ -1,0 +1,9 @@
+{% extends 'model/base_model.html' %}
+
+{% block model_type_and_params %}
+    <h1>Modeluj: NNMF</h1>
+{% endblock %}
+
+{% block summary %}
+    {{ model.generate_document_topics_table() }}
+{% endblock %}
