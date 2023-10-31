@@ -41,4 +41,3 @@ class Storage():
             table = f"<table><th></th><th>model</th><th>l. klastrów</th><th>data utworzenia</th><th></th><th></th>{rows}</table>"
             
             return table
-                
