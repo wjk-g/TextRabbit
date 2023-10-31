@@ -8,12 +8,8 @@ The app implements a number of functionalities from nltk and spacy libraries.
 The app is intended to empower researchers with no coding skills to quickly process, visualize and analyze unstructured text.
 
 It was designed to facilitate analysis of unstructured survey data and other similar use-cases, i.e. data consisting of many short, preferably "single-threaded" texts.
-
-<div style="background-color: #fff3cd; padding: 10px; border: 1px solid #ffeeba; border-radius: 5px; color: #856404;">
     
-**Note:** ⚠️ This project is currently under active development. As such, certain functionalities may not be perfected yet.
-
-</div>
+> **Note:** ⚠️ This project is currently under active development. As such, certain functionalities may not be perfected yet.
 
 ## Authorization
 
