@@ -5,8 +5,7 @@
         <div class="form-container">
             <form action="" method="POST" id="modeling-form">
                 <h3>Zidentyfikuj tematy</h3>
-                
-                <p>...</p>
+                <br>
                 {{ modeling_form.hidden_tag() }}
                 {{ modeling_form.pca_radio.label }}<br>
                 {% for subfield in modeling_form.pca_radio %}
@@ -22,7 +21,6 @@
                     {{ modeling_form.n_of_pcs_int.label }}
                     {{ modeling_form.n_of_pcs_int }}<br>
                 </div>
-                <p>...</p>
                 {{ modeling_form.n_of_ks_int.label }}
                 {{ modeling_form.n_of_ks_int }}<br>
                 {{ modeling_form.submit_clustering }}

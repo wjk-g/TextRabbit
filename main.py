@@ -127,6 +127,7 @@ def callback():
     
     return redirect(url_for("load_data"))
 
+# === UTILITY FUNCTIONS ===
 def protect_access(f):
     @wraps(f)
     def decorated_func(*args, **kwargs):
@@ -136,7 +137,15 @@ def protect_access(f):
             return redirect("login")
     return decorated_func
 
-# DATA IMPORT
+# Initiate storage helper function
+def initiate_storage():
+    storage = session.get("storage")
+    if not storage:
+        storage = Storage()
+        session["storage"] = storage
+    return storage
+
+# === DATA IMPORT ===
 @app.route("/load_data", methods=["GET", "POST"])
 @protect_access
 def load_data():
@@ -192,13 +201,14 @@ def load_data():
         d=d,
         data_selection_form=data_selection_form,
         example_data_form=example_data_form,
+        storage=initiate_storage(),
     )
 
 # DATA PREPROCESSING
 @app.route("/preprocess", methods=["GET", "POST"])
 @protect_access
 def preprocess():
-    
+
     # Load data from session and tokenize and clean it
     d = session.get("d", redirect("load_data"))
     d.tokenize_and_clean()
@@ -221,6 +231,7 @@ def preprocess():
         d=d,
         stopwords_form=stopwords_form,
         replacements_form=replacements_form,
+        storage=initiate_storage(),
     )
 
 # DATA EXPLORATION
@@ -251,6 +262,7 @@ def explore_ngrams():
         top_bigrams=top_bigrams,
         top_trigrams=top_trigrams,
         ngrams_form=ngrams_form,
+        storage=initiate_storage()
     )
 
 @app.route("/explore_network", methods = ["GET", "POST"])
@@ -279,6 +291,7 @@ def explore_network():
         d=d,
         network_form=network_form,
         selected_words_form=selected_words_form,
+        storage=initiate_storage(),
     )
 
 # DATA MODELING
@@ -304,15 +317,8 @@ def select_model():
         "model/select_model.html",
         d=d,
         model_selection_form=model_selection_form,
+        storage=initiate_storage()
     )
-
-# Initiate storage helper function
-def initiate_storage():
-    storage = session.get("storage")
-    if not storage:
-        storage = Storage()
-        session["storage"] = storage
-    return storage
 
 # DATA MODELING
 #@protect_access
@@ -383,6 +389,7 @@ def model_w2v():
         silhouette_values=session.get("silhouette_values", None),
         cluster_summary=session.get("cluster_summary", None),
         download_results_form=download_results_form,
+        storage=storage,
     )
 
 #@protect_access
@@ -471,11 +478,13 @@ def model_nnmf():
         # --no iterations
 
     d = session.get("d")
+    storage = initiate_storage()
+
     nnmf = NNMF("NNMF", d.data) # initializing lda
     nnmf.compare_coherence(2,40,4) # initial comp performed at low iter (250)
     nnmf.create_model()
 
-    return render_template("model/model_nnmf.html", d=d, model=nnmf)
+    return render_template("model/model_nnmf.html", d=d, model=nnmf, storage=storage)
 
 #@protect_access
 @app.route("/model/lsi", methods = ["GET", "POST"])
@@ -488,22 +497,43 @@ def model_lsi():
         # iterations
 
     d = session.get("d")
+    storage = initiate_storage()
+
     lsi = LSI("LSI", d.data) # initializing lda
     lsi.compare_coherence(2,40,4) # initial comp performed at low iter (250)
     lsi.create_model()
     lsi.show_topics()
 
-    return render_template("model/model_lsi.html", d=d, model=lsi)
+    return render_template("model/model_lsi.html", d=d, model=lsi, storage=storage)
 
-@app.route("/storage", methods = ["GET"])
+@app.route("/storage", methods = ["GET", "POST"])
 def show_storage():
-    
+
     d = session.get("d")
-    storage = session.get("storage")
-    print(storage.models)
-    table_of_models = storage.return_html_summary()
+    storage = initiate_storage()
     
-    return render_template("storage.html", d=d, table_of_models=table_of_models, storage=storage)
+    if request.method == "GET":
+        
+        print(storage.models)
+        
+        # Create a table of models
+        table_of_models = storage.return_html_summary()
+
+    if request.method == "POST":
+        for key in request.form:
+            if key.startswith('delete_'):
+                model_number = int(key.split('_')[1])
+
+            storage.delete_model(model_number)
+
+            table_of_models = storage.return_html_summary()
+            
+    return render_template(
+        "storage.html", 
+        d=d, 
+        table_of_models=table_of_models, 
+        storage=storage,
+    )
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5050, ssl_context="adhoc")
+    app.run(debug=True, port=5050)#, ssl_context="adhoc")

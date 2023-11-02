@@ -8,6 +8,7 @@ downloads/*
 flask_session/
 modules/__pycache__/
 .idea/
+.DS_Store
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

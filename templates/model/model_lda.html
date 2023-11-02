@@ -6,6 +6,8 @@
 
 {% block model_type_and_params %}
     <form method="POST" id="lda_coherence">
+        <h3>Porównaj miary spójności klastrów</h3>
+        <br>
         {{ lda_coherence_form.hidden_tag() }}
         {{ lda_coherence_form.start.label }} {{ lda_coherence_form.start }}
         {{ lda_coherence_form.end.label }} {{ lda_coherence_form.end }}
@@ -18,6 +20,8 @@
 
 {% block summary %}
     <form method="POST" id="lda_model">
+        <h3>Stwórz model</h3>
+        <br>
         {{ lda_model_form.hidden_tag() }}
         {{ lda_model_form.no_above.label }} {{ lda_model_form.no_above }}<br>
         {{ lda_model_form.no_below.label }} {{ lda_model_form.no_below }}<br>

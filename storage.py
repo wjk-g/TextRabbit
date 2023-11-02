@@ -6,10 +6,16 @@ class Storage():
         def save_model(self, model):
             self.models.append(model)
             self.n_of_models = len(self.models)
+
+        def delete_model(self, model_index):
+             del self.models[model_index]
+
+        def print_model(model_index):
+             pass
         
         def return_html_summary(self):
 
-            model_number = 0
+            model_number = -1
             
             rows = ""
             for model in self.models:
@@ -29,10 +35,10 @@ class Storage():
                             {model.created_at}
                         </td>
                         <td>
-                            <form name="download-{model_number}" class="table-buttons"><input type="submit" value="pobierz"></form>
+                            <form method="post" name="download" class="table-buttons"><input type="submit" value="pobierz" name=download_{model_number}></form>
                         </td>
                         <td>
-                            <form name="remove-{model_number}" class="table-buttons"><input type="submit" value="usuń"></form>
+                            <form method="post" name="remove" class="table-buttons"><input type="submit" value="usuń" name=delete_{model_number}></form>
                         </td>
                     </tr>
                     """
