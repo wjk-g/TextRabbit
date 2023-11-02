@@ -23,6 +23,7 @@ class GeneralizedModel():
         #self.input_data = input_data # this can probably be removed!
         # Explicit conversion of .values() objects to lists is necessary because .values() objs are not pickable
         # See for example: https://github.com/tensorflow/models/issues/4780 
+        self.current_model = None
         self._model_type = model_type 
         self.list_of_tokenized_docs = list(input_data["tokens"].values()) # input_data["tokens"] returns a dict (key-value pairs)
         self.list_of_original_docs = list(input_data["text"].values())
@@ -30,7 +31,6 @@ class GeneralizedModel():
         self.n_clusters = 10
         self.cluster_assignments = []
         self.coherence_scores = {}
-        self.current_model = None
         self._created_at = datetime.now()
     
     @property
@@ -407,22 +407,28 @@ class W2V(GeneralizedModel):
         terms = self.generate_most_representative_terms(word2vec).to_html(index=False)
         return terms
     
-    @classmethod
-    def write_to_excel(self, word2vec, model):
+    def write_to_excel(self, word2vec):
+        '''
+        word2vec: a word2vec gensim model (imported from a pickle file in main.py)
+        '''
+        print(self.current_model)
         
         output = BytesIO()
 
-        if model.pca_variance_explained.size == 0:
-            most_representative_terms = model.generate_most_representative_terms(word2vec)
-        summary = model.generate_cluster_summary()
-        results = model.generate_results_table()
+        if self.pca_variance_explained.size == 0:
+            most_representative_terms = self.generate_most_representative_terms(word2vec)
+        summary = self.generate_cluster_summary()
+        results = self.generate_results_table()
 
         with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
             summary.to_excel(writer, sheet_name='summary', index=False)
-            if model.pca_variance_explained.size == 0:
+            if self.pca_variance_explained.size == 0: # if most_representative_terms
                 most_representative_terms.to_excel(writer, sheet_name='most_representative_terms', index=False)
             results.to_excel(writer, sheet_name='results', index=False)
         # TODO add pc values to the excel file
         output.seek(0)
 
-        return send_file(output, download_name='results.xlsx')
+        if self.pca_variance_explained.size == 0:
+            return send_file(output, download_name=f'results_{self.model_type}_k_{self.n_clusters}_{self._created_at}.xlsx')
+        
+        return send_file(output, download_name=f'results_{self.model_type}_k_{self.n_clusters}_pcs_{self.pca_n_of_pcs}_{self._created_at}.xlsx')

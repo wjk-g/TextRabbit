@@ -145,6 +145,12 @@ def initiate_storage():
         session["storage"] = storage
     return storage
 
+def load_w2v_gensim_model():
+    path_to_gensim_model = "static/word2vec/word2vec_gensim_nkjp_wiki_lemmas_all_300_cbow_hs.pickle"
+    with open(path_to_gensim_model, 'rb') as gensim_model:
+        word2vec = pickle.load(gensim_model)
+    return word2vec
+
 # === DATA IMPORT ===
 @app.route("/load_data", methods=["GET", "POST"])
 @protect_access
@@ -333,11 +339,8 @@ def model_w2v():
     modeling_form = ModelingForm()
     download_results_form = DownloadResults()
 
-    # Loading gensim model
     if request.method == "POST":
-        path_to_gensim_model = "static/word2vec/word2vec_gensim_nkjp_wiki_lemmas_all_300_cbow_hs.pickle"
-        with open(path_to_gensim_model, 'rb') as gensim_model:
-            word2vec = pickle.load(gensim_model)
+        word2vec = load_w2v_gensim_model()
 
     w2v = None
     most_representative_terms = None
@@ -373,11 +376,11 @@ def model_w2v():
             storage.save_model(w2v)
             session["storage"] = storage
 
-    if download_results_form.validate_on_submit() and download_results_form.download_data_submit.data:
-        if session.get("model"): # TODO downloading should be moved to a separate tab
-            model = session.get("model", False)
-            if model:
-                return W2V.write_to_excel(word2vec, model)
+    #if download_results_form.validate_on_submit() and download_results_form.download_data_submit.data:
+    #    if session.get("model"): # TODO downloading should be moved to a separate tab
+    #        model = session.get("model", False)
+    #        if model:
+    #            return W2V.write_to_excel(word2vec, model)
 
     return render_template(
         "model/model_w2v.html",
@@ -514,20 +517,29 @@ def show_storage():
     
     if request.method == "GET":
         
-        print(storage.models)
-        
-        # Create a table of models
         table_of_models = storage.return_html_summary()
 
     if request.method == "POST":
         for key in request.form:
+            # Deleting models from storage
             if key.startswith('delete_'):
                 model_number = int(key.split('_')[1])
 
-            storage.delete_model(model_number)
+                storage.delete_model(model_number)
 
-            table_of_models = storage.return_html_summary()
-            
+            # Exporting models in storage to Excel 
+            if key.startswith('download_'):
+                model_number = int(key.split('_')[1])
+                # trigger model's download method
+
+                model_to_download = storage.models[model_number]
+                print(model_to_download)
+                word2vec = load_w2v_gensim_model()
+
+                return model_to_download.write_to_excel(word2vec)
+                
+        table_of_models = storage.return_html_summary()
+
     return render_template(
         "storage.html", 
         d=d, 
