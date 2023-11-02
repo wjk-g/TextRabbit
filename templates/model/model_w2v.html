@@ -2,37 +2,28 @@
 
 {% block content %}
     <h1>Modeluj</h1>
-        <div class="form-container">
-            <form action="" method="POST" id="modeling-form">
-                <h3>Zidentyfikuj tematy</h3>
-                <br>
-                {{ modeling_form.hidden_tag() }}
-                {{ modeling_form.pca_radio.label }}<br>
-                {% for subfield in modeling_form.pca_radio %}
+    <div class="form-container">
+        <form action="" method="POST" id="modeling-form">
+            <h3>Zidentyfikuj tematy</h3>
+            <br>
+            {{ modeling_form.hidden_tag() }}
+            {{ modeling_form.pca_radio.label }}<br>
+            {% for subfield in modeling_form.pca_radio %}
+                {{ subfield(style="margin-left:15px") }}
+                {{ subfield.label }}
+            {% endfor %}<br>
+            <div class="pca">
+                {{ modeling_form.standardize_pcs.label }}
+                {% for subfield in modeling_form.standardize_pcs %}
                     {{ subfield(style="margin-left:15px") }}
                     {{ subfield.label }}
                 {% endfor %}<br>
-                <div class="pca">
-                    {{ modeling_form.standardize_pcs.label }}
-                    {% for subfield in modeling_form.standardize_pcs %}
-                        {{ subfield(style="margin-left:15px") }}
-                        {{ subfield.label }}
-                    {% endfor %}<br>
-                    {{ modeling_form.n_of_pcs_int.label }}
-                    {{ modeling_form.n_of_pcs_int }}<br>
-                </div>
-                {{ modeling_form.n_of_ks_int.label }}
-                {{ modeling_form.n_of_ks_int }}<br>
-                {{ modeling_form.submit_clustering }}
-            </form>
-
-        <form action="" method="POST" id="download-form">
-            <div>
-                <h3>Pobierz wyniki analizy skupień</h3>
-                <p>Kliknij „Pobierz“, żeby pobrać wyniki analizy w formacie .xlsx. W pliku wszystkie rekordy zostaną przyporządkowane do klastrów (widok poniżej przedstawia tylko po kilka przykładów dla każdego klastra). Zastanów się, jak najlepiej opisać każdy klaster. Czasami jest to oczywiste już na pierwszy rzut oka, czasami wymaga zastanowienia, czasami wyniki po prostu nie mają interpretacji – są wyłącznie artefaktem statystycznym. Wypróbuj kilka różnych „rozwiązań“, aż znajdzie takie, które Cię satysfakcjonuje.</p>
+                {{ modeling_form.n_of_pcs_int.label }}
+                {{ modeling_form.n_of_pcs_int }}<br>
             </div>
-            {{ download_results_form.hidden_tag() }}
-            {{ download_results_form.download_data_submit }}
+            {{ modeling_form.n_of_ks_int.label }}
+            {{ modeling_form.n_of_ks_int }}<br>
+            {{ modeling_form.submit_clustering }}
         </form>
     </div>
 

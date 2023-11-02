@@ -376,12 +376,6 @@ def model_w2v():
             storage.save_model(w2v)
             session["storage"] = storage
 
-    #if download_results_form.validate_on_submit() and download_results_form.download_data_submit.data:
-    #    if session.get("model"): # TODO downloading should be moved to a separate tab
-    #        model = session.get("model", False)
-    #        if model:
-    #            return W2V.write_to_excel(word2vec, model)
-
     return render_template(
         "model/model_w2v.html",
         d=d,
@@ -520,7 +514,6 @@ def show_storage():
     storage = initiate_storage()
     
     if request.method == "GET":
-        
         table_of_models = storage.return_html_summary()
 
     if request.method == "POST":
@@ -534,7 +527,6 @@ def show_storage():
             # Exporting models in storage to Excel 
             if key.startswith('download_'):
                 model_number = int(key.split('_')[1])
-                # trigger model's download method
 
                 model_to_download = storage.models[model_number]
 
