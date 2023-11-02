@@ -438,6 +438,7 @@ def model_lda():
     # SCENARIO 3
     # POST request with user-supplied parameters for the model form
     lda_summary_html = None
+    lda_most_representative_words = None
     if lda_model_form.validate():
 
         lda.create_nltk_dict()
@@ -452,6 +453,8 @@ def model_lda():
         # Update model based on the new data
 
         lda.create_model()
+        lda_most_representative_words = lda.generate_most_representative_words()
+        lda_most_representative_words = lda_most_representative_words.to_html()
         
         lda_summary = lda.generate_summary()
         lda_summary_html = lda_summary.to_html()
@@ -462,11 +465,12 @@ def model_lda():
 
     return render_template(
         "model/model_lda.html", 
-        d=d, 
+        d=d,
         model=lda, # might not be necessary
         lda_coherence_form=lda_coherence_form,
         lda_model_form=lda_model_form,
         lda_summary_html=lda_summary_html,
+        lda_most_representative_words=lda_most_representative_words,
         storage=storage,
     )
 
@@ -533,10 +537,12 @@ def show_storage():
                 # trigger model's download method
 
                 model_to_download = storage.models[model_number]
-                print(model_to_download)
-                word2vec = load_w2v_gensim_model()
 
-                return model_to_download.write_to_excel(word2vec)
+                if "word2vec" in model_to_download.model_type:
+                    word2vec = load_w2v_gensim_model()
+                    return model_to_download.write_to_excel(word2vec)
+
+                return model_to_download.write_to_excel()
                 
         table_of_models = storage.return_html_summary()
 

@@ -29,5 +29,8 @@
         {{ lda_model_form.n_clusters.label }} {{ lda_model_form.n_clusters }}<br>
         {{ lda_model_form.submit }}
     </form>
+    
+    {{ lda_most_representative_words|safe }}
     {{ lda_summary_html|safe }}
+
 {% endblock %}

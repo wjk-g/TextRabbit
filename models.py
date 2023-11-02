@@ -134,6 +134,12 @@ class LDA(GeneralizedModel):
         
         return summary
 
+    def generate_most_representative_words(self):
+        most_representative_words = self.current_model.print_topics(num_words=10)
+
+        df = pd.DataFrame(most_representative_words, columns=['topic', 'most_representative_words'])
+        return df
+
     # COMPARE COHERENCE
     def compare_coherence(self, start, end, step):
         '''
@@ -180,6 +186,23 @@ class LDA(GeneralizedModel):
         temp = self.nltk_dictionary[0] # This is only to "load" the dictionary (??)
         id2word = self.nltk_dictionary.id2token
         self.id2word = id2word
+
+    # Export to Excel
+    def write_to_excel(self):
+        
+        output = BytesIO()
+
+        results = self.generate_document_topics_table()
+        most_representative_words = self.generate_most_representative_words()
+        # add some sort of summary showing the number of clusters, size of clusters, coherence for clustesrs etc.
+
+        with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+            most_representative_words.to_excel(writer, sheet_name='most_representative_words', index=False)
+            results.to_excel(writer, sheet_name='results', index=False)
+
+        output.seek(0)
+        
+        return send_file(output, download_name=f'results_{self.model_type}_k_{self.n_clusters}_{self._created_at}.xlsx')
 
 # =============
 # NNMF
