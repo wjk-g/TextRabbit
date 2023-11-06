@@ -523,29 +523,44 @@ def model_nnmf():
         )
 
         session["nnmf"] = nnmf
+    
+    # Scenario 3 
+    # Just like above -- this probably should be moved to a function
+    # POST request with user-supplied parameters for the model form
+    nnmf_summary_html = None
+    nnmf_most_representative_words = None
+    if nnmf_model_form.validate():
 
+        nnmf.create_nltk_dict()
+        nnmf.create_corpus()
 
-    # Scenario 3
+        # Update properties of the nnmf object with data from the form
+        nnmf.no_below=int(nnmf_model_form.no_below.data)
+        nnmf.no_above=float(nnmf_model_form.no_above.data)
+        nnmf.n_iterations=nnmf_model_form.n_iterations.data
+        nnmf.n_clusters=nnmf_model_form.n_clusters.data
 
-    # Form
-        # no_below
-        # no_above
-        # n_of_ks
-        # --no iterations
+        # Update model based on teh new data
 
-    d = session.get("d")
-    storage = initiate_storage()
+        nnmf.create_model()
+        nnmf_most_representative_words=nnmf.generate_most_representative_words()
+        nnmf_most_representative_words=nnmf_most_representative_words.to_html()
 
-    #nnmf = NNMF("NNMF", d.data) # initializing lda
-    #nnmf.compare_coherence(2,40,4) # initial comp performed at low iter (250)
-    #nnmf.create_model()
+        nnmf_summary = nnmf.generate_summary()
+        nnmf_summary_html = nnmf_summary.to_html()
+
+        # Save model 
+        storage.save_model(nnmf)
+        session["storage"] = storage
 
     return render_template(
         "model/model_nnmf.html", 
         d=d, 
-        model=nnmf, 
+        model=nnmf,
         nnmf_coherence_form=nnmf_coherence_form,
         nnmf_model_form=nnmf_model_form,
+        nnmf_summary_html=nnmf_summary_html,
+        nnmf_most_representative_words=nnmf_most_representative_words,
         storage=storage,
     )
 

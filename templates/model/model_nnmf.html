@@ -29,6 +29,9 @@
         {{ nnmf_model_form.n_clusters.label }} {{ nnmf_model_form.n_clusters }}<br>
         {{ nnmf_model_form.submit }}
     </form>
+
+    {{ nnmf_most_representative_words|safe }}
+    {{ nnmf_summary_html|safe }}
     
     
 {% endblock %}
