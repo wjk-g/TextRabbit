@@ -12,9 +12,22 @@ from flask import Flask, render_template, session, redirect, url_for, request
 from flask_session import Session
 
 # Load forms
-from forms import (DataSelection, ExampleData, StopwordsForm, ReplacementsForm,
-                   NgramsForm, NetworkForm, SelectedWordsForm, ModelingForm, 
-                   DownloadResults, ModelSelection, LDACoherence, LDAModel)
+from forms import (
+    DataSelection, 
+    ExampleData, 
+    StopwordsForm, 
+    ReplacementsForm,
+    NgramsForm, 
+    NetworkForm, 
+    SelectedWordsForm, 
+    ModelingForm, 
+    DownloadResults, 
+    ModelSelection, 
+    LDACoherence, 
+    LDAModel,
+    NNMFModel,
+    NNMFCoherence,
+)
 
 # Load classes
 from data import Data
@@ -153,7 +166,7 @@ def load_w2v_gensim_model():
 
 # === DATA IMPORT ===
 @app.route("/load_data", methods=["GET", "POST"])
-@protect_access
+#@protect_access
 def load_data():
     print(session.get("logged_in"))
 
@@ -212,7 +225,7 @@ def load_data():
 
 # DATA PREPROCESSING
 @app.route("/preprocess", methods=["GET", "POST"])
-@protect_access
+#@protect_access
 def preprocess():
 
     # Load data from session and tokenize and clean it
@@ -242,12 +255,12 @@ def preprocess():
 
 # DATA EXPLORATION
 @app.route("/explore", methods = ["GET", "POST"])
-@protect_access
+#@protect_access
 def explore():
     return redirect(url_for("explore_ngrams"))
 
 @app.route("/explore_ngrams", methods = ["GET", "POST"])
-@protect_access
+#@protect_access
 def explore_ngrams():
     
     d = session.get("d")
@@ -272,7 +285,7 @@ def explore_ngrams():
     )
 
 @app.route("/explore_network", methods = ["GET", "POST"])
-@protect_access
+#@protect_access
 def explore_network():
     
     d = session.get("d")
@@ -424,7 +437,7 @@ def model_lda():
         lda.compare_coherence(
             lda_coherence_form.start.data,
             lda_coherence_form.end.data,
-            lda_coherence_form.step.data
+            lda_coherence_form.step.data,
             )
         
         session["lda"] = lda
@@ -472,6 +485,48 @@ def model_lda():
 @app.route("/model/nnmf", methods = ["GET", "POST"])
 def model_nnmf():
 
+    # Loading data
+    d = session.get("d")
+
+    # Initiating storage
+    storage = initiate_storage()
+
+    nnmf = NNMF("NNMF", d.data) # initializing nnmf
+
+    # Initiating forms
+    nnmf_coherence_form = NNMFCoherence(no_below=nnmf.no_below, no_above=nnmf.no_above)
+    nnmf_model_form = NNMFModel() # so far it's identical as lda
+    # mabye drop nnmf/lda suffixes to simplify the code?
+
+    # Scenario 1
+    # Compare coherence for a set of predefined parameters for get requests 
+    if request.method == "GET":
+        nnmf.compare_coherence(2,40,4)
+
+        print(nnmf.corpus)
+        print(nnmf.nltk_dictionary)
+        #nnmf.create_model() # we need this bit because generate_document_topics_table gets called inside a template
+    
+    # Scenario 2
+    # TODO this should be moved to a function once I make sure that
+    # there are no meaningful differences between LDA and NNMF.
+    # POST request with user-supplied parameters for the coherence form
+    if nnmf_coherence_form.validate():
+        nnmf.no_below=int(nnmf_coherence_form.no_below.data)
+        nnmf.no_above=float(nnmf_coherence_form.no_above.data)
+
+        print("POST")
+        nnmf.compare_coherence(
+            nnmf_coherence_form.start.data,
+            nnmf_coherence_form.end.data,
+            nnmf_coherence_form.step.data,
+        )
+
+        session["nnmf"] = nnmf
+
+
+    # Scenario 3
+
     # Form
         # no_below
         # no_above
@@ -481,11 +536,18 @@ def model_nnmf():
     d = session.get("d")
     storage = initiate_storage()
 
-    nnmf = NNMF("NNMF", d.data) # initializing lda
-    nnmf.compare_coherence(2,40,4) # initial comp performed at low iter (250)
-    nnmf.create_model()
+    #nnmf = NNMF("NNMF", d.data) # initializing lda
+    #nnmf.compare_coherence(2,40,4) # initial comp performed at low iter (250)
+    #nnmf.create_model()
 
-    return render_template("model/model_nnmf.html", d=d, model=nnmf, storage=storage)
+    return render_template(
+        "model/model_nnmf.html", 
+        d=d, 
+        model=nnmf, 
+        nnmf_coherence_form=nnmf_coherence_form,
+        nnmf_model_form=nnmf_model_form,
+        storage=storage,
+    )
 
 #@protect_access
 @app.route("/model/lsi", methods = ["GET", "POST"])
@@ -507,6 +569,7 @@ def model_lsi():
 
     return render_template("model/model_lsi.html", d=d, model=lsi, storage=storage)
 
+#@protect_access
 @app.route("/storage", methods = ["GET", "POST"])
 def show_storage():
 

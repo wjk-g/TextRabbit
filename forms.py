@@ -78,7 +78,8 @@ class LDAModel(FlaskForm):
     submit = SubmitField("Zatwierdź")
 
 class LDACoherence(FlaskForm):
-    start = IntegerField("Start", validators=[NumberRange(min=1, max=500, # TODO has to be lower than end
+    start = IntegerField(
+        "Start", validators=[NumberRange(min=1, max=500, # TODO has to be lower than end
                                                     message="Podaj liczbę całkowitę z przedziału od 1 do 500")])
     end = IntegerField("End", validators=[NumberRange(min=1, max=500,
                                                     message="Podaj liczbę całkowitę z przedziału od 1 do 500")])
@@ -91,3 +92,11 @@ class LDACoherence(FlaskForm):
                           validators=[NumberRange(min=0.0, max=1.0,
                                                   message="Podaj wartość z przedziału od 0 do 1")])
     submit = SubmitField("Zatwierdź")
+
+# Creating exact copies of the LDA form and coherence
+# This is done only to make the code more explicit
+class NNMFModel(LDAModel):
+    pass
+
+class NNMFCoherence(LDACoherence):
+    pass

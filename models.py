@@ -183,6 +183,7 @@ class LDA(GeneralizedModel):
 
         corpus = [self.nltk_dictionary.doc2bow(doc) for doc in self.list_of_tokenized_docs]
         self.corpus = corpus
+        print(self.nltk_dictionary)
         temp = self.nltk_dictionary[0] # This is only to "load" the dictionary (??)
         id2word = self.nltk_dictionary.id2token
         self.id2word = id2word
