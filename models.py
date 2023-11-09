@@ -27,8 +27,12 @@ class GeneralizedModel():
         self._model_type = model_type 
         self.list_of_tokenized_docs = list(input_data["tokens"].values()) # input_data["tokens"] returns a dict (key-value pairs)
         self.list_of_original_docs = list(input_data["text"].values())
-        # add ids here
+        # These are UNIQUE ids automatically assigned to individual records
         self.list_of_ids = list(input_data["tokens"].keys())
+        # These are original ids sourced from the data. 
+        # These ids identify unique respondents if we're dealing with long format data.
+        # The ids themselves may or may not be unique.
+        self.list_of_original_ids = list(input_data["id"].values())
         self.n_clusters = 10
         self.cluster_assignments = []
         self.coherence_scores = {}
@@ -92,11 +96,11 @@ class LDA(GeneralizedModel):
 
     def get_document_topics(self):
         document_topics = self.current_model.get_document_topics(
-                                bow = self.corpus, # bag of words
-                                minimum_probability = 0,
-                                minimum_phi_value = None,
-                                per_word_topics = False
-                                )
+            bow = self.corpus, # bag of words
+            minimum_probability = 0,
+            minimum_phi_value = None,
+            per_word_topics = False
+        )
     
         return document_topics
 
@@ -116,6 +120,7 @@ class LDA(GeneralizedModel):
         df.insert(loc=0, column='original_text', value=self.list_of_original_docs)
         df.insert(loc=0, column='top_topic', value=self.cluster_assignments)
         df.insert(loc=0, column='id', value=self.list_of_ids)
+        df.insert(loc=0, column='original_id', value=self.list_of_original_ids)
 
         df = df.sort_values(by=["top_topic"])
 
@@ -257,6 +262,7 @@ class NNMF(LDA):
         df.insert(loc=0, column='top_topic', value=self.cluster_assignments)
         df.insert(loc=0, column='text', value=self.list_of_tokenized_docs)
         df.insert(loc=0, column='id', value=self.list_of_ids)
+        df.insert(loc=0, column='oringinal_id', value=self.list_of_original_ids)
 
         df = df.sort_values(by=["top_topic"])
 
@@ -265,6 +271,8 @@ class NNMF(LDA):
 # =============
 # LSI
 # =============
+
+# LSI IS CURRENTLY NOT SUPPORTED
 
 class LSI(LDA):
 
@@ -396,18 +404,27 @@ class W2V(GeneralizedModel):
         return summary.to_html(index=False)
     
     def generate_results_table(self):
-        results_table = pd.DataFrame({"id": self.list_of_ids,
-                                     "cluster": self.cluster_assignments,
-                                     "original_text": self.list_of_original_docs,
-                                     "tokenized_docs": self.list_of_tokenized_docs})
+        results_table = pd.DataFrame({
+            "id": self.list_of_ids,
+            "oringinal_id": self.list_of_original_ids,
+            "cluster": self.cluster_assignments,
+            "original_text": self.list_of_original_docs,
+            "tokenized_docs": self.list_of_tokenized_docs,
+        })
+
+        results_table = (results_table
+            .sort_values("cluster")
+        )
+
         return results_table
     
     def display_results(self):
         results = (self.generate_results_table()
-                   .sort_values(by="cluster")
-                   .groupby("cluster")
-                   .head(5)
-                   .to_html(index=False))
+            .sort_values(by="cluster")
+            .groupby("cluster")
+            .head(5)
+            .to_html(index=False)
+        )
         
         return results
 

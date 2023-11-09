@@ -219,8 +219,8 @@ def load_data():
 
         clear_cached_data()
 
-        data = imp.load_example_data() # gives me a dict
-                                # will need fake id col
+        data = imp.load_example_data()
+
         d = Data(data)
         d.select()
         d.mark_as_example_data()
@@ -255,6 +255,7 @@ def preprocess():
             stopwords_form.remove_stopwords.data
         )
         d.tokenize_and_clean()
+        print(d.return_pandas_df())
 
     if replacements_form.validate_on_submit() and replacements_form.submit.data:
         d.replace_tokens(replacements_form.replacements.data)
@@ -360,6 +361,7 @@ def select_model():
 def model_w2v():
 
     d = session.get("d")
+    print(d.return_pandas_df())
 
     storage = initiate_storage()
     

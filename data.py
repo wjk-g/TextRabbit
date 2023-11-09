@@ -16,7 +16,13 @@ class Data:
         self.replacements = {"starytoken": "nowytoken"} # should be private
         self.top_words = None
         self.top_bigrams = None
-        self.data = data # must be a dict; cols should be renamed with a class method to avoid naming issues in the future
+        # data is stored as a dict
+        # for calculations and processing it is temporarily converted to pandas df
+        # and then reconverted to dict to enable transfer across views.
+        # Tokenize and clean adds an additional column/key "tokens" to self.data
+        # which contains lemmas for analysis.
+        self.data = data
+        
 
     # DATA STATES
     def process(self):
@@ -129,7 +135,8 @@ class Data:
         texts = self.pre_process_corpus(texts)
 
         df["tokens"] = texts
-        df = df.loc[df.tokens.map(lambda x: len(x) > 0), ["text", "tokens"]] # odfiltrowuję puste, TU JESZCZE WARTO ODFILTROWAĆ NP. " "
+        # !
+        df = df.loc[df.tokens.map(lambda x: len(x) > 0), ["id", "text", "tokens"]] # odfiltrowuję puste, TU JESZCZE WARTO ODFILTROWAĆ NP. " "
 
         # .values returns Series as ndarray or ndarray-like depending on the dtype
         #original_docs = df["text"].values
@@ -175,8 +182,10 @@ class Data:
                 .rename_axis('top_tokens') \
                 .reset_index(name="n")
             
-            top_bigrams = {"tokens": top_tokens["top_tokens"].tolist(),
-                           "counts": top_tokens["n"].tolist() }
+            top_bigrams = {
+                "tokens": top_tokens["top_tokens"].tolist(),
+                "counts": top_tokens["n"].tolist() 
+            }
         
             return top_bigrams
         
@@ -192,7 +201,9 @@ class Data:
                 .rename_axis('top_tokens') \
                 .reset_index(name="n")
             
-            top_trigrams = {"tokens": top_tokens["top_tokens"].tolist(),
-                           "counts": top_tokens["n"].tolist() }
+            top_trigrams = {
+                "tokens": top_tokens["top_tokens"].tolist(),
+                "counts": top_tokens["n"].tolist() 
+            }
         
             return top_trigrams

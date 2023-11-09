@@ -122,6 +122,8 @@ def load_data_from_file(app):
 def load_example_data():
     df = pd.read_csv("static/example_data.csv")
     df = df.dropna()
+    print(df)
     df = df.to_dict()
+    print(df)
     return df
     
