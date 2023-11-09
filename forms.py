@@ -8,6 +8,7 @@ from wtforms.validators import DataRequired, InputRequired, NumberRange
 class DataSelection(FlaskForm):
     input_survey_number = IntegerField("Wprowadź numer ankiety")
     input_survey_column = StringField("Wprowadź kod pytania z danymi tekstowymi")
+    input_id_column = StringField("Wprowadź kod kolumny zawierającej ID rekordu (opcjonalne)")
     submit = SubmitField("Załaduj dane")
 
 class ExampleData(FlaskForm):

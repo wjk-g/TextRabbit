@@ -7,7 +7,7 @@ import os
 
 # Add: data_column:
 # Add: id_column
-def download_data_from_ls(survey_number, column):
+def download_data_from_ls(survey_number, data_column, id_column=None):
     """
     Download LimeSurvey data in a base64 format
     - convert it to a pandas df
@@ -38,11 +38,27 @@ def download_data_from_ls(survey_number, column):
             string_data = StringIO(decoded_data)
             # transforming into pandas df
             df = pd.read_csv(string_data, sep=';')
-            # renames the "Kod dostępu" column as "token")
-            try:
-                df = df[["id", column]]
-            except KeyError:
-                return "column_error"
+
+            # If the user did not provide an id column,
+            # the default id column is used.
+            if not id_column:
+                try:
+                    df = df[["id", data_column]]
+                except KeyError:
+                    return "column_error"
+            
+            # If user provided the id column it will be used instead of the
+            # default LimeSurvey "id" column.
+            if id_column:
+                try:
+                    df = df[[id_column, data_column]]
+                    print(df)
+                    print(id_column)
+                except KeyError:
+                    return "column_error"
+            
+            
+
             df = df.dropna()
             df.columns = ["id", "text"] # setting new colnames
 

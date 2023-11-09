@@ -7,7 +7,7 @@ import nltk
 class Data:
     def __init__(self, data):
         self.possible_errors = ["survey_error", "column_error", "extension_error"]
-
+        self.errors = False
         self._is_tokenized_and_preprocessed = False
         self._is_processed = False
         self._is_selected = False
@@ -61,7 +61,7 @@ class Data:
 
     def display_original_text_as_html_table(self):
         try:
-            return pd.DataFrame(self.data)[["text"]].to_html()
+            return pd.DataFrame(self.data)[["id", "text"]].to_html()
         except:
             if self.data in self.possible_errors:
                 return self.data

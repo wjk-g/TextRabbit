@@ -13,6 +13,7 @@
             {{ data_selection_form.hidden_tag() }}
             {{ data_selection_form.input_survey_number.label }} {{ data_selection_form.input_survey_number }}<br>
             {{ data_selection_form.input_survey_column.label }} {{ data_selection_form.input_survey_column }}<br>
+            {{ data_selection_form.input_id_column.label }} {{data_selection_form.input_id_column }}<br>
             {{ data_selection_form.submit }}
         </form>
 
@@ -32,7 +33,7 @@
         <script type="text/javascript" src="{{ url_for('static', filename='js/display_file_info.js') }}"></script>
     </div>
 
-    {% if d.data in d.possible_errors %}
+    {% if d.errors %}
         <p style="color: rgb(231 71 60);">{{ d.display_error_message() }}</p>
     {% elif d.is_selected and not d.is_example %}
         {{ d.display_original_text_as_html_table()|safe }}

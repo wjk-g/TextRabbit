@@ -27,6 +27,7 @@ class GeneralizedModel():
         self._model_type = model_type 
         self.list_of_tokenized_docs = list(input_data["tokens"].values()) # input_data["tokens"] returns a dict (key-value pairs)
         self.list_of_original_docs = list(input_data["text"].values())
+        # add ids here
         self.list_of_ids = list(input_data["tokens"].keys())
         self.n_clusters = 10
         self.cluster_assignments = []

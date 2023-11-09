@@ -2,6 +2,7 @@ import os
 import requests
 import json
 import pickle
+import pandas as pd
 
 from oauthlib.oauth2 import WebApplicationClient
 from dotenv import load_dotenv
@@ -150,6 +151,11 @@ def protect_access(f):
             return redirect("login")
     return decorated_func
 
+# Check for errors in data
+def errors_in_data(d):
+    if not isinstance(d.data, pd.DataFrame) and d.data in d.possible_errors:
+        return True
+
 # Initiate storage helper function
 def initiate_storage():
     storage = session.get("storage")
@@ -186,10 +192,17 @@ def load_data():
         # consider adding dataset information to the storage view
         clear_cached_data()
 
-        data = imp.download_data_from_ls(data_selection_form.input_survey_number.data,
-                                        data_selection_form.input_survey_column.data)
-                                        # and here we will add the ID column at some point
+        data = imp.download_data_from_ls(
+            data_selection_form.input_survey_number.data,
+            data_selection_form.input_survey_column.data,
+            data_selection_form.input_id_column.data,
+        ) # and here we will add the ID column at some point
+
         d = Data(data)
+        
+        if errors_in_data(d):
+            d.errors = True
+        
         d.select() # select indicates that this is the currently active dataset
 
     ### (METHOD 2) DOWNLOAD DATA FROM FILE
@@ -237,8 +250,10 @@ def preprocess():
     replacements_form = ReplacementsForm()
 
     if stopwords_form.validate_on_submit() and stopwords_form.submit_stopwords.data:
-        d.add_remove_stopwords(stopwords_form.add_stopwords.data, 
-                               stopwords_form.remove_stopwords.data)
+        d.add_remove_stopwords(
+            stopwords_form.add_stopwords.data, 
+            stopwords_form.remove_stopwords.data
+        )
         d.tokenize_and_clean()
 
     if replacements_form.validate_on_submit() and replacements_form.submit.data:
@@ -565,24 +580,24 @@ def model_nnmf():
     )
 
 #@protect_access
-@app.route("/model/lsi", methods = ["GET", "POST"])
-def model_lsi():
-
-    # Form
-        # no_below
-        # no_above
-        # n_of_ks
-        # iterations
-
-    d = session.get("d")
-    storage = initiate_storage()
-
-    lsi = LSI("LSI", d.data) # initializing lda
-    lsi.compare_coherence(2,40,4) # initial comp performed at low iter (250)
-    lsi.create_model()
-    lsi.show_topics()
-
-    return render_template("model/model_lsi.html", d=d, model=lsi, storage=storage)
+#@app.route("/model/lsi", methods = ["GET", "POST"])
+#def model_lsi():
+#
+#    # Form
+#        # no_below
+#        # no_above
+#        # n_of_ks
+#        # iterations
+#
+#    d = session.get("d")
+#    storage = initiate_storage()
+#
+#    lsi = LSI("LSI", d.data) # initializing lda
+#    lsi.compare_coherence(2,40,4) # initial comp performed at low iter (250)
+#    lsi.create_model()
+#    lsi.show_topics()
+#
+#    return render_template("model/model_lsi.html", d=d, model=lsi, storage=storage)
 
 #@protect_access
 @app.route("/storage", methods = ["GET", "POST"])
@@ -613,6 +628,7 @@ def show_storage():
                     return model_to_download.write_to_excel(word2vec)
 
                 return model_to_download.write_to_excel()
+                    
                 
         table_of_models = storage.return_html_summary()
 

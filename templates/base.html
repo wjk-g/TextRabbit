@@ -25,7 +25,6 @@
         <a href="{{ url_for('model_w2v') }}">&emsp;&emsp; word2vec</a>
         <a href="{{ url_for('model_lda') }}">&emsp;&emsp; lda</a>
         <a href="{{ url_for('model_nnmf') }}">&emsp;&emsp; nnmf</a>
-        <a href="{{ url_for('model_lsi') }}">&emsp;&emsp; lsi</a>
         {% elif d.is_selected %}
         <a href="{{ url_for('preprocess') }}">Przygotuj i wyczyść</a>
         <a style="color: rgb(129, 129, 129) !important;">Eksploruj</a>
@@ -36,9 +35,9 @@
         <a style="color: rgb(129, 129, 129) !important;">Modeluj</a>
         {% endif %}
         {% if storage %}
-            <a href="{{ url_for('show_storage') }}">Ładownia &emsp;<div class="circle">{{storage.n_of_models}}</div></a>
+            <a href="{{ url_for('show_storage') }}">Magazyn &emsp;<div class="circle">{{storage.n_of_models}}</div></a>
         {% else %}
-            <a href="{{ url_for('show_storage') }}">Ładownia</a>
+            <a href="{{ url_for('show_storage') }}">Magazyn</a>
         {% endif %}
     </div>
     
