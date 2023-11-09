@@ -1,59 +1,86 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    
+
+<div class="container-fluid">
     <h1>Wczytaj dane</h1>
-    <p>Ta aplikacja pozwoli Ci przeanalizować nieustrukturyzowane dane tekstowe.</p>
+    <p class="lead">Ta aplikacja pozwoli Ci przeanalizować nieustrukturyzowane dane tekstowe.</p>
     <p>Mogą to być na przykład otwarte odpowiedzi respondentów w sondażu, wpisy na forum internetowym lub krótkie dokumenty.</p>
     <p>Zacznijmy od załadowania danych.</p>
-    <div class="form-container">
-        <form method="POST" id="load_ls">
-            <h3>Wczytaj dane z LimeSurvey</h3>
-            <p>Wczytaj dane bezpośrednio z serwera LimeSurvey Stoczni. Pobranie danych może zająć od kilku do kilkunastu sekund.</p>
-            {{ data_selection_form.hidden_tag() }}
-            {{ data_selection_form.input_survey_number.label }} {{ data_selection_form.input_survey_number }}<br>
-            {{ data_selection_form.input_survey_column.label }} {{ data_selection_form.input_survey_column }}<br>
-            {{ data_selection_form.input_id_column.label }} {{data_selection_form.input_id_column }}<br>
-            {{ data_selection_form.submit }}
-        </form>
 
-        <form method="POST" id="load_file" enctype="multipart/form-data">
-            <h3>Wczytaj dane z pliku</h3>
-            <p>Wczytaj dane z lokalnego pliku.</p>
-            Dopuszczalne formaty: .csv, .txt, .xlsx i .xls
-            <input name="upload_form_button" type="button" id="load_file" value="Wczytaj plik" onclick="document.getElementById('file', 'upload_form_submit').click();" />
-
-            <input name="upload_form_file" style="display:none;" type="file" id="file" name="file"/>
-            <div id="fileInfo"></div>
-            <label for="file_column">Wprowadź nazwę kolumny z tekstem:</label> 
-            <input type="text" name="file_column"><br>
-            <label for="id_column">Wprowadź nazwę kolumny z id (opcjonalnie):</label> 
-            <input type="text" name="id_column"><br>
-            <input name="upload_form_submit" type="submit" value="Zatwierdź" />
-        </form>
-
-        <script type="text/javascript" src="{{ url_for('static', filename='js/display_file_info.js') }}"></script>
+    <div class="card mb-3">
+        <div class="card-body">
+            <h3 class="card-title">Wczytaj dane z LimeSurvey</h3>
+            <p class="card-text">Wczytaj dane bezpośrednio z serwera LimeSurvey Stoczni. Pobranie danych może zająć od kilku do kilkunastu sekund.</p>
+            <form method="POST" id="load_ls">
+                {{ data_selection_form.hidden_tag() }}
+                <div class="mb-3">
+                    {{ data_selection_form.input_survey_number.label(class="form-label") }}
+                    {{ data_selection_form.input_survey_number(class="form-control") }}
+                </div>
+                <div class="mb-3">
+                    {{ data_selection_form.input_survey_column.label(class="form-label") }}
+                    {{ data_selection_form.input_survey_column(class="form-control") }}
+                </div>
+                <div class="mb-3">
+                    {{ data_selection_form.input_id_column.label(class="form-label") }}
+                    {{ data_selection_form.input_id_column(class="form-control") }}
+                </div>
+                {{ data_selection_form.submit(class="btn btn-primary") }}
+            </form>
+        </div>
     </div>
 
+    <div class="card">
+        <div class="card-body">
+            <h3 class="card-title">Wczytaj dane z pliku</h3>
+            <p class="card-text">Wczytaj dane z lokalnego pliku. Dopuszczalne formaty: .csv, .txt, .xlsx i .xls</p>
+            <form method="POST" id="load_file" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <button type="button" class="btn btn-secondary" onclick="document.getElementById('file').click();">Wczytaj plik</button>
+                    <input name="upload_form_file" type="file" id="file" style="display:none;" onchange="displayFileName()"/>
+                </div>
+                <div id="fileInfo"></div>
+                <div class="mb-3">
+                    <label for="file_column" class="form-label">Wprowadź nazwę kolumny z tekstem:</label>
+                    <input type="text" name="file_column" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label for="id_column" class="form-label">Wprowadź nazwę kolumny z id (opcjonalnie):</label>
+                    <input type="text" name="id_column" class="form-control">
+                </div>
+                <input name="upload_form_submit" type="submit" class="btn btn-primary" value="Zatwierdź" />
+            </form>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="{{ url_for('static', filename='js/display_file_info.js') }}"></script>
+
     {% if d.errors %}
-        <p style="color: rgb(231 71 60);">{{ d.display_error_message() }}</p>
-    {% elif d.is_selected and not d.is_example %}
-        {{ d.display_original_text_as_html_table()|safe }}
-    {% else %}
+        <div class="alert alert-danger" role="alert">
+            {{ d.display_error_message() }}
+        </div>
     {% endif %}
 
-    <form method="POST" id="example_data_form">
-        <h3>Wczytaj przykładowe dane</h3>
-        <p>Możesz również wczytać udostępniony przez nas zbiór danych. Dane opisują ... Na tym przykładzie zobaczysz, jak działa proces czyszczenia, eksploracji i modelowania danych tekstowych.</p>
-        {{ example_data_form.hidden_tag() }}
-        {{ example_data_form.submit_example }}
-    </form>
+    <div class="card mt-3">
+        <div class="card-body">
+            <h3 class="card-title">Wczytaj przykładowe dane</h3>
+            <p class="card-text">Możesz również wczytać udostępniony przez nas zbiór danych. Dane opisują ... Na tym przykładzie zobaczysz, jak działa proces czyszczenia, eksploracji i modelowania danych tekstowych.</p>
+            <form method="POST" id="example_data_form">
+                {{ example_data_form.hidden_tag() }}
+                {{ example_data_form.submit_example(class="btn btn-primary") }}
+            </form>
+        </div>
+    </div>
 
     {% if d.is_selected and d.is_example %}
-    <table>
-        {{ d.display_original_text_as_html_table()|safe }}
-    </table>
-    {% else %}
+        <div>
+            <table class="table">
+                {{ d.display_original_text_as_html_table()|safe }}
+            </table>
+        </div>
     {% endif %}
+
+</div>
 
 {% endblock %}

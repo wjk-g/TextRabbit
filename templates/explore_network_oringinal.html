@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Eksploruj</h1>
+    {% if d.is_selected %}
+
+    <div class="form-container">
+        <form action="" method="POST" id="network_most_common_words">
+            <h3>Wyświetl sieć powiązań między najczęstszymi słowami</h3>
+            <p>Bigramy i trigramy pozwalają zorientować się jakie słowa najczęściej występują obok siebie, ale wciąż niewiele mówią o relacjach w analizowanym tekście. Kliknij „Wygeneruj sieć“, żeby wyświetlić relacje między słowami współwystępującymi w tych samych dokumentach (np. w tej samej odpowiedzi lub w tym samym komentarzu ale niekoniecznie obok siebie).</p>
+            <p>Wielkość sieci określa, ile z najczęściej występujących słów bierzemy pod uwagę. Na przykład wielkość 100 oznacza, że śledzimy relacje między stoma najczęściej występującymi słowami.</p>
+            <p>Grubość linii określa, jak często dane słowa współwystępują w tych samych dokumentach.</p>
+            <p>Kolory wyróżniają najsilniej zsieciowane słowa (tzw. communities). Można je traktować jako ogólne wątki lub tematy.</p>
+            {{ network_form.hidden_tag() }}
+            {{ network_form.network_size }}<br>
+            {{ network_form.submit }}
+        </form>
+
+        <form action="" method="POST" id="network_selected_words">
+            <h3>Wyświetl sieć dla wybranych słów</h3>
+            <p>Możesz również wyświetlić sieć powiązań dla wybranych słów.</p>
+            <p>Wprowadź je do pola poniżej <strong>oddzielając spacjami: pierwszesłowo drugiesłowo itd.</strong></p>
+            <p>Sieć przedstawia słowa współwystępujące z wybranymi słowami w tych samych dokumentach.</p>
+            {{ selected_words_form.hidden_tag() }}
+            {{ selected_words_form.choose_words(style="width: 100%;") }}<br>
+            <br>
+            {{ selected_words_form.submit_words }}
+        </form>
+    </div>
+    {% else %}
+        <p>Nic tu nie ma.</p>
+    {% endif %}
+    
+    {% if network_form.validate_on_submit() or selected_words_form.validate_on_submit() %}
+    <table>
+        {{ network_data|safe }}
+    </table>
+    <iframe src="static/pyvis_graph.html" width="100%" height="600px"></iframe>
+    {% else %}
+    {% endif %}
+
+    {% if selected_words_form.validate_on_submit() %}
+    {% else %}
+    {% endif %}
+
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends 'model/base_model.html' %}
+
+{% block model_name %}
+    <h1>Modeluj: NNMF</h1>
+{% endblock %}
+
+{% block model_type_and_params %}
+    <form method="POST" id="lda_coherence">
+        <h3>Porównaj miary spójności klastrów</h3>
+        <br>
+        {{ nnmf_coherence_form.hidden_tag() }}
+        {{ nnmf_coherence_form.start.label }} {{ nnmf_coherence_form.start }}
+        {{ nnmf_coherence_form.end.label }} {{ nnmf_coherence_form.end }}
+        {{ nnmf_coherence_form.step.label }} {{ nnmf_coherence_form.step }}<br>
+        {{ nnmf_coherence_form.no_above.label }} {{ nnmf_coherence_form.no_above }}<br>
+        {{ nnmf_coherence_form.no_below.label }} {{ nnmf_coherence_form.no_below }}<br>
+        {{ nnmf_coherence_form.submit }}
+    </form>
+{% endblock %}
+
+{% block summary %}
+    <form method="POST" id="lda_model">
+        <h3>Stwórz model</h3>
+        <br>
+        {{ nnmf_model_form.hidden_tag() }}
+        {{ nnmf_model_form.no_above.label }} {{ nnmf_model_form.no_above }}<br>
+        {{ nnmf_model_form.no_below.label }} {{ nnmf_model_form.no_below }}<br>
+        {{ nnmf_model_form.n_iterations.label }} {{ nnmf_model_form.n_iterations }}<br>
+        {{ nnmf_model_form.n_clusters.label }} {{ nnmf_model_form.n_clusters }}<br>
+        {{ nnmf_model_form.submit }}
+    </form>
+
+    {{ nnmf_most_representative_words|safe }}
+    {{ nnmf_summary_html|safe }}
+    
+    
+{% endblock %}

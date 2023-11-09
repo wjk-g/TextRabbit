@@ -1,51 +1,66 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<div class="container-fluid">
     <h1>Przygotuj i wyczyść</h1>
     <p>Przed analizą dane należy odpowiednio przygotować. Polega to przeważnie na:</p>
     <ol>
-        <li>Usunięciu najczęściej występujących, „beztreściowych“ słów takich jak „bo“, „a“, „i“ itp. (tzw. stopwords) </li>
+        <li>Usunięciu najczęściej występujących, „beztreściowych“ słów takich jak „bo“, „a“, „i“ itp. (tzw. stopwords)</li>
         <li>Tokenizacji czyli podzieleniu tekstu na jednostki analizy (przeważnie pojedyncze słowa)</li>
         <li>Lematyzacji czyli sprowadzeniu słów do podstawowych form (np. czasowniki są sprowadzane do form bezokolicznikowych, a rzeczowniki do mianownika liczby pojedynczej, możliwe jest też sprowadzanie słów do gramatycznych rdzeni).</li>
     </ol>
-
     <p>Powyższe czynności wykonaliśmy za Ciebie.</p>
-    
-    <form method="POST">
-        <h3>Skoryguj stopwords</h3>
-        <div id="stopwords">
-        {% for word in d.stopwords %}
-            {{ word }} 
-        {% endfor %}
-        </div>
-        {{ stopwords_form.hidden_tag() }}
-        {{ stopwords_form.add_stopwords.label }}
-        {{ stopwords_form.add_stopwords(style="width: 100%; margin-bottom: 15px;") }}<br>
-        {{ stopwords_form.remove_stopwords.label|safe }}
-        {{ stopwords_form.remove_stopwords(style="width: 100%; margin-bottom: 15px;") }}<br>
-        {{ stopwords_form.submit_stopwords }}
-    </form>
 
-    <form method="POST">
-        <h3>Skoryguj tokeny</h3>
-        <div id="stopwords">
-        {% for pair in d.display_replacements() %}
-            {{ pair }}
-        {% endfor %}
+    <div class="card my-3">
+        <div class="card-body">
+            <form method="POST">
+                <h3 class="card-title">Skoryguj stopwords</h3>
+                <div id="stopwords" class="mb-3">
+                    {% for word in d.stopwords %}
+                        <span class="badge bg-secondary">{{ word }}</span>
+                    {% endfor %}
+                </div>
+                {{ stopwords_form.hidden_tag() }}
+                <div class="mb-3">
+                    {{ stopwords_form.add_stopwords.label(class="form-label") }}
+                    {{ stopwords_form.add_stopwords(class="form-control") }}
+                </div>
+                <div class="mb-3">
+                    {{ stopwords_form.remove_stopwords.label(class="form-label")|safe }}
+                    {{ stopwords_form.remove_stopwords(class="form-control") }}
+                </div>
+                {{ stopwords_form.submit_stopwords(class="btn btn-primary") }}
+            </form>
         </div>
-        <p>Spójrz na rezultaty lematyzacji (prawa kolumna) i porównaj je z oryginalnym tekstem (lewa kolumna). Być może już na pierwszy rzut oka dostrzegasz błędne decyzje lematyzatora. Zwróć szczególną uwagę na najważniejsze ze względu na tematykę tekstu słowa oraz nazwy własne. Możesz je poprawić korzystając z formularza poniżej.</p>
-        <p>Żeby poprawić błędnie zlematyzowany token i zastąpić go nowym wpisz w pole poniżej: <strong>błędnytoken|poprawnytoken</strong></p>
-        <p>Możesz zmienić za jednym razem dowolną liczbę tokenów. Pary do zamiany oddzielaj spacją: <strong>błędny|poprawny kolejnybłąd|kolejnazmiana</strong></p>
-        <p>Twoje zmiany zostaną zapamiętane. Możesz więc również wprowadzać je w krokach. Jeżeli chcesz usunąć wszystkie wprowadzone zmiany, ponownie wczytaj dane.</p>
-        {{ replacements_form.hidden_tag() }}
-        {{ replacements_form.replacements(style="width: 100%; margin-bottom: 15px;") }}<br>
-        {{ replacements_form.submit }}
-        {% if error_msg %}
-            {{ error_msg|safe }}
-        {% else %}
-        {% endif %}
-    </form>
+    </div>
 
-    {{ d.display_all_data_as_html_table()|safe }}
-    
-{% endblock %} 
+    <div class="card my-3">
+        <div class="card-body">
+            <form method="POST">
+                <h3 class="card-title">Skoryguj tokeny</h3>
+                <div id="tokens" class="mb-3">
+                    {% for pair in d.display_replacements() %}
+                        <span class="badge bg-secondary">{{ pair }}</span>
+                    {% endfor %}
+                </div>
+                <p class="card-text">Spójrz na rezultaty lematyzacji (prawa kolumna) i porównaj je z oryginalnym tekstem (lewa kolumna). Być może już na pierwszy rzut oka dostrzegasz błędne decyzje lematyzatora. Zwróć szczególną uwagę na najważniejsze ze względu na tematykę tekstu słowa oraz nazwy własne. Możesz je poprawić korzystając z formularza poniżej.</p>
+                <p class="card-text">Żeby poprawić błędnie zlematyzowany token i zastąpić go nowym wpisz w pole poniżej: <strong>błędnytoken|poprawnytoken</strong></p>
+                <p class="card-text">Możesz zmienić za jednym razem dowolną liczbę tokenów. Pary do zamiany oddzielaj spacją: <strong>błędny|poprawny kolejnybłąd|kolejnazmiana</strong></p>
+                <p class="card-text">Twoje zmiany zostaną zapamiętane. Możesz więc również wprowadzać je w krokach. Jeżeli chcesz usunąć wszystkie wprowadzone zmiany, ponownie wczytaj dane.</p>
+                {{ replacements_form.hidden_tag() }}
+                <div class="mb-3">
+                    {{ replacements_form.replacements(class="form-control") }}
+                </div>
+                {{ replacements_form.submit(class="btn btn-primary") }}
+                {% if error_msg %}
+                    <div class="alert alert-danger mt-3">{{ error_msg|safe }}</div>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+
+    <div class="my-3">
+        {{ d.display_all_data_as_html_table()|safe }}
+    </div>
+</div>
+{% endblock %}

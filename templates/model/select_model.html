@@ -1,35 +1,37 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<div class="container-fluid">
     <h1>Modeluj</h1>
-    <div class="form-container">
-        <form action="" method="POST" id="select-model">
-            <h3>Wybierz model</h3>
-            <br>
-            {{ model_selection_form.hidden_tag() }}
-            {{ model_selection_form.select_model }}
-            <div>
-                <div class="model-description" id="word2vec">
-                    <p>Word Embeddings (word2vec): Jest to technika uczenia maszynowego, która konwertuje słowa na wektory o stałej długości w taki sposób, że słowa o podobnym znaczeniu znajdują się blisko siebie w przestrzeni wektorowej. Word2vec to popularna realizacja tej koncepcji, która używa sieci neuronowych do generowania osadzeń słów, pozwalając na efektywne reprezentowanie kontekstu i semantyki słów.</p>
-                    <p>Wyobraź sobie, że chcesz przedstawić każde słowo jako punkt na mapie, tak że słowa o podobnym znaczeniu są blisko siebie. Word2vec to narzędzie, które robi dokładnie to, tworząc dla każdego słowa specjalny "adres" na tej mapie.</p>
+    <div class="card my-3">
+        <div class="card-body">
+            <form action="" method="POST" id="select-model">
+                <h3 class="card-title">Wybierz model</h3>
+                <div class="mb-3">
+                    {{ model_selection_form.hidden_tag() }}
+                    {{ model_selection_form.select_model(class="form-select") }}
                 </div>
-                <div class="model-description" id="lda">
-                    <p>LDA (Latent Dirichlet Allocation): To generatywny model probabilistyczny, który służy do identyfikacji tematów w zestawie dokumentów. Działa poprzez przydzielenie każdemu słowu w dokumentach pewnej wagi w odniesieniu do określonego tematu, a następnie grupuje te słowa, aby odkryć różne tematy w zbiorze.</p>
-                    <p>To narzędzie jest trochę jak naukowiec, który analizuje stosy książek i próbuje znaleźć główne tematy, które przewijają się przez te książki. Na podstawie słów w książkach decyduje, jakie tematy są najważniejsze.</p>
+                <div id="word2vec" class="model-description mb-3 d-none">
+                    <p class="card-text">Word Embeddings (word2vec): Jest to technika uczenia maszynowego, która konwertuje słowa na wektory o stałej długości w taki sposób, że słowa o podobnym znaczeniu znajdują się blisko siebie w przestrzeni wektorowej. Word2vec to popularna realizacja tej koncepcji, która używa sieci neuronowych do generowania osadzeń słów, pozwalając na efektywne reprezentowanie kontekstu i semantyki słów.</p>
+                    <p class="card-text">Wyobraź sobie, że chcesz przedstawić każde słowo jako punkt na mapie, tak że słowa o podobnym znaczeniu są blisko siebie. Word2vec to narzędzie, które robi dokładnie to, tworząc dla każdego słowa specjalny "adres" na tej mapie.</p>
                 </div>
-                <div class="model-description" id="nnmf">
-                    <p>NNMF (Non-Negative Matrix Factorization): Jest to algorytm rozkładu macierzy, który faktoryzuje daną macierz na dwie inne macierze o nieujemnych wartościach. W kontekście analizy tekstu NNMF jest często używany do ekstrakcji tematów, podobnie jak LDA, ale z wykorzystaniem innej matematyki i podejścia.</p>
-                    <p>To trochę jak rozbieranie skomplikowanej układanki na prostsze części, które razem tworzą całość. W kontekście tekstów, NNMF pomaga nam zrozumieć główne tematy, które występują w zbiorze dokumentów.</p>
+                <div id="lda" class="model-description mb-3 d-none">
+                    <p class="card-text">LDA (Latent Dirichlet Allocation): To generatywny model probabilistyczny, który służy do identyfikacji tematów w zestawie dokumentów. Działa poprzez przydzielenie każdemu słowu w dokumentach pewnej wagi w odniesieniu do określonego tematu, a następnie grupuje te słowa, aby odkryć różne tematy w zbiorze.</p>
+                    <p class="card-text">To narzędzie jest trochę jak naukowiec, który analizuje stosy książek i próbuje znaleźć główne tematy, które przewijają się przez te książki. Na podstawie słów w książkach decyduje, jakie tematy są najważniejsze.</p>
                 </div>
-                <div class="model-description" id="lsi">
-                    <p>LSI (Latent Semantic Indexing): To technika, która redukuje wymiarowość macierzy termin-dokument przy użyciu dekompozycji wartości osobliwych (SVD). Pozwala to na identyfikację ukrytych struktur semantycznych w tekście, co czyni ją przydatną w zadaniach takich jak wyszukiwanie informacji czy klasyfikacja tekstu.</p>
-                    <p>Wyobraź sobie, że próbujesz znaleźć główne idee w wielu artykułach. LSI analizuje słowa w tych artykułach, aby znaleźć ukryte połączenia i tematy. Pomaga to w zrozumieniu głównego przesłania tekstu bez konieczności czytania każdego słowa.</p>
+                <div id="nnmf" class="model-description mb-3 d-none">
+                    <p class="card-text">NNMF (Non-Negative Matrix Factorization): Jest to algorytm rozkładu macierzy, który faktoryzuje daną macierz na dwie inne macierze o nieujemnych wartościach. W kontekście analizy tekstu NNMF jest często używany do ekstrakcji tematów, podobnie jak LDA, ale z wykorzystaniem innej matematyki i podejścia.</p>
+                    <p class="card-text">To trochę jak rozbieranie skomplikowanej układanki na prostsze części, które razem tworzą całość. W kontekście tekstów, NNMF pomaga nam zrozumieć główne tematy, które występują w zbiorze dokumentów.</p>
                 </div>
+                <div id="lsi" class="model-description mb-3 d-none">
+                    <p class="card-text">LSI (Latent Semantic Indexing): To technika, która redukuje wymiarowość macierzy termin-dokument przy użyciu dekompozycji wartości osobliwych (SVD). Pozwala to na identyfikację ukrytych struktur semantycznych w tekście, co czyni ją przydatną w zadaniach takich jak wyszukiwanie informacji czy klasyfikacja tekstu.</p>
+                    <p class="card-text">Wyobraź sobie, że próbujesz znaleźć główne idee w wielu artykułach. LSI analizuje słowa w tych artykułach, aby znaleźć ukryte połączenia i tematy. Pomaga to w zrozumieniu głównego przesłania tekstu bez konieczności czytania każdego słowa.</p>
                 </div>
-            {{ model_selection_form.submit_select_model }}
-        </form>
+                {{ model_selection_form.submit_select_model(class="btn btn-primary") }}
+            </form>
+        </div>
     </div>
-
+</div>
 {% endblock %}
 
 {% block scripts %}

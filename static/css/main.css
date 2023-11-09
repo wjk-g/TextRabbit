@@ -1,5 +1,9 @@
-@import url('https://fonts.googleapis.com/css?family=Open+Sans&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins&family=Roboto+Slab&display=swap');
 
+/*@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+/* @import url('https://fonts.googleapis.com/css?family=Open+Sans&display=swap');
+/*
 :root {
   --text:  #020303 ;
   --background:  #f1f2f4 ;
@@ -32,12 +36,14 @@ h3 {
   margin-top: 0px;
   margin-bottom: 0px;
 }
-
+/*
 .form-container {
   display: flex;
   justify-content: space-between;
 }
+*/
 
+/*
 #load_file {
   flex-grow: 1;
   margin-left: 15px;
@@ -80,7 +86,7 @@ h3 {
 .model-description.show {
   display: inline;
 }
-
+/*
 #download-form {
   display: flex;
   flex-direction: column;
@@ -90,6 +96,53 @@ h3 {
   justify-content: space-between;
   align-items: flex-start;
 }
+*/
+
+html {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: 'Roboto Slab', serif;
+  height: 100%;
+  margin: 0;
+}
+
+* {
+  font-family: 'Poppins', sans-serif;
+}
+
+
+/* Primary button */
+.btn-primary {
+  background-color: #9bc8e5; /* Your custom primary color */
+  border-color: #9bc8e5; /* Your custom primary border color */
+  color: black;
+}
+
+.rounded-pill {
+  background-color: #9bc8e5;
+}
+
+.btn-primary:hover {
+  background-color: #7db2d4;
+  border-color: #7db2d4;
+  color: black;
+}
+
+.btn-secondary {
+  background-color: #d9a6c3; /* Your custom secondary color */
+  border-color: #d9a6c3; /* Your custom secondary border color */
+  color: black;
+}
+
+.btn-secondary:hover {
+  background-color: #d293b7;
+  border-color: #d293b7;
+  color: black;
+}
+
 
 .topbar {
   z-index: 1;
@@ -115,17 +168,27 @@ h3 {
   font-size: 20px;
 }
 
-.sidenav {
+.container-fluid, .row {
   height: 100%;
-  width: 200px;
-  position: fixed;
-  z-index: 1;
-  top: 60px;
-  left: 0;
-  background-color: var(--secondary);
-  overflow-x: hidden;
-  padding-top: 20px;
 }
+
+#sidenav {
+  height: 100vh; /* 100% of the viewport height */
+  position: fixed; /* Fixed position to stay in place when scrolling */
+  z-index: 1; /* Ensures the sidenav is above other content */
+  background-color: #ffeff1;
+}
+
+.nav-link {
+  color: black;
+}
+
+/* Adjust the main content area */
+main {
+  margin-left: 200px; /* Adjust this value based on the width of your sidenav */
+  padding: 1rem;
+}
+
 
 .sidenav a {
   color: var(--text) !important;
@@ -146,10 +209,13 @@ h3 {
 
 /* Tables */
 
+/*
+
 .table-container {
   overflow-x: auto;
   max-width: 100%;
 }
+*/
 
 table {
   border-collapse: collapse;
@@ -158,13 +224,15 @@ table {
 }
 
 table th {
-  background-color: rgb(240 240 240);
-  position: sticky;
-  top: 60px;
   text-align: left;
 }
 
-.table-container { /* Div around tables */
+table tr:hover {
+  background-color: #ffeff1;
+}
+
+/*
+.table-container {
   overflow-y: auto;
   max-height: 500px;
 }
@@ -175,12 +243,10 @@ table td {
   padding: 8px;
 }
 
-table tr:hover {
-  background-color: rgba(231, 71, 60, 0.2);
-}
+*/
 
 /* Forms */
-
+/*
 form {
   background-color: var(--secondary);
   padding: 20px;
@@ -195,6 +261,7 @@ form input {
 #example_data_form {
   background-color: rgb(240 240 240);
 }
+*/
 
 /* iframe */
 iframe {
@@ -203,7 +270,7 @@ iframe {
 }
 
 /* buttons */
-
+/*
 input {
   color: var(--text);
   border: none;
@@ -253,7 +320,7 @@ input[type="button"] {
 input[type="button"]:hover {
   background-color: rgba(231, 71, 60, 0.7);
 }
-
+*/
 #top-tokens-barchart {
   z-index: 0;
   display: inline-block;
@@ -262,6 +329,7 @@ input[type="button"]:hover {
   height: 400px;
 }
 
+/*
 #answer {
   display: none;
   transition: transform 500ms;

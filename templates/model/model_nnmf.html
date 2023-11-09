@@ -1,37 +1,79 @@
 {% extends 'model/base_model.html' %}
 
-{% block model_name %}
-    <h1>Modeluj: NNMF</h1>
-{% endblock %}
-
 {% block model_type_and_params %}
-    <form method="POST" id="lda_coherence">
-        <h3>Porównaj miary spójności klastrów</h3>
-        <br>
-        {{ nnmf_coherence_form.hidden_tag() }}
-        {{ nnmf_coherence_form.start.label }} {{ nnmf_coherence_form.start }}
-        {{ nnmf_coherence_form.end.label }} {{ nnmf_coherence_form.end }}
-        {{ nnmf_coherence_form.step.label }} {{ nnmf_coherence_form.step }}<br>
-        {{ nnmf_coherence_form.no_above.label }} {{ nnmf_coherence_form.no_above }}<br>
-        {{ nnmf_coherence_form.no_below.label }} {{ nnmf_coherence_form.no_below }}<br>
-        {{ nnmf_coherence_form.submit }}
-    </form>
+<div class="container-fluid">
+    <h1>Modeluj: NNMF</h1>
+    <div class="card my-3">
+        <div class="card-body">
+            <form method="POST" id="lda_coherence">
+                <h3 class="card-title">Porównaj miary spójności klastrów</h3>
+                {{ nnmf_coherence_form.hidden_tag() }}
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        {{ nnmf_coherence_form.start.label(class="form-label") }}
+                        {{ nnmf_coherence_form.start(class="form-control") }}
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        {{ nnmf_coherence_form.end.label(class="form-label") }}
+                        {{ nnmf_coherence_form.end(class="form-control") }}
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        {{ nnmf_coherence_form.step.label(class="form-label") }}
+                        {{ nnmf_coherence_form.step(class="form-control") }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        {{ nnmf_coherence_form.no_above.label(class="form-label") }}
+                        {{ nnmf_coherence_form.no_above(class="form-control") }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ nnmf_coherence_form.no_below.label(class="form-label") }}
+                        {{ nnmf_coherence_form.no_below(class="form-control") }}
+                    </div>
+                </div>
+                    {{ nnmf_coherence_form.submit(class="btn btn-primary") }}
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block summary %}
-    <form method="POST" id="lda_model">
-        <h3>Stwórz model</h3>
-        <br>
-        {{ nnmf_model_form.hidden_tag() }}
-        {{ nnmf_model_form.no_above.label }} {{ nnmf_model_form.no_above }}<br>
-        {{ nnmf_model_form.no_below.label }} {{ nnmf_model_form.no_below }}<br>
-        {{ nnmf_model_form.n_iterations.label }} {{ nnmf_model_form.n_iterations }}<br>
-        {{ nnmf_model_form.n_clusters.label }} {{ nnmf_model_form.n_clusters }}<br>
-        {{ nnmf_model_form.submit }}
-    </form>
+<div class="container-fluid">
+    <div class="card my-3">
+        <div class="card-body">
+            <form method="POST" id="lda_model">
+                <h3 class="card-title">Stwórz model</h3>
+                {{ nnmf_model_form.hidden_tag() }}
+                <div class="mb-3">
+                    {{ nnmf_model_form.no_above.label(class="form-label") }}
+                    {{ nnmf_model_form.no_above(class="form-control") }}
+                </div>
+                <div class="mb-3">
+                    {{ nnmf_model_form.no_below.label(class="form-label") }}
+                    {{ nnmf_model_form.no_below(class="form-control") }}
+                </div>
+                <div class="mb-3">
+                    {{ nnmf_model_form.n_iterations.label(class="form-label") }}
+                    {{ nnmf_model_form.n_iterations(class="form-control") }}
+                </div>
+                <div class="mb-3">
+                    {{ nnmf_model_form.n_clusters.label(class="form-label") }}
+                    {{ nnmf_model_form.n_clusters(class="form-control") }}
+                </div>
+                {{ nnmf_model_form.submit(class="btn btn-primary") }}
+            </form>
+        </div>
+    </div>
 
-    {{ nnmf_most_representative_words|safe }}
-    {{ nnmf_summary_html|safe }}
-    
-    
+    <div class="my-3">
+        <div>
+            {{ nnmf_most_representative_words|safe }}
+        </div>
+        <div>
+            {{ nnmf_summary_html|safe }}
+        </div>
+    </div>
+</div>
 {% endblock %}

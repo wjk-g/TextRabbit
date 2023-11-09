@@ -1,43 +1,70 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1>Modeluj</h1>
-    <div class="form-container">
-        <form action="" method="POST" id="modeling-form">
-            <h3>Zidentyfikuj tematy</h3>
-            <br>
-            {{ modeling_form.hidden_tag() }}
-            {{ modeling_form.pca_radio.label }}<br>
-            {% for subfield in modeling_form.pca_radio %}
-                {{ subfield(style="margin-left:15px") }}
-                {{ subfield.label }}
-            {% endfor %}<br>
-            <div class="pca">
-                {{ modeling_form.standardize_pcs.label }}
-                {% for subfield in modeling_form.standardize_pcs %}
-                    {{ subfield(style="margin-left:15px") }}
-                    {{ subfield.label }}
-                {% endfor %}<br>
-                {{ modeling_form.n_of_pcs_int.label }}
-                {{ modeling_form.n_of_pcs_int }}<br>
-            </div>
-            {{ modeling_form.n_of_ks_int.label }}
-            {{ modeling_form.n_of_ks_int }}<br>
-            {{ modeling_form.submit_clustering }}
-        </form>
+<div class="container-fluid">
+    <h1>Modeluj: w2v</h1>
+    <div class="card my-3">
+        <div class="card-body">
+            <form action="" method="POST" id="modeling-form">
+                <h3 class="card-title">Zidentyfikuj tematy</h3>
+                {{ modeling_form.hidden_tag() }}
+                <fieldset class="form-group">
+                    <legend class="col-form-label pt-0">{{ modeling_form.pca_radio.label }}</legend>
+                    <div class="d-flex flex-column">
+                        {% for subfield in modeling_form.pca_radio %}
+                            <div class="form-check form-check-inline">
+                                {{ subfield(class="form-check-input", style="margin-left:1px") }}
+                                {{ subfield.label(class="form-check-label") }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </fieldset>
+                <div class="pca mb-3 d-none">
+                    <fieldset class="form-group">
+                        <legend class="col-form-label pt-0">{{ modeling_form.standardize_pcs.label }}</legend>
+                        <div class="d-flex flex-column">
+                            {% for subfield in modeling_form.standardize_pcs %}
+                                <div class="form-check form-check-inline">
+                                    {{ subfield(class="form-check-input", style="margin-left:1px") }}
+                                    {{ subfield.label(class="form-check-label") }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </fieldset>
+                    <div class="mb-3">
+                        {{ modeling_form.n_of_pcs_int.label(class="form-label") }}
+                        {{ modeling_form.n_of_pcs_int(class="form-control") }}
+                    </div>
+                </div>
+                <div class="mb-3">
+                    {{ modeling_form.n_of_ks_int.label(class="form-label") }}
+                    {{ modeling_form.n_of_ks_int(class="form-control") }}
+                </div>
+                {{ modeling_form.submit_clustering(class="btn btn-primary") }}
+            </form>
+        </div>
     </div>
 
     {% if display_summary %}
-    <h3>Podsumowanie</h3>
-    <table>
-        {{ w2v.display_cluster_summary()|safe }}
-    </table>
-    <h3>Wyniki</h3>
-    <table>
-        {{ w2v.display_results()|safe }}
-    </table>
+        <div class="card my-3">
+            <div class="card-body">
+                <h3 class="card-title">Podsumowanie</h3>
+                <div class="table-responsive">
+                    {{ w2v.display_cluster_summary()|safe }}
+                </div>
+            </div>
+        </div>
+        <div class="card my-3">
+            <div class="card-body">
+                <h3 class="card-title">Wyniki</h3>
+                <div class="table-responsive">
+                    {{ w2v.display_results()|safe }}
+                </div>
+            </div>
+        </div>
     {% endif %}
 
+</div>
 {% endblock %}
 
 {% block scripts %}

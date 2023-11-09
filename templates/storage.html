@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<div class="container-fluid">
     <h1>Ładownia</h1>
-    {{ table_of_models|safe }}
+    <div>
+        {{ table_of_models|safe }}
+    </div>
+</div>
 {% endblock %}

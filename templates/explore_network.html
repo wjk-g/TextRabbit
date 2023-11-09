@@ -1,46 +1,56 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<div class="container-fluid">
     <h1>Eksploruj</h1>
     {% if d.is_selected %}
 
-    <div class="form-container">
-        <form action="" method="POST" id="network_most_common_words">
-            <h3>Wyświetl sieć powiązań między najczęstszymi słowami</h3>
-            <p>Bigramy i trigramy pozwalają zorientować się jakie słowa najczęściej występują obok siebie, ale wciąż niewiele mówią o relacjach w analizowanym tekście. Kliknij „Wygeneruj sieć“, żeby wyświetlić relacje między słowami współwystępującymi w tych samych dokumentach (np. w tej samej odpowiedzi lub w tym samym komentarzu ale niekoniecznie obok siebie).</p>
-            <p>Wielkość sieci określa, ile z najczęściej występujących słów bierzemy pod uwagę. Na przykład wielkość 100 oznacza, że śledzimy relacje między stoma najczęściej występującymi słowami.</p>
-            <p>Grubość linii określa, jak często dane słowa współwystępują w tych samych dokumentach.</p>
-            <p>Kolory wyróżniają najsilniej zsieciowane słowa (tzw. communities). Można je traktować jako ogólne wątki lub tematy.</p>
-            {{ network_form.hidden_tag() }}
-            {{ network_form.network_size }}<br>
-            {{ network_form.submit }}
-        </form>
+    <div class="card my-3">
+        <div class="card-body">
+            <form action="" method="POST" id="network_most_common_words">
+                <h3 class="card-title">Wyświetl sieć powiązań między najczęstszymi słowami</h3>
+                <p class="card-text">Bigramy i trigramy pozwalają zorientować się jakie słowa najczęściej występują obok siebie, ale wciąż niewiele mówią o relacjach w analizowanym tekście. Kliknij „Wygeneruj sieć“, żeby wyświetlić relacje między słowami współwystępującymi w tych samych dokumentach (np. w tej samej odpowiedzi lub w tym samym komentarzu ale niekoniecznie obok siebie).</p>
+                <p class="card-text">Wielkość sieci określa, ile z najczęściej występujących słów bierzemy pod uwagę. Na przykład wielkość 100 oznacza, że śledzimy relacje między stoma najczęściej występującymi słowami.</p>
+                <p class="card-text">Grubość linii określa, jak często dane słowa współwystępują w tych samych dokumentach.</p>
+                <p class="card-text">Kolory wyróżniają najsilniej zsieciowane słowa (tzw. communities). Można je traktować jako ogólne wątki lub tematy.</p>
+                {{ network_form.hidden_tag() }}
+                <div class="mb-3">
+                    {{ network_form.network_size.label(class="form-label") }}
+                    {{ network_form.network_size(class="form-control") }}
+                </div>
+                {{ network_form.submit(class="btn btn-primary") }}
+            </form>
+        </div>
+    </div>
 
-        <form action="" method="POST" id="network_selected_words">
-            <h3>Wyświetl sieć dla wybranych słów</h3>
-            <p>Możesz również wyświetlić sieć powiązań dla wybranych słów.</p>
-            <p>Wprowadź je do pola poniżej <strong>oddzielając spacjami: pierwszesłowo drugiesłowo itd.</strong></p>
-            <p>Sieć przedstawia słowa współwystępujące z wybranymi słowami w tych samych dokumentach.</p>
-            {{ selected_words_form.hidden_tag() }}
-            {{ selected_words_form.choose_words(style="width: 100%;") }}<br>
-            <br>
-            {{ selected_words_form.submit_words }}
-        </form>
+    <div class="card my-3">
+        <div class="card-body">
+            <form action="" method="POST" id="network_selected_words">
+                <h3 class="card-title">Wyświetl sieć dla wybranych słów</h3>
+                <p class="card-text">Możesz również wyświetlić sieć powiązań dla wybranych słów.</p>
+                <p class="card-text">Wprowadź je do pola poniżej <strong>oddzielając spacjami: pierwszesłowo drugiesłowo itd.</strong></p>
+                <p class="card-text">Sieć przedstawia słowa współwystępujące z wybranymi słowami w tych samych dokumentach.</p>
+                {{ selected_words_form.hidden_tag() }}
+                <div class="mb-3">
+                    {{ selected_words_form.choose_words.label(class="form-label") }}
+                    {{ selected_words_form.choose_words(class="form-control") }}
+                </div>
+                {{ selected_words_form.submit_words(class="btn btn-primary") }}
+            </form>
+        </div>
     </div>
     {% else %}
-        <p>Nic tu nie ma.</p>
+    <p>Nic tu nie ma.</p>
     {% endif %}
     
     {% if network_form.validate_on_submit() or selected_words_form.validate_on_submit() %}
-    <table>
+    <div class="my-3">
         {{ network_data|safe }}
-    </table>
-    <iframe src="static/pyvis_graph.html" width="100%" height="600px"></iframe>
-    {% else %}
+    </div>
+    <div class="my-3">
+        <iframe src="{{ url_for('static', filename='pyvis_graph.html') }}" width="100%" height="600px"></iframe>
+    </div>
     {% endif %}
 
-    {% if selected_words_form.validate_on_submit() %}
-    {% else %}
-    {% endif %}
-
+</div>
 {% endblock %}

@@ -1,45 +1,52 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<div class="container-fluid">
     <h1>Eksploruj</h1>
     {% if d.is_selected %}
-    <form action="" method="POST">
-        <h3>Wyświetl najczęstsze słowa i ngramy</h3>
-        <p>Zacznijmy od czegoś prostego. Korzystając z formularza możesz wyświetlić najczęściej występujące w tekście słowa i zbitki słów (tzw. ngramy).</p>
-        {{ ngrams_form.hidden_tag() }}
-        {{ ngrams_form.ngram.label }} {{ ngrams_form.ngram }}<br>
-        {{ ngrams_form.submit }}
-    </form>
-
+    <div class="card my-3">
+        <div class="card-body">
+            <h3 class="card-title">Wyświetl najczęstsze słowa i ngramy</h3>
+            <p class="card-text">Zacznijmy od czegoś prostego. Korzystając z formularza możesz wyświetlić najczęściej występujące w tekście słowa i zbitki słów (tzw. ngramy).</p>
+            <form action="" method="POST">
+                {{ ngrams_form.hidden_tag() }}
+                <div class="mb-3">
+                    {{ ngrams_form.ngram.label(class="form-label") }}
+                    {{ ngrams_form.ngram(class="form-select") }}
+                </div>
+                {{ ngrams_form.submit }}
+            </form>
+        </div>
+    </div>
     <canvas id="top-tokens-barchart" height="550"></canvas>
     {% else %}
-        <p>Nic tu nie ma.</p>
+    <p>Nic tu nie ma.</p>
     {% endif %}
-
+</div>
 {% endblock %}
 
 {% block scripts %}
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        let tokens = {{top_words["tokens"]|tojson|safe}}
-        let token_counts = {{top_words["counts"]|tojson|safe}}
-        const ngrams_field = document.querySelector("#ngram")
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    let tokens = {{top_words["tokens"]|tojson|safe}}
+    let token_counts = {{top_words["counts"]|tojson|safe}}
+    const ngrams_field = document.querySelector("#ngram")
 
-        ngrams_field.addEventListener("change", () => {
+    ngrams_field.addEventListener("change", () => {
 
-            if (ngrams_field.value == "words") {
-                tokens = {{top_words["tokens"]|tojson|safe}}
-                token_counts = {{top_words["counts"]|tojson|safe}}
-            }
-            if (ngrams_field.value == "bigrams") {
-                tokens = {{top_bigrams["tokens"]|tojson|safe}}
-                token_counts = {{top_bigrams["counts"]|tojson|safe}}
-            }
-            if (ngrams_field.value == "trigrams") {
-                tokens = {{top_trigrams["tokens"]|tojson|safe}}
-                token_counts = {{top_trigrams["counts"]|tojson|safe}}
-            }
-        })
-    </script>
-    <script type="text/javascript" src="{{ url_for('static', filename='js/top_tokens_barchart.js') }}"></script>
+        if (ngrams_field.value == "words") {
+            tokens = {{top_words["tokens"]|tojson|safe}}
+            token_counts = {{top_words["counts"]|tojson|safe}}
+        }
+        if (ngrams_field.value == "bigrams") {
+            tokens = {{top_bigrams["tokens"]|tojson|safe}}
+            token_counts = {{top_bigrams["counts"]|tojson|safe}}
+        }
+        if (ngrams_field.value == "trigrams") {
+            tokens = {{top_trigrams["tokens"]|tojson|safe}}
+            token_counts = {{top_trigrams["counts"]|tojson|safe}}
+        }
+    })
+</script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/top_tokens_barchart.js') }}"></script>
 {% endblock %}
