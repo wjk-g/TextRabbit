@@ -44,6 +44,7 @@ def download_data_from_ls(survey_number, data_column, id_column=None):
             if not id_column:
                 try:
                     df = df[["id", data_column]]
+                    print("not id_column")
                 except KeyError:
                     return "column_error"
             
@@ -66,18 +67,28 @@ def download_data_from_ls(survey_number, data_column, id_column=None):
 
 # TODO
 # add id_column and data_column
-def prep_loaded_data(df, column):
+def prep_loaded_data(df, data_column, id_column=None):
             df.reset_index(inplace=True)
 
-            try:
-                df = df[["index", column]]
-                df.fillna("", inplace=True)
-                df.columns = ["id", "text"]
-                df_dict = df.to_dict()
-                return df_dict
-            except KeyError:
-                return "column_error"
+            if not id_column:
+                try:
+                    df = df[["index", data_column]]
+                    df.columns = ["id", "text"]
+                except KeyError:
+                    return "column_error"
+            
+            if id_column:
+                try:
+                    df = df[["index", id_column, data_column]]
+                    df.drop(columns=["index"], inplace=True)
+                    df.columns = ["id", "text"]
+                except KeyError:
+                    return "column_error"
 
+            df.fillna("", inplace=True)
+            df_dict = df.to_dict()
+            return df_dict
+            
 # TODO
 # Also add id_column
 def load_data_from_file(app):
@@ -91,6 +102,7 @@ def load_data_from_file(app):
         file_path = os.path.join(app.root_path, 'uploads', filename)
         file.save(file_path)
         column = request.form.get("file_column")
+        id = request.form.get("id_column", None)
         # This should work: id_column = request.form.get("id_column")
         # Add "id_column" field in load.html
     else:
@@ -98,10 +110,10 @@ def load_data_from_file(app):
 
     if extension in ['xls', 'xlsx']:
         df = pd.read_excel('uploads/' + filename)
-        return prep_loaded_data(df, column)
+        return prep_loaded_data(df, column, id)
     elif extension in ['csv', 'txt']:
         df = pd.read_csv('uploads/' + filename)
-        return prep_loaded_data(df, column)
+        return prep_loaded_data(df, column, id)
     else:
         pass
 
