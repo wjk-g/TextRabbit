@@ -153,6 +153,11 @@ main {
   margin-top: 60px; /* equal to topbar height */
 }
 
+#navbar-title {
+  color: #d293b7;
+  font-size: 30px;
+}
+
 /* Primary button */
 .btn-primary {
   background-color: #9bc8e5; /* Your custom primary color */
