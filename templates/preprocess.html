@@ -17,7 +17,7 @@
                 <h3 class="card-title">Skoryguj stopwords</h3>
                 <div id="stopwords" class="mb-3">
                     {% for word in d.stopwords %}
-                        <span class="badge bg-secondary">{{ word }}</span>
+                        <span class="badge">{{ word }}</span>
                     {% endfor %}
                 </div>
                 {{ stopwords_form.hidden_tag() }}

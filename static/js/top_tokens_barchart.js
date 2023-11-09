@@ -7,8 +7,8 @@ const myChart = new Chart(ctx, {
         datasets: [{
             //label: '# of tokens',
             data: token_counts, // [1, 2, 3, 4],
-            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-            borderColor: 'rgba(75, 192, 192, 1)',
+            backgroundColor: 'rgba(210, 147, 183, 0.5)',
+            borderColor: 'rgba(210, 147, 183, 1)',
             borderWidth: 1,
             barThickness: 15,
         }]

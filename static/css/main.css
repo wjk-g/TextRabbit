@@ -107,12 +107,51 @@ body {
   font-family: 'Roboto Slab', serif;
   height: 100%;
   margin: 0;
+  background-color: white;
 }
 
 * {
   font-family: 'Poppins', sans-serif;
 }
 
+
+#sidenav {
+  height: 100vh; /* 100% of the viewport height */
+  position: fixed; /* Fixed position to stay in place when scrolling */
+  z-index: 1; /* Ensures the sidenav is above other content */
+  background-color: #d293b7;
+}
+
+.nav-link {
+  color: black;
+}
+
+/* Adjust the main content area */
+main {
+  margin-left: 200px; /* Adjust this value based on the width of your sidenav */
+  padding: 1rem;
+}
+
+.card {
+  background-color: #F7F7F7;
+}
+
+.sidenav a {
+  color: black;
+  padding: 10px;
+  text-decoration: none;
+  display: block;
+}
+
+.sidenav a:hover {
+  color: black;
+}
+
+.content {
+  margin-left: 200px;
+  padding: 20px;
+  margin-top: 60px; /* equal to topbar height */
+}
 
 /* Primary button */
 .btn-primary {
@@ -140,6 +179,10 @@ body {
 .btn-secondary:hover {
   background-color: #d293b7;
   border-color: #d293b7;
+  color: black;
+}
+
+.nav-link:hover {
   color: black;
 }
 
@@ -172,41 +215,6 @@ body {
   height: 100%;
 }
 
-#sidenav {
-  height: 100vh; /* 100% of the viewport height */
-  position: fixed; /* Fixed position to stay in place when scrolling */
-  z-index: 1; /* Ensures the sidenav is above other content */
-  background-color: #ffeff1;
-}
-
-.nav-link {
-  color: black;
-}
-
-/* Adjust the main content area */
-main {
-  margin-left: 200px; /* Adjust this value based on the width of your sidenav */
-  padding: 1rem;
-}
-
-
-.sidenav a {
-  color: var(--text) !important;
-  padding: 10px;
-  text-decoration: none;
-  display: block;
-}
-
-.sidenav a:hover {
-  background-color: var(--accent);
-}
-
-.content {
-  margin-left: 200px;
-  padding: 20px;
-  margin-top: 60px; /* equal to topbar height */
-}
-
 /* Tables */
 
 /*
@@ -228,7 +236,7 @@ table th {
 }
 
 table tr:hover {
-  background-color: #ffeff1;
+  background-color: #F7F7F7;
 }
 
 /*
@@ -364,6 +372,7 @@ input[type="button"]:hover {
   max-width: 300px;
   max-height: 200px;
 }
+*/
 
 .active_path {
   font-weight: bold;
@@ -376,6 +385,12 @@ input[type="button"]:hover {
   font-weight: 900;
 }
 
+.badge {
+  background-color: #9bc8e5;
+  color: black;
+}
+
+/*
 .circle {
   width: 20px;
   height: 20px;

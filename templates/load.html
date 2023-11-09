@@ -18,16 +18,19 @@
                     {{ data_selection_form.input_survey_number.label(class="form-label") }}
                     {{ data_selection_form.input_survey_number(class="form-control") }}
                 </div>
-                <div class="mb-3">
-                    {{ data_selection_form.input_survey_column.label(class="form-label") }}
-                    {{ data_selection_form.input_survey_column(class="form-control") }}
-                </div>
-                <div class="mb-3">
-                    {{ data_selection_form.input_id_column.label(class="form-label") }}
-                    {{ data_selection_form.input_id_column(class="form-control") }}
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        {{ data_selection_form.input_survey_column.label(class="form-label") }}
+                        {{ data_selection_form.input_survey_column(class="form-control") }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ data_selection_form.input_id_column.label(class="form-label") }}
+                        {{ data_selection_form.input_id_column(class="form-control") }}
+                    </div>
                 </div>
                 {{ data_selection_form.submit(class="btn btn-primary") }}
             </form>
+            
         </div>
     </div>
 
@@ -36,21 +39,30 @@
             <h3 class="card-title">Wczytaj dane z pliku</h3>
             <p class="card-text">Wczytaj dane z lokalnego pliku. Dopuszczalne formaty: .csv, .txt, .xlsx i .xls</p>
             <form method="POST" id="load_file" enctype="multipart/form-data">
+                <!-- Full-width button -->
                 <div class="mb-3">
-                    <button type="button" class="btn btn-secondary" onclick="document.getElementById('file').click();">Wczytaj plik</button>
+                    <button type="button" class="btn btn-secondary w-100" onclick="document.getElementById('file').click();">Wczytaj plik</button>
                     <input name="upload_form_file" type="file" id="file" style="display:none;" onchange="displayFileName()"/>
                 </div>
+                
                 <div id="fileInfo"></div>
-                <div class="mb-3">
-                    <label for="file_column" class="form-label">Wprowadź nazwę kolumny z tekstem:</label>
-                    <input type="text" name="file_column" class="form-control">
+            
+                <!-- Grid system for the horizontally aligned text fields -->
+                <div class="row g-2 mb-3">
+                    <div class="col">
+                        <label for="file_column" class="form-label">Wprowadź nazwę kolumny z tekstem:</label>
+                        <input type="text" name="file_column" class="form-control">
+                    </div>
+                    <div class="col">
+                        <label for="id_column" class="form-label">Wprowadź nazwę kolumny z id (opcjonalnie):</label>
+                        <input type="text" name="id_column" class="form-control">
+                    </div>
                 </div>
-                <div class="mb-3">
-                    <label for="id_column" class="form-label">Wprowadź nazwę kolumny z id (opcjonalnie):</label>
-                    <input type="text" name="id_column" class="form-control">
-                </div>
+            
+                <!-- Submit button -->
                 <input name="upload_form_submit" type="submit" class="btn btn-primary" value="Zatwierdź" />
             </form>
+            
         </div>
     </div>
 

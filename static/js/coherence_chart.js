@@ -6,7 +6,7 @@ const myLineChart = new Chart(ctx, {
         datasets: [{
             //label: 'Spójność klastrów',
             data: data,
-            borderColor: '#FF5733',
+            borderColor: 'rgba(210, 147, 183, 1)',
             fill: false
         }]
     },
