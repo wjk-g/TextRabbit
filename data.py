@@ -67,7 +67,7 @@ class Data:
 
     def display_original_text_as_html_table(self):
         try:
-            return pd.DataFrame(self.data)[["id", "text"]].to_html()
+            return pd.DataFrame(self.data)[["id", "text"]].to_html(index=False)
         except:
             if self.data in self.possible_errors:
                 return self.data
@@ -76,7 +76,7 @@ class Data:
             
 
     def display_all_data_as_html_table(self):
-        return pd.DataFrame(self.data).to_html()
+        return pd.DataFrame(self.data).to_html(index=False)
 
     # DATA CLEANING AND PROCESSING
     # Adding / removing stopwords

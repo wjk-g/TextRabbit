@@ -398,7 +398,6 @@ def model_w2v():
             w2v.n_clusters = modeling_form.n_of_ks_int.data
             w2v.perform_mbkmeans()
             most_representative_terms = w2v.generate_most_representative_terms(word2vec) # has to be create here to avoid passing the entire w2v model to template
-            print(most_representative_terms)
             
             display_summary = True
             session["model"] = w2v # see above: is it necessary?
@@ -478,10 +477,10 @@ def model_lda():
 
         lda.create_model()
         lda_most_representative_words = lda.generate_most_representative_words()
-        lda_most_representative_words = lda_most_representative_words.to_html()
+        lda_most_representative_words = lda_most_representative_words.to_html(index=False)
         
         lda_summary = lda.generate_summary()
-        lda_summary_html = lda_summary.to_html()
+        lda_summary_html = lda_summary.to_html(index=False)
 
         # Save model in storage
         storage.save_model(lda)
@@ -520,10 +519,6 @@ def model_nnmf():
     if request.method == "GET":
         nnmf.compare_coherence(2,40,4)
 
-        print(nnmf.corpus)
-        print(nnmf.nltk_dictionary)
-        #nnmf.create_model() # we need this bit because generate_document_topics_table gets called inside a template
-    
     # Scenario 2
     # TODO this should be moved to a function once I make sure that
     # there are no meaningful differences between LDA and NNMF.
@@ -532,7 +527,6 @@ def model_nnmf():
         nnmf.no_below=int(nnmf_coherence_form.no_below.data)
         nnmf.no_above=float(nnmf_coherence_form.no_above.data)
 
-        print("POST")
         nnmf.compare_coherence(
             nnmf_coherence_form.start.data,
             nnmf_coherence_form.end.data,
@@ -561,10 +555,10 @@ def model_nnmf():
 
         nnmf.create_model()
         nnmf_most_representative_words=nnmf.generate_most_representative_words()
-        nnmf_most_representative_words=nnmf_most_representative_words.to_html()
+        nnmf_most_representative_words=nnmf_most_representative_words.to_html(index=False)
 
         nnmf_summary = nnmf.generate_summary()
-        nnmf_summary_html = nnmf_summary.to_html()
+        nnmf_summary_html = nnmf_summary.to_html(index=False)
 
         # Save model 
         storage.save_model(nnmf)
@@ -609,7 +603,7 @@ def show_storage():
     storage = initiate_storage()
     
     if request.method == "GET":
-        table_of_models = storage.return_html_summary()
+        models_numbered = storage.get_models_numbered()
 
     if request.method == "POST":
         for key in request.form:
@@ -630,14 +624,13 @@ def show_storage():
                     return model_to_download.write_to_excel(word2vec)
 
                 return model_to_download.write_to_excel()
-                    
                 
-        table_of_models = storage.return_html_summary()
+        models_numbered = storage.get_models_numbered()
 
     return render_template(
         "storage.html", 
         d=d, 
-        table_of_models=table_of_models, 
+        models_numbered=models_numbered, 
         storage=storage,
     )
 

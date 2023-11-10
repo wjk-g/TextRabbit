@@ -8,7 +8,10 @@
     <div>
         {% block model_type_and_params %}{% endblock %}
     </div>
-    <canvas id="coherence-chart" height="75" class="ps-4"></canvas>
+    {% if not nnmf_summary_html %}
+        <canvas id="coherence-chart" height="75" class="ps-4"></canvas>
+    {% endif %}
+    
     <div class="summary">
         {% block summary %}{% endblock %}
     </div>
@@ -22,9 +25,5 @@
             let data = {{model.coherence_scores["scores"]|tojson|safe}}
         </script>
     <script type="text/javascript" src="{{ url_for('static', filename='js/coherence_chart.js') }}"></script>
-    {% else %}
-    <div>
-        No coherence scores to display.
-    </div>
     {% endif %}
 {% endblock %}

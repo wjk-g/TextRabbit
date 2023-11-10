@@ -2,9 +2,35 @@
 
 {% block content %}
 <div class="container-fluid">
-    <h1>Ładownia</h1>
+    <h1>Magazyn</h1>
+    <br>
     <div>
-        {{ table_of_models|safe }}
+        <table>
+            <th></th>
+            <th>model</th>
+            <th>l. klastrów</th>
+            <th>data utworzenia</th>
+            <th></th>
+            <th></th>
+            {% for model_number, model in models_numbered %}
+                <tr>
+                    <td>{{ model_number }}</td>
+                    <td>{{ model.model_type }}</td>
+                    <td>{{ model.n_clusters }}</td>
+                    <td>{{ model.created_at }}</td>
+                    <td>
+                        <form method="post" name="download">
+                            <input type="submit" value="pobierz" name="download_{{ model_number }}" class="btn btn-primary">
+                        </form>
+                    </td>
+                    <td>
+                        <form method="post" name="remove">
+                            <input type="submit" value="usuń" name="delete_{{ model_number }}" class="btn btn-secondary">
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
     </div>
 </div>
 {% endblock %}

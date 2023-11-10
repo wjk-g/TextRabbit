@@ -46,33 +46,38 @@
             <form method="POST" id="lda_model">
                 <h3 class="card-title">Stwórz model</h3>
                 {{ lda_model_form.hidden_tag() }}
-                <div class="mb-3">
-                    {{ lda_model_form.no_above.label(class="form-label") }}
-                    {{ lda_model_form.no_above(class="form-control") }}
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        {{ lda_model_form.no_above.label(class="form-label") }}
+                        {{ lda_model_form.no_above(class="form-control") }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ lda_model_form.no_below.label(class="form-label") }}
+                        {{ lda_model_form.no_below(class="form-control") }}
+                    </div>
                 </div>
-                <div class="mb-3">
-                    {{ lda_model_form.no_below.label(class="form-label") }}
-                    {{ lda_model_form.no_below(class="form-control") }}
-                </div>
-                <div class="mb-3">
-                    {{ lda_model_form.n_iterations.label(class="form-label") }}
-                    {{ lda_model_form.n_iterations(class="form-control") }}
-                </div>
-                <div class="mb-3">
-                    {{ lda_model_form.n_clusters.label(class="form-label") }}
-                    {{ lda_model_form.n_clusters(class="form-control") }}
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        {{ lda_model_form.n_iterations.label(class="form-label") }}
+                        {{ lda_model_form.n_iterations(class="form-control") }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ lda_model_form.n_clusters.label(class="form-label") }}
+                        {{ lda_model_form.n_clusters(class="form-control") }}
+                    </div>
                 </div>
                 {{ lda_model_form.submit(class="btn btn-primary") }}
             </form>
         </div>
     </div>
     
-
+    {% if lda_most_representative_words %}
     <div class="lda-most-representative-words">
         {{ lda_most_representative_words|safe }}
     </div>
     <div class="lda-summary-html">
         {{ lda_summary_html|safe }}
     </div>
+    {% endif %}
 </div>
 {% endblock %}

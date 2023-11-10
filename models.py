@@ -262,7 +262,7 @@ class NNMF(LDA):
         df.insert(loc=0, column='top_topic', value=self.cluster_assignments)
         df.insert(loc=0, column='text', value=self.list_of_tokenized_docs)
         df.insert(loc=0, column='id', value=self.list_of_ids)
-        df.insert(loc=0, column='oringinal_id', value=self.list_of_original_ids)
+        df.insert(loc=0, column='original_id', value=self.list_of_original_ids)
 
         df = df.sort_values(by=["top_topic"])
 
@@ -406,7 +406,7 @@ class W2V(GeneralizedModel):
     def generate_results_table(self):
         results_table = pd.DataFrame({
             "id": self.list_of_ids,
-            "oringinal_id": self.list_of_original_ids,
+            "original_id": self.list_of_original_ids,
             "cluster": self.cluster_assignments,
             "original_text": self.list_of_original_docs,
             "tokenized_docs": self.list_of_tokenized_docs,

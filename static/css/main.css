@@ -108,6 +108,7 @@ body {
   height: 100%;
   margin: 0;
   background-color: white;
+  margin-top: 65px;
 }
 
 * {
@@ -150,7 +151,7 @@ main {
 .content {
   margin-left: 200px;
   padding: 20px;
-  margin-top: 60px; /* equal to topbar height */
+  margin-top: 80px; /* equal to topbar height */
 }
 
 #navbar-title {
@@ -159,9 +160,9 @@ main {
 }
 
 /* Primary button */
-.btn-primary {
-  background-color: #9bc8e5; /* Your custom primary color */
-  border-color: #9bc8e5; /* Your custom primary border color */
+.btn-secondary {
+  background-color: #9bc8e5;
+  border-color: #9bc8e5;
   color: black;
 }
 
@@ -169,19 +170,19 @@ main {
   background-color: #9bc8e5;
 }
 
-.btn-primary:hover {
+.btn-secondary:hover {
   background-color: #7db2d4;
   border-color: #7db2d4;
   color: black;
 }
 
-.btn-secondary {
+.btn-primary {
   background-color: #d9a6c3; /* Your custom secondary color */
   border-color: #d9a6c3; /* Your custom secondary border color */
   color: black;
 }
 
-.btn-secondary:hover {
+.btn-primary:hover {
   background-color: #d293b7;
   border-color: #d293b7;
   color: black;
@@ -189,6 +190,13 @@ main {
 
 .nav-link:hover {
   color: black;
+}
+
+.fixed-top {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 999;
 }
 
 
