@@ -32,7 +32,7 @@ from forms import (
 
 # Load classes
 from data import Data
-from models import LDA, NNMF, LSI, W2V
+from models import LDA, NNMF, W2V #LSI
 from storage import Storage
 
 # Load functions
@@ -40,8 +40,6 @@ from modules.support_module import clear_cached_data
 import modules.import_module as imp
 import modules.network_module as net
 import modules.model_module as mdl
-
-from modules.model_module import vectorize_kv, perform_pca, mbkmeans_clusters, display_most_representative_terms
 
 # Detailed information on implementing Oauth in Flask
 # can be found here:
@@ -83,7 +81,7 @@ def get_google_provider_cfg():
 def login():
     # Find out what URL to hit for Google login
     google_provider_cfg = get_google_provider_cfg()
-    print(google_provider_cfg)
+    
     # The field from the provider configuration document you need is called authorization_endpoint. 
     # This will contain the URL you need to use to initiate the OAuth 2 flow with Google from your client application.
     authorization_endpoint = google_provider_cfg["authorization_endpoint"]
@@ -105,7 +103,6 @@ def login():
 
 @app.route("/login/callback")
 def callback():
-    print("Initiating callback view function")
     # Get authorization code Google sent back to you
     code = request.args.get("code")
     # Find out what URL to hit to get tokens that allow you to ask for
@@ -174,7 +171,6 @@ def load_w2v_gensim_model():
 @app.route("/load_data", methods=["GET", "POST"])
 #@protect_access
 def load_data():
-    print(session.get("logged_in"))
 
     # If d doesn't exist yet, create empty data with default (negative) data states
     # --> d <-- is the key variable in which we store our data throughhout the entire process of cleaning and analysis
@@ -255,7 +251,6 @@ def preprocess():
             stopwords_form.remove_stopwords.data
         )
         d.tokenize_and_clean()
-        print(d.return_pandas_df())
 
     if replacements_form.validate_on_submit() and replacements_form.submit.data:
         d.replace_tokens(replacements_form.replacements.data)
@@ -361,7 +356,6 @@ def select_model():
 def model_w2v():
 
     d = session.get("d")
-    print(d.return_pandas_df())
 
     storage = initiate_storage()
     
