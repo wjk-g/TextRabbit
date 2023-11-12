@@ -115,6 +115,9 @@ body {
   font-family: 'Poppins', sans-serif;
 }
 
+.main-title {
+  font-size: 100px;
+}
 
 #sidenav {
   height: 100vh; /* 100% of the viewport height */
@@ -228,6 +231,8 @@ main {
   height: 100%;
 }
 
+
+
 /* Tables */
 
 /*
@@ -250,6 +255,15 @@ table th {
 
 table tr:hover {
   background-color: #F7F7F7;
+}
+
+.plus { color: #64b000; } /* Delicate Green */
+.question { color: #9bc8e5; }
+.x { color: #ff6961; } /* Delicate Red */
+
+.legend p {
+  display: inline-block;
+  margin-right: 20px; /* Adjust as needed for spacing */
 }
 
 /*

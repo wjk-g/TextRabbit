@@ -8,7 +8,7 @@ from wtforms.validators import DataRequired, InputRequired, NumberRange
 class DataSelection(FlaskForm):
     input_survey_number = IntegerField("Wprowadź numer ankiety")
     input_survey_column = StringField("Wprowadź kod pytania z danymi tekstowymi")
-    input_id_column = StringField("Wprowadź kod kolumny zawierającej ID rekordu (opcjonalne)")
+    input_id_column = StringField("Wprowadź kod kolumny zawierającej ID rekordu (opcjonalnie)")
     submit = SubmitField("Załaduj dane")
 
 class ExampleData(FlaskForm):
@@ -44,7 +44,8 @@ class ModelSelection(FlaskForm):
                         choices = [("word2vec", "word2vec"), 
                                    ("lda", "Latent Dirichlet Allocation"), 
                                    ("nnmf", "Non-Negative Matrix Factorization"),
-                                   ("lsi", "Latent Semantic Indexing")])
+                                   #("lsi", "Latent Semantic Indexing")
+                                   ])
     submit_select_model = SubmitField("Zatwierdź wybór")
 
 class ModelingForm(FlaskForm):
@@ -67,10 +68,10 @@ class LDAModel(FlaskForm):
     no_below = IntegerField("Nie mniej razy niż:", 
                             validators=[NumberRange(min=0, max=500, 
                                                     message="Podaj liczbę całkowitę z przedziału od 0 do 500")])
-    no_above = DecimalField("Częstość występowania nie większa niż:",
+    no_above = DecimalField("Częstość występowania nie większa niż (od 0 do 1):",
                           validators=[NumberRange(min=0.0, max=1.0,
                                                   message="Podaj wartość z przedziału od 0 do 1")])
-    n_iterations = IntegerField("Liczba iteracji:", 
+    n_iterations = IntegerField("Liczba iteracji:", default=1000, 
                                 validators=[NumberRange(min=250, max=1000,
                                                         message="Podaj liczbę całkowitę z przedziału od 250 do 1000")])
     n_clusters = IntegerField("Liczba skupień:", 
@@ -89,7 +90,7 @@ class LDACoherence(FlaskForm):
     no_below = IntegerField("Nie mniej razy niż:", 
                             validators=[NumberRange(min=0, max=500, 
                                                     message="Podaj liczbę całkowitę z przedziału od 0 do 500")])
-    no_above = DecimalField("Częstość występowania nie większa niż:", 
+    no_above = DecimalField("Częstość występowania nie większa niż (od 0 do 1):", 
                           validators=[NumberRange(min=0.0, max=1.0,
                                                   message="Podaj wartość z przedziału od 0 do 1")])
     submit = SubmitField("Zatwierdź")

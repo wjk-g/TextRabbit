@@ -165,7 +165,20 @@ def load_w2v_gensim_model():
     path_to_gensim_model = "static/word2vec/word2vec_gensim_nkjp_wiki_lemmas_all_300_cbow_hs.pickle"
     with open(path_to_gensim_model, 'rb') as gensim_model:
         word2vec = pickle.load(gensim_model)
+    print(len(word2vec))
     return word2vec
+
+# === HOME ===
+
+@app.route("/home", methods=["GET", "POST"])
+#@protect_access
+def home():
+    d = session.get("d", Data({}))
+    
+    return render_template(
+        "home.html",
+        d=d,
+    )
 
 # === DATA IMPORT ===
 @app.route("/load_data", methods=["GET", "POST"])

@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div style="max-width: 950px;">
+        <h2>
+            <span class="fw-bold" style="color: #d293b7">TextRabbit</span> <span class="fst-italic">pozwoli Ci przeanalizować nieustrukturyzowane dane tekstowe takie jak odpowiedzi na otwarte pytania w sondażu, dokumenty, nieuporządkowane listy słów i inne.</span>
+        </h2>
+        <h4 class="mb-3 pt-3">
+            Aplikacja udostępnia interfejs dla całego cyklu analizy danych tekstowych: od załadowania i czyszczenia danych, przez prostą analizę eksploracyjną po analizę skupień, która pozwoli wyróżnić „naturalne“ kategorie lub tematy zawarte w danych.
+        </h4>
+        <a href="{{ url_for('load_data') }}">
+            <button type="submit" class="btn btn-secondary" style="font-size: 20px;">Załaduj dane i zacznij analizę</button>
+        </a>
+        <br>
+        <h3 class="pt-5">TextRabbit vs ChatGPT</h3>
+        <p class="mb-3">
+            ChatGPT również umożliwia analizę nieustrukturyzowanych danych tekstowych osobom bez odpowiednich umiejętności programistycznych. Rekomendujemy korzystanie z obu narzędzi w zależności od doraźnych potrzeb analitycznych.
+        </p>
+        <ul>
+            <li>ChatGPT oferuje szeroki wachlarz technik i dużą elastyczność.</li>
+            <br>
+            <li>Interfejs ChataGPT nie umożliwia dostępu do <span class="fst-italic">pretrenowanych</span> wektorowych reprezentacji słów (<span class="fst-italic">word embeddings</span>) wliczając w to jego własne embeddingsy. Pliki zawierające pretrenowane embeddingsy są przeważnie zbyt duże, żeby wgrać je do pamięci ChataGPT. Na przykład wykorzystywany przez TR zbiór zawiera 1 549 322 lematów. Do każdego przypisany jest 300-elementowy wektor. Segmentacje w oparciu o model umożliwia opcja word2vec w zakładce „Modeluj“.</li>
+            <li>TR daje również bardziej bezpośrednią kontrolę nad procesem czyszczenia danych i wybranymi parametrami modelowania tekstu (np. maksymalna/minimalna częstość występowania uwzględnianyh w modelu słów, liczba iteracji). Pozwala to na stworzenie puli możliwych rozwiązań (dla różnej liczby klastrów przy różnych konfiguracjach parametrów), z których analityk może subiektywnie wyłonić „najlepsze“ rozwiązanie.</li>
+        </ul>
+
+    </div>
+</div>
+{% endblock %}

@@ -12,16 +12,15 @@
                     {{ model_selection_form.select_model(class="form-select") }}
                 </div>
                 <div id="word2vec" class="model-description mb-3 d-none">
-                    <p class="card-text">Word Embeddings (word2vec): Jest to technika uczenia maszynowego, która konwertuje słowa na wektory o stałej długości w taki sposób, że słowa o podobnym znaczeniu znajdują się blisko siebie w przestrzeni wektorowej. Word2vec to popularna realizacja tej koncepcji, która używa sieci neuronowych do generowania osadzeń słów, pozwalając na efektywne reprezentowanie kontekstu i semantyki słów.</p>
-                    <p class="card-text">Wyobraź sobie, że chcesz przedstawić każde słowo jako punkt na mapie, tak że słowa o podobnym znaczeniu są blisko siebie. Word2vec to narzędzie, które robi dokładnie to, tworząc dla każdego słowa specjalny "adres" na tej mapie.</p>
+                    <p class="card-text">Word Embeddings (word2vec): Jest to technika uczenia maszynowego, która konwertuje słowa na wektory o stałej długości w taki sposób, że słowa o podobnym znaczeniu znajdują się blisko siebie w przestrzeni wektorowej. Można o niej myśleć jako o bardzo skoplikowanej mapie, na której bliskoznaczne wyrażenie znajdują się nieopodal siebie.</p>
+                    <p class="card-text">W przeciwieństwie do pozostałych dwóch modeli w2v "rozumie" znaczenie słów w oderwaniu od kontekstu analizowanego korpusu. Na przykład rozpozna fakt, że "medyk" i "lekarz" są wyrazami bliskoznacznymi, nawet jeżeli nie współwystępują w ani jednym dokumencie w analizowanym zbiorze.</p>
+                    <p class="card-text">Model zapisuje również relacje między słowami. Na przykład, że góra ma się do dołu tak jak przód do tyłu, królowa do kobiety, tak jak mężczyzna do króla itp.</p>
                 </div>
                 <div id="lda" class="model-description mb-3 d-none">
                     <p class="card-text">LDA (Latent Dirichlet Allocation): To generatywny model probabilistyczny, który służy do identyfikacji tematów w zestawie dokumentów. Działa poprzez przydzielenie każdemu słowu w dokumentach pewnej wagi w odniesieniu do określonego tematu, a następnie grupuje te słowa, aby odkryć różne tematy w zbiorze.</p>
-                    <p class="card-text">To narzędzie jest trochę jak naukowiec, który analizuje stosy książek i próbuje znaleźć główne tematy, które przewijają się przez te książki. Na podstawie słów w książkach decyduje, jakie tematy są najważniejsze.</p>
                 </div>
                 <div id="nnmf" class="model-description mb-3 d-none">
                     <p class="card-text">NNMF (Non-Negative Matrix Factorization): Jest to algorytm rozkładu macierzy, który faktoryzuje daną macierz na dwie inne macierze o nieujemnych wartościach. W kontekście analizy tekstu NNMF jest często używany do ekstrakcji tematów, podobnie jak LDA, ale z wykorzystaniem innej matematyki i podejścia.</p>
-                    <p class="card-text">To trochę jak rozbieranie skomplikowanej układanki na prostsze części, które razem tworzą całość. W kontekście tekstów, NNMF pomaga nam zrozumieć główne tematy, które występują w zbiorze dokumentów.</p>
                 </div>
                 <div id="lsi" class="model-description mb-3 d-none">
                     <p class="card-text">LSI (Latent Semantic Indexing): To technika, która redukuje wymiarowość macierzy termin-dokument przy użyciu dekompozycji wartości osobliwych (SVD). Pozwala to na identyfikację ukrytych struktur semantycznych w tekście, co czyni ją przydatną w zadaniach takich jak wyszukiwanie informacji czy klasyfikacja tekstu.</p>
@@ -31,6 +30,63 @@
             </form>
         </div>
     </div>
+
+    <!-- Legend -->
+    <div class="legend mt-5">
+        <p><span class="plus">++</span> Preferowana metoda</p>
+        <p><span class="plus">+</span> Dobra metoda</p>
+        <p><span class="question">?</span> Trudno powiedzieć</p>
+        <p><span class="x">x</span> Niewłaściwa metoda</p>
+    </div>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th></th>
+                <th>w2v</th>
+                <th>lda</th>
+                <th>nnmf</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>krótkie jednowątkowe odpowiedzi w sondażu</td>
+                <td class="plus">++</td>
+                <td class="question">?</td>
+                <td class="question">?</td>
+            </tr>
+            <tr>
+                <td>krótkie wielowątkowe odpowiedzi (np. trzy zalety programu…)</td>
+                <td class="question">?</td>
+                <td class="question">?</td>
+                <td class="question">?</td>
+            </tr>
+            <tr>
+                <td>nieuporządkowana lista (np. zawodów, kierunków studiów)</td>
+                <td class="plus">++</td>
+                <td class="x">x</td>
+                <td class="x">x</td>
+            </tr>
+            <tr>
+                <td>zbiór dokumentów (np. opisy projektów w budżecie obywatelskim)</td>
+                <td class="plus">+</td>
+                <td class="plus">++</td>
+                <td class="plus">++</td>
+            </tr>
+            <tr>
+            <td>analiza indywidualnych wywiadów pogłębionych lub zogniskowanych</td>
+            <td class="x">x</td>
+            <td class="x">x</td>
+            <td class="x">x</td>
+            </tr>
+            <tr>
+                <td>interpretacja <em>Na wschód od Edenu</em> lub <em>W poszukiwaniu straconego czasu</em></td>
+                <td class="x">x</td>
+                <td class="x">x</td>
+                <td class="x">x</td>
+            </tr>
+        </tbody>
+      </table>
 </div>
 {% endblock %}
 

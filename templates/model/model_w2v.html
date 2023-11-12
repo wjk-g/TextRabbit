@@ -5,6 +5,15 @@
     <h1>Modeluj: w2v</h1>
     <div class="card my-3">
         <div class="card-body">
+            <div class="mb-3">
+                <p>
+                    TR wykorzystuje pretrenowane embeddingsy stworzone przez Polską Akademię Nauk w oparciu o Narodowy Korpus Języka Polskiego oraz polską Wikipedię.
+                </p>
+                <p>
+                    W przeciwieństwie do dwóch pozostałych modeli obsługiwanych przez TR (LDA, NNMF) embeddingsy nie modelują analizowanego korpusu, ale <span class="fst-italic">język polski</span>. Mówiąc precyzyjniej: wersję języka polskiego z NKJP i Wikipedii. Pamiętaj o tym, jeżeli analizujesz teksty syntaktycznie i semantycznie odległe od standardowej polszczyzny (np. napisane w środowiskowym slangu).
+                </p>
+
+            </div>
             <form action="" method="POST" id="modeling-form">
                 <h3 class="card-title">Zidentyfikuj tematy</h3>
                 {{ modeling_form.hidden_tag() }}
@@ -14,7 +23,7 @@
                         {% for subfield in modeling_form.pca_radio %}
                             <div class="form-check form-check-inline">
                                 {{ subfield(class="form-check-input", style="margin-left:1px") }}
-                                {{ subfield.label(class="form-check-label") }}
+                                {{ subfield.label(class="form-check-label ps-3") }}
                             </div>
                         {% endfor %}
                     </div>
@@ -26,7 +35,7 @@
                             {% for subfield in modeling_form.standardize_pcs %}
                                 <div class="form-check form-check-inline">
                                     {{ subfield(class="form-check-input", style="margin-left:1px") }}
-                                    {{ subfield.label(class="form-check-label") }}
+                                    {{ subfield.label(class="form-check-label ps-3") }}
                                 </div>
                             {% endfor %}
                         </div>

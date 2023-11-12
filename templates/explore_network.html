@@ -10,7 +10,7 @@
             <form action="" method="POST" id="network_most_common_words">
                 <h3 class="card-title">Wyświetl sieć powiązań między najczęstszymi słowami</h3>
                 <p class="card-text">Bigramy i trigramy pozwalają zorientować się jakie słowa najczęściej występują obok siebie, ale wciąż niewiele mówią o relacjach w analizowanym tekście. Kliknij „Wygeneruj sieć“, żeby wyświetlić relacje między słowami współwystępującymi w tych samych dokumentach (np. w tej samej odpowiedzi lub w tym samym komentarzu ale niekoniecznie obok siebie).</p>
-                <p class="card-text">Wielkość sieci określa, ile z najczęściej występujących słów bierzemy pod uwagę. Na przykład wielkość 100 oznacza, że śledzimy relacje między stoma najczęściej występującymi słowami.</p>
+                <p class="card-text">Wielkość sieci określa, ile najczęstszych par słów bierzemy pod uwagę. Na przykład wielkość 100 oznacza, że śledzimy relacje między stoma najczęstszymi parami słów. Wysokie wartości mogą znacząco wydłużyć czas generowania sieci. Duże sieci mogą być również trudne w interpretacji.</p>
                 <p class="card-text">Grubość linii określa, jak często dane słowa współwystępują w tych samych dokumentach.</p>
                 <p class="card-text">Kolory wyróżniają najsilniej zsieciowane słowa (tzw. communities). Można je traktować jako ogólne wątki lub tematy.</p>
                 {{ network_form.hidden_tag() }}
