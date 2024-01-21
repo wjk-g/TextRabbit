@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1>Moje transkrypcje</h1>
+    <br>
+    <div class="alert alert-warning" role="alert">
+        Informacje o Twoich transkrypcjach są przechowywane w pamięci aplikacji tylko przez kilkanaście godzin. Nie zwlekaj z ich pobraniem.
+    </div>
+    <p><em>Odśwież stronę, żeby uaktualnić status Twoich transkrypcji.</em></p>
+    <br>
+    <div>
+        <table>
+            <th>Stan realizacji</th>
+            <th>Dostępność</th>
+            <th>ID</th>
+            <th>Rozpoczęto transk.</th>
+            <th>Zakończono transk.</th>
+            <th></th>
+            {% for transcript in transcripts %}
+                <tr>
+                    <td>{{ transcript.status }}</td>
+                    {% if transcript.audio_url == 'http://deleted_by_user' %}
+                        <td>USUNIĘTO</td>
+                    {% elif transcript.status == 'processing' %}
+                        <td>TRWA TRANSKRYPCJA</td>
+                    {% else %}
+                        <td>DOSTĘPNY</td>
+                    {% endif %}
+                    <td>{{ transcript.id }}</td>
+                    <td>{{ transcript.created }}</td>
+                    <td>{{ transcript.completed }}</td>
+                    <td>
+                        <form method="post" name="download">
+                            <input type="submit" value="pobierz" name="download_{{ transcript.id }}" 
+                                {% if (transcript.audio_url == 'http://deleted_by_user') or (transcript.status != 'completed')  %}
+                                class="btn btn-secondary" 
+                                disabled 
+                                {% else %}
+                                class="btn btn-primary" 
+                                {% endif %}
+                                >
+                        </form>
+                    </td>
+
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+{% endblock %}

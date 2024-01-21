@@ -179,6 +179,12 @@ main {
   color: black;
 }
 
+.btn-secondary:focus {
+  background-color: #7db2d4;
+  border-color: #7db2d4;
+  color: black;
+}
+
 .btn-primary {
   background-color: #d9a6c3; /* Your custom secondary color */
   border-color: #d9a6c3; /* Your custom secondary border color */
@@ -186,6 +192,12 @@ main {
 }
 
 .btn-primary:hover {
+  background-color: #d293b7;
+  border-color: #d293b7;
+  color: black;
+}
+
+.btn-primary:active {
   background-color: #d293b7;
   border-color: #d293b7;
   color: black;

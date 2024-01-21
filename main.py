@@ -8,8 +8,22 @@ from oauthlib.oauth2 import WebApplicationClient
 from dotenv import load_dotenv
 from functools import wraps
 
+# API's
+# OpenAI
+from openai import OpenAI
+#from pydub import AudioSegment
+import whisper
+import time
+# Google cloud
+from google.cloud import speech_v1p1beta1 as speech
+from google.cloud import storage
+# AssemblyAI
+import assemblyai as aai
+
+from werkzeug.utils import secure_filename
+
 # Flask imports
-from flask import Flask, render_template, session, redirect, url_for, request
+from flask import Flask, render_template, session, redirect, url_for, request, jsonify, send_file
 from flask_session import Session
 
 # Load forms
@@ -28,12 +42,15 @@ from forms import (
     LDAModel,
     NNMFModel,
     NNMFCoherence,
+    TranscribeForm,
 )
 
 # Load classes
 from data import Data
 from models import LDA, NNMF, W2V #LSI
 from storage import Storage
+from transcripts import TranscriptsHandler
+#from modules.audio_module import convert_to_mp3_and_split
 
 # Load functions
 from modules.support_module import clear_cached_data
@@ -44,7 +61,7 @@ import modules.model_module as mdl
 # Detailed information on implementing Oauth in Flask
 # can be found here:
 # https://realpython.com/flask-google-login/
-#from oauthlib.oauth2 import WebApplicationClient
+# from oauthlib.oauth2 import WebApplicationClient
 
 
 app = Flask(__name__)
@@ -56,16 +73,16 @@ Session(app)
 
 UPLOAD_FOLDER = "/uploads"
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['MAX_CONTENT_LENGTH'] = 10 * 1000 * 1000 # max file size = 10 MB
+app.config['MAX_CONTENT_LENGTH'] = 300 * 1000 * 1000 # max file size = 300 MB
 
 # OAuth CONFIGURATION
 
 load_dotenv()
 
-GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", None)
-GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET", None)
-GOOGLE_DISCOVERY_URL = ("https://accounts.google.com/.well-known/openid-configuration")
-client = WebApplicationClient(GOOGLE_CLIENT_ID)
+GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", None) # Oauth
+GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET", None) # Oauth
+GOOGLE_DISCOVERY_URL = ("https://accounts.google.com/.well-known/openid-configuration") # Oauth
+client = WebApplicationClient(GOOGLE_CLIENT_ID) # Oauth
 
 @app.route("/")
 def index():
@@ -136,7 +153,7 @@ def callback():
     userinfo_response = requests.get(uri, headers=headers, data=body)
     session["logged_in"] = True
     
-    return redirect(url_for("load_data"))
+    return redirect(url_for("home"))
 
 # === UTILITY FUNCTIONS ===
 def protect_access(f):
@@ -165,13 +182,13 @@ def load_w2v_gensim_model():
     path_to_gensim_model = "static/word2vec/word2vec_gensim_nkjp_wiki_lemmas_all_300_cbow_hs.pickle"
     with open(path_to_gensim_model, 'rb') as gensim_model:
         word2vec = pickle.load(gensim_model)
-    print(len(word2vec))
     return word2vec
+
 
 # === HOME ===
 
 @app.route("/home", methods=["GET", "POST"])
-#@protect_access
+@protect_access
 def home():
     d = session.get("d", Data({}))
     
@@ -182,7 +199,7 @@ def home():
 
 # === DATA IMPORT ===
 @app.route("/load_data", methods=["GET", "POST"])
-#@protect_access
+@protect_access
 def load_data():
 
     # If d doesn't exist yet, create empty data with default (negative) data states
@@ -247,7 +264,7 @@ def load_data():
 
 # DATA PREPROCESSING
 @app.route("/preprocess", methods=["GET", "POST"])
-#@protect_access
+@protect_access
 def preprocess():
 
     # Load data from session and tokenize and clean it
@@ -279,12 +296,12 @@ def preprocess():
 
 # DATA EXPLORATION
 @app.route("/explore", methods = ["GET", "POST"])
-#@protect_access
+@protect_access
 def explore():
     return redirect(url_for("explore_ngrams"))
 
 @app.route("/explore_ngrams", methods = ["GET", "POST"])
-#@protect_access
+@protect_access
 def explore_ngrams():
     
     d = session.get("d")
@@ -309,7 +326,7 @@ def explore_ngrams():
     )
 
 @app.route("/explore_network", methods = ["GET", "POST"])
-#@protect_access
+@protect_access
 def explore_network():
     
     d = session.get("d")
@@ -339,13 +356,13 @@ def explore_network():
 
 # DATA MODELING
 
-#@protect_access
 @app.route("/model", methods = ["GET", "POST"])
+@protect_access
 def model():
     return redirect(url_for("select_model"))
 
-#@protect_access
 @app.route("/select_model", methods = ["GET", "POST"])
+@protect_access
 def select_model():
 
     d = session.get("d")
@@ -364,8 +381,8 @@ def select_model():
     )
 
 # DATA MODELING
-#@protect_access
 @app.route("/model/word2vec", methods = ["GET", "POST"])
+@protect_access
 def model_w2v():
 
     d = session.get("d")
@@ -425,8 +442,8 @@ def model_w2v():
         storage=storage,
     )
 
-#@protect_access
 @app.route("/model/lda", methods = ["GET", "POST"])
+@protect_access
 def model_lda():
 
     # Loading data
@@ -504,8 +521,8 @@ def model_lda():
         storage=storage,
     )
 
-#@protect_access
 @app.route("/model/nnmf", methods = ["GET", "POST"])
+@protect_access
 def model_nnmf():
 
     # Loading data
@@ -582,8 +599,8 @@ def model_nnmf():
         storage=storage,
     )
 
-#@protect_access
 #@app.route("/model/lsi", methods = ["GET", "POST"])
+#@protect_access
 #def model_lsi():
 #
 #    # Form
@@ -602,8 +619,8 @@ def model_nnmf():
 #
 #    return render_template("model/model_lsi.html", d=d, model=lsi, storage=storage)
 
-#@protect_access
 @app.route("/storage", methods = ["GET", "POST"])
+@protect_access
 def show_storage():
 
     d = session.get("d")
@@ -641,5 +658,177 @@ def show_storage():
         storage=storage,
     )
 
+@app.route("/transcribe", methods = ["GET", "POST"])
+@protect_access
+def transcribe():
+    
+    d = session.get('d')
+    transcribe_form = TranscribeForm()
+    
+    if request.method == "GET":
+        return render_template(
+            "transcribe.html", 
+            d=d,
+            storage=initiate_storage(),
+            transcribe_form=transcribe_form,
+            user_transcripts = session.get("user_transcripts", ""),
+        )
+
+    if transcribe_form.validate_on_submit():
+
+        # Load audio file
+        ALLOWED_EXTENSIONS = {"mp3", "mp4", "mpeg", "mpga", "m4a", "wav", "webm"}
+
+        if 'file_upload' not in request.files:
+            return jsonify({"error": "Nie wybrano pliku"}), 400
+        
+        audio_file = request.files['file_upload']
+        print(audio_file)
+        audio_file.save(f"./test_audio/{audio_file.filename}")
+
+        if audio_file.filename == '':
+            return jsonify({"error": "Nie wybrano pliku"}), 400
+
+        transcription_requested = False
+        
+        if audio_file:
+            
+            # AssemblyAI API
+            #aai.settings.api_key = os.getenv('ASSEMBLYAI_API_KEY')
+            api_key = os.getenv('ASSEMBLYAI_API_KEY')
+
+            def upload_file(filename):
+                headers = {'authorization': api_key}
+                with open(filename, 'rb') as f:
+                    response = requests.post('https://api.assemblyai.com/v2/upload',
+                                            headers=headers,
+                                            files={'file': f})
+                
+                return response.json()['upload_url']
+
+            def submit_transcription_request(audio_url):
+
+                json = {
+                    'audio_url': audio_url,
+                    'speaker_labels': True,
+                    'punctuate': True, 
+                    'format_text': True
+                }
+                
+                headers = {
+                    'authorization': api_key,
+                    'content-type': 'application/json'
+                }
+
+                response = requests.post('https://api.assemblyai.com/v2/transcript',
+                                        json=json,
+                                        headers=headers)
+                
+                return response.json()['id']
+            
+            local_url = f"./test_audio/{audio_file.filename}"
+            audio_url = upload_file(local_url)
+            transcript_id = submit_transcription_request(audio_url)
+
+            # https://github.com/AssemblyAI/assemblyai-python-sdk/blob/master/assemblyai/types.py#L471
+            #config = aai.TranscriptionConfig(
+            #    language_code=transcribe_form.select_language.data,
+            #    speaker_labels=True,
+            #    punctuate=True, 
+            #    format_text=True, 
+            #)
+
+            #transcriber = aai.Transcriber()
+
+            #transcript = transcriber.transcribe_async(
+            #    f"./test_audio/{audio_file.filename}",
+            #    config=config,
+            #)
+
+            if session.get("transcripts_in_session_ids"):
+                session["transcripts_in_session_ids"].append(transcript_id)
+            else:
+                session["transcripts_in_session_ids"] = [transcript_id]
+
+            transcription_requested = True
+            
+            #def convert_ms_to_hms(milliseconds):
+            #    seconds, milliseconds = divmod(milliseconds, 1000)
+            #    minutes, seconds = divmod(seconds, 60)
+            #    hours, minutes = divmod(minutes, 60)
+            #    return f"{hours:02}:{minutes:02}:{seconds:02}"
+
+            #text = ""
+            #for utterance in transcript.utterances:
+            #    start_time_formatted = convert_ms_to_hms(utterance.start)
+            #    end_time_formatted = convert_ms_to_hms(utterance.end)
+            #    #text += f"SPEAKER {utterance.speaker}: {utterance.text}\n\n"
+            #    text += f"[{start_time_formatted}-{end_time_formatted}] SPEAKER {utterance.speaker}: {utterance.text}\n\n"
+            #
+            #print(transcribe_form.select_language.data)
+
+            ## Writing to the file
+            #with open('uploads/transcript.txt', 'w') as file:
+            #    file.write(text)
+
+            #return send_file('uploads/transcript.txt', as_attachment=True)
+
+        return render_template(
+            "transcribe.html", 
+            d=d,
+            storage=initiate_storage(),
+            transcribe_form=transcribe_form,
+            #user_transcripts = session.get("user_transcripts", ""),
+            transcription_requested=transcription_requested,
+        )
+    
+@app.route("/retrieve_transcripts", methods = ["GET", "POST"])
+@protect_access
+def retrieve_transcripts():
+    
+    d = session.get("d")
+
+    transcripts_handler = TranscriptsHandler()
+
+    api_key = os.getenv('ASSEMBLYAI_API_KEY')
+    
+    transcripts_in_session_ids = session.get("transcripts_in_session_ids")
+    print(transcripts_in_session_ids)
+
+    transcripts_in_session = []
+
+    if transcripts_in_session_ids:
+        transcripts_handler.get_response_from_api(api_key=api_key, limit=100)
+        transcripts_handler.get_transcripts_in_session(transcripts_in_session_ids)
+        transcripts_in_session = transcripts_handler.transcripts_in_session
+
+    if request.method == "POST":
+        for key in request.form:
+            # Delete a transcript from db
+            #if key.startswith('delete_'):
+            #    transcript_id = key.split('_')[1]
+            #    transcripts_handler.delete_transcript(transcript_id)
+            #    
+            #    return render_template(
+            #        "retrieve_transcripts.html", 
+            #        d=d,
+            #        storage=initiate_storage(),
+            #        transcripts=transcripts_in_session,
+            #        user_transcripts = session.get("transcripts_in_session_ids"),
+            #    )
+
+            # Download a transcript from db
+            if key.startswith('download_'):
+                transcript_id = key.split('_')[1]
+                return transcripts_handler.download_transcript(transcript_id)
+
+    return render_template(
+        "retrieve_transcripts.html", 
+        d=d,
+        storage=initiate_storage(),
+        transcripts=transcripts_in_session,
+        user_transcripts = session.get("transcripts_in_session_ids"),
+    )
+
 if __name__ == "__main__":
-    app.run(debug=True, port=5050)#, ssl_context="adhoc")
+    app.run(debug=False, port=5050),# ssl_context="adhoc")

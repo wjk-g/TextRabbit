@@ -93,7 +93,7 @@ def prep_loaded_data(df, data_column, id_column=None):
 # Also add id_column
 def load_data_from_file(app):
 
-    ALLOWED_EXTENSIONS = {'txt', 'xlsx', 'csv'}
+    ALLOWED_EXTENSIONS = {'txt', 'xlsx', 'xls', 'csv'}
     file = request.files['upload_form_file']
     filename = secure_filename(file.filename)
     extension = filename.rsplit('.', 1)[1].lower()
