@@ -25,7 +25,7 @@
                     Wciśnięcie <em>Zleć transkrypcję</em> oznacza naliczenie opłaty.
                 </div>
                 <div>
-                    {% if transcription_requested %}
+                    {% if transcription_submitted %}
                         <div class="alert alert-success" role="alert">
                             Zlecono transkrypcję! Będzie dostępna w zakładce 
                             <a href="{{ url_for('retrieve_transcripts') }}">

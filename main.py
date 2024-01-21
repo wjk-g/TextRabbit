@@ -683,8 +683,10 @@ def transcribe():
             return jsonify({"error": "Nie wybrano pliku"}), 400
         
         audio_file = request.files['file_upload']
-        print(audio_file)
-        audio_file.save(f"./test_audio/{audio_file.filename}")
+        #print(audio_file)
+        #TODO change the name of the folder
+        #TODO automatically delete files after they're submitted for transcritption
+        audio_file.save(f"./test_audio/{audio_file.filename}") 
 
         if audio_file.filename == '':
             return jsonify({"error": "Nie wybrano pliku"}), 400
@@ -692,65 +694,36 @@ def transcribe():
         transcription_requested = False
         
         if audio_file:
+
+            local_url = f"./test_audio/{audio_file.filename}"
             
             # AssemblyAI API
-            #aai.settings.api_key = os.getenv('ASSEMBLYAI_API_KEY')
-            api_key = os.getenv('ASSEMBLYAI_API_KEY')
+            aai.settings.api_key = os.getenv('ASSEMBLYAI_API_KEY')
+            #api_key = os.getenv('ASSEMBLYAI_API_KEY')
 
-            def upload_file(filename):
-                headers = {'authorization': api_key}
-                with open(filename, 'rb') as f:
-                    response = requests.post('https://api.assemblyai.com/v2/upload',
-                                            headers=headers,
-                                            files={'file': f})
-                
-                return response.json()['upload_url']
+            config = aai.TranscriptionConfig(
+                language_code=transcribe_form.select_language.data,
+                speaker_labels=True,
+                punctuate=True, 
+                format_text=True,
+            )
 
-            def submit_transcription_request(audio_url):
+            transcriber = aai.Transcriber()
 
-                json = {
-                    'audio_url': audio_url,
-                    'speaker_labels': True,
-                    'punctuate': True, 
-                    'format_text': True
-                }
-                
-                headers = {
-                    'authorization': api_key,
-                    'content-type': 'application/json'
-                }
+            transcript = transcriber.submit(
+                f"./test_audio/{audio_file.filename}",
+                config=config,
+            )
 
-                response = requests.post('https://api.assemblyai.com/v2/transcript',
-                                        json=json,
-                                        headers=headers)
-                
-                return response.json()['id']
-            
-            local_url = f"./test_audio/{audio_file.filename}"
-            audio_url = upload_file(local_url)
-            transcript_id = submit_transcription_request(audio_url)
-
-            # https://github.com/AssemblyAI/assemblyai-python-sdk/blob/master/assemblyai/types.py#L471
-            #config = aai.TranscriptionConfig(
-            #    language_code=transcribe_form.select_language.data,
-            #    speaker_labels=True,
-            #    punctuate=True, 
-            #    format_text=True, 
-            #)
-
-            #transcriber = aai.Transcriber()
-
-            #transcript = transcriber.transcribe_async(
-            #    f"./test_audio/{audio_file.filename}",
-            #    config=config,
-            #)
+            transcript_id = transcript.id
+            print(transcript_id)
 
             if session.get("transcripts_in_session_ids"):
                 session["transcripts_in_session_ids"].append(transcript_id)
             else:
                 session["transcripts_in_session_ids"] = [transcript_id]
 
-            transcription_requested = True
+            transcription_submitted = True
             
             #def convert_ms_to_hms(milliseconds):
             #    seconds, milliseconds = divmod(milliseconds, 1000)
@@ -779,7 +752,7 @@ def transcribe():
             storage=initiate_storage(),
             transcribe_form=transcribe_form,
             #user_transcripts = session.get("user_transcripts", ""),
-            transcription_requested=transcription_requested,
+            transcription_submitted=transcription_submitted,
         )
     
 @app.route("/retrieve_transcripts", methods = ["GET", "POST"])
@@ -831,4 +804,4 @@ def retrieve_transcripts():
     )
 
 if __name__ == "__main__":
-    app.run(debug=False, port=5050),# ssl_context="adhoc")
+    app.run(debug=True, port=5050),# ssl_context="adhoc")
