@@ -672,35 +672,23 @@ def transcribe():
             storage=initiate_storage(),
             transcribe_form=transcribe_form,
             user_transcripts = session.get("user_transcripts", ""),
+            request_method=request.method,
+            form_valid=True,
         )
 
     if transcribe_form.validate_on_submit():
 
-        # Load audio file
-        ALLOWED_EXTENSIONS = {"mp3", "mp4", "mpeg", "mpga", "m4a", "wav", "webm"}
-
-        if 'file_upload' not in request.files:
-            return jsonify({"error": "Nie wybrano pliku"}), 400
+        form_valid = True
+        transcription_submitted = False
         
         audio_file = request.files['file_upload']
         #print(audio_file)
         #TODO change the name of the folder
         #TODO automatically delete files after they're submitted for transcritption
-        audio_file.save(f"./test_audio/{audio_file.filename}") 
-
-        if audio_file.filename == '':
-            return jsonify({"error": "Nie wybrano pliku"}), 400
-
-        transcription_requested = False
+        audio_file.save(f"./test_audio/{audio_file.filename}")
         
         if audio_file:
-
-            local_url = f"./test_audio/{audio_file.filename}"
-            
-            # AssemblyAI API
             aai.settings.api_key = os.getenv('ASSEMBLYAI_API_KEY')
-            #api_key = os.getenv('ASSEMBLYAI_API_KEY')
-
             config = aai.TranscriptionConfig(
                 language_code=transcribe_form.select_language.data,
                 speaker_labels=True,
@@ -724,37 +712,34 @@ def transcribe():
                 session["transcripts_in_session_ids"] = [transcript_id]
 
             transcription_submitted = True
-            
-            #def convert_ms_to_hms(milliseconds):
-            #    seconds, milliseconds = divmod(milliseconds, 1000)
-            #    minutes, seconds = divmod(seconds, 60)
-            #    hours, minutes = divmod(minutes, 60)
-            #    return f"{hours:02}:{minutes:02}:{seconds:02}"
-
-            #text = ""
-            #for utterance in transcript.utterances:
-            #    start_time_formatted = convert_ms_to_hms(utterance.start)
-            #    end_time_formatted = convert_ms_to_hms(utterance.end)
-            #    #text += f"SPEAKER {utterance.speaker}: {utterance.text}\n\n"
-            #    text += f"[{start_time_formatted}-{end_time_formatted}] SPEAKER {utterance.speaker}: {utterance.text}\n\n"
-            #
-            #print(transcribe_form.select_language.data)
-
-            ## Writing to the file
-            #with open('uploads/transcript.txt', 'w') as file:
-            #    file.write(text)
-
-            #return send_file('uploads/transcript.txt', as_attachment=True)
+        
+            return render_template(
+                "transcribe.html", 
+                d=d,
+                storage=initiate_storage(),
+                transcribe_form=transcribe_form,
+                #user_transcripts = session.get("user_transcripts", ""),
+                transcription_submitted=transcription_submitted,
+                form_valid=form_valid,
+                request_method=request.method,
+            )
+        
+    if request.method == 'POST' and not transcribe_form.validate_on_submit():
+        
+        form_valid = False
+        transcription_submitted = False
 
         return render_template(
-            "transcribe.html", 
-            d=d,
-            storage=initiate_storage(),
-            transcribe_form=transcribe_form,
-            #user_transcripts = session.get("user_transcripts", ""),
-            transcription_submitted=transcription_submitted,
-        )
-    
+                "transcribe.html", 
+                d=d,
+                storage=initiate_storage(),
+                transcribe_form=transcribe_form,
+                #user_transcripts = session.get("user_transcripts", ""),
+                transcription_submitted=transcription_submitted,
+                form_valid=form_valid,
+                request_method=request.method,
+            )
+
 @app.route("/retrieve_transcripts", methods = ["GET", "POST"])
 @protect_access
 def retrieve_transcripts():
@@ -766,7 +751,6 @@ def retrieve_transcripts():
     api_key = os.getenv('ASSEMBLYAI_API_KEY')
     
     transcripts_in_session_ids = session.get("transcripts_in_session_ids")
-    print(transcripts_in_session_ids)
 
     transcripts_in_session = []
 
@@ -804,4 +788,4 @@ def retrieve_transcripts():
     )
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5050),# ssl_context="adhoc")
+    app.run(debug=False, port=5050)#, ssl_context="adhoc")

@@ -125,7 +125,10 @@ class TranscribeForm(FlaskForm):
         validators=[DataRequired()]
         )
     file_upload = FileField(
-        'Załaduj plik audio', 
-        validators=[FileAllowed(["mp3", "mp4", "mpeg", "mpga", "m4a", "wav", "webm"],
-                                'Tylko pliki audio!')])
+        'Załaduj plik audio',
+        validators=[
+            FileAllowed(["mp3", "mp4", "mpeg", "mpga", "m4a", "wav", "webm"], 'Tylko pliki audio!'),
+            InputRequired(),
+        ]
+    )
     submit = SubmitField('Zleć transkrypcję')

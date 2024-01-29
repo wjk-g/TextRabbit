@@ -21,9 +21,19 @@
                     {{ transcribe_form.file_upload.label(class="form-label") }}
                     {{ transcribe_form.file_upload(class="form-control") }}
                 </div>
-                <div class="alert alert-warning" role="alert">
-                    Wciśnięcie <em>Zleć transkrypcję</em> oznacza naliczenie opłaty.
+                
+                <div>
+                    {% if not form_valid and request_method == "POST" %}
+                        <div class="alert alert-danger" role="alert">
+                            Wybrano błędny format pliku. Obsługiwane formaty audio to mp3, mp4, mpeg, mpga, m4a, wav, webm.
+                        </div>
+                    {% endif %}
                 </div>
+                
+                <div class="alert alert-warning" role="alert">
+                    Wciśnięcie <em>Zleć transkrypcję</em> oznacza zgodę na naliczenie opłaty.
+                </div>
+
                 <div>
                     {% if transcription_submitted %}
                         <div class="alert alert-success" role="alert">
@@ -35,8 +45,20 @@
                         </div>
                     {% endif %}
                 </div>
-                <div class="mb-3">
-                    {{ transcribe_form.submit(class="btn btn-primary") }}
+
+                <div style="display: flex; gap: 30px;">
+                    
+                    <div class="mb-3">
+                        {{ transcribe_form.submit(class="btn btn-primary") }}
+                    </div>
+                    
+                    {% if form_valid and request_method == "POST" %}
+                    <div id="spinner" name="spinner" class="visually-hidden" role="status" style="display: flex; align-items: center;">
+                        <div class="spinner-border" aria-hidden="true"></div>
+                        <span style="margin-left: 10px;">Trwa przesyłanie pliku do transkrypcji. To może chwilę potrwać...</span>
+                    </div>
+                    {% endif %}
+
                 </div>
             </form>
         </div>
@@ -46,4 +68,22 @@
     <p>Transkrypcje z języka ukraińskiego nie pozwalają na automatyczne rozróżnianie rozmówców.</p>
 </div>
 
+{% endblock %}
+
+{% block scripts %}
+<script>
+
+    const formValid={{ form_valid|tojson }}
+    const requestMethod={{ request_method|tojson }}
+
+    const submitButton = document.getElementById('submit');
+    const spinner = document.getElementById('spinner');        
+    
+    if (formValid && requestMethod === "GET") {
+        submitButton.addEventListener('click', function() {
+            spinner.classList.remove('visually-hidden');
+        });
+    }
+    
+</script>
 {% endblock %}
