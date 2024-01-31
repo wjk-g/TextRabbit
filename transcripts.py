@@ -34,6 +34,12 @@ class TranscriptsHandler():
         
         self.transcripts_in_session = [transcript for transcript in all_transcripts if transcript["id"] in transcripts_in_session_ids]
     
+    def get_transcript_status(self, transcript_id):
+
+        polling_endpoint = f"https://api.assemblyai.com/v2/transcript/{transcript_id}"
+        response = requests.get(polling_endpoint, headers=self.headers).json()
+        return response['status']
+
     #def create_detailed_transcripts_list(self):
 
     #    for transcript in self.transcripts_list:

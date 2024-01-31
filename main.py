@@ -753,28 +753,25 @@ def retrieve_transcripts():
     transcripts_in_session_ids = session.get("transcripts_in_session_ids")
 
     transcripts_in_session = []
+    session["transcripts_being_processed"] = []
 
+    # TODO duplicated, put it in a function
     if transcripts_in_session_ids:
         transcripts_handler.get_response_from_api(api_key=api_key, limit=100)
         transcripts_handler.get_transcripts_in_session(transcripts_in_session_ids)
+        
+        # All transcripts in session
         transcripts_in_session = transcripts_handler.transcripts_in_session
+
+        # All transcripts being processed
+        transcripts_being_processed = [t["id"] for t in transcripts_in_session if t["status"] == "processing"]
+        print("transcripts being processed in retrieve")
+        print(transcripts_being_processed)
+        session["transcripts_being_processed"] = transcripts_being_processed
+        # example: {"status": "processing", "id": 123}, {"status": "processing", "id": 456}
 
     if request.method == "POST":
         for key in request.form:
-            # Delete a transcript from db
-            #if key.startswith('delete_'):
-            #    transcript_id = key.split('_')[1]
-            #    transcripts_handler.delete_transcript(transcript_id)
-            #    
-            #    return render_template(
-            #        "retrieve_transcripts.html", 
-            #        d=d,
-            #        storage=initiate_storage(),
-            #        transcripts=transcripts_in_session,
-            #        user_transcripts = session.get("transcripts_in_session_ids"),
-            #    )
-
-            # Download a transcript from db
             if key.startswith('download_'):
                 transcript_id = key.split('_')[1]
                 return transcripts_handler.download_transcript(transcript_id)
@@ -784,8 +781,35 @@ def retrieve_transcripts():
         d=d,
         storage=initiate_storage(),
         transcripts=transcripts_in_session,
+        transcripts_being_processed=transcripts_being_processed,
         user_transcripts = session.get("transcripts_in_session_ids"),
+        api_key=api_key,
     )
 
+
+@app.route('/check_transcripts_status', methods=['GET'])
+def check_transcripts_status():
+
+    transcripts_handler = TranscriptsHandler()
+    api_key = os.getenv('ASSEMBLYAI_API_KEY')
+    transcripts_being_processed = session.get("transcripts_being_processed")
+    print("Print transcripts in check_transrctips_status")
+    print(transcripts_being_processed)
+
+    transcripts_handler.get_response_from_api(api_key=api_key, limit=100)
+
+    transcripts_statuses = [ transcripts_handler.get_transcript_status(t) for t in transcripts_being_processed ]
+
+    print(f"transcritp statuses: {transcripts_statuses} ")
+
+    if transcripts_statuses:
+        completed = any(status != 'processing' for status in transcripts_statuses)
+        print(completed)
+    else:
+        completed = False
+        print(completed)
+
+    return jsonify({"reload": completed}), 200
+
 if __name__ == "__main__":
-    app.run(debug=False, port=5050)#, ssl_context="adhoc")
+    app.run(debug=True, port=5050)#, ssl_context="adhoc")

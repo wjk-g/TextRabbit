@@ -7,9 +7,11 @@
     <div class="alert alert-warning" role="alert">
         Informacje o Twoich transkrypcjach są przechowywane w pamięci aplikacji tylko przez kilkanaście godzin. Nie zwlekaj z ich pobraniem.
     </div>
-    <div class="alert alert-warning" role="alert">
-        Odśwież stronę, żeby uaktualnić status Twoich transkrypcji.
-    </div>
+    {% if transcripts_being_processed %}
+        <div class="alert alert-info" role="alert">
+            AssemblyAI przetwarza Twój plik audio... Strona zostanie automatycznie odświeżona, gdy transkrypcja będzie gotowa.
+        </div>
+    {% endif %}
     <br>
     <div>
         <table>
@@ -50,4 +52,8 @@
         </table>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript" src="{{ url_for('static', filename='js/check_transcripts_status.js') }}"></script>
 {% endblock %}
