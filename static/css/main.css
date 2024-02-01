@@ -211,3 +211,7 @@ iframe {
   background-color: #9bc8e5;
   color: black;
 }
+
+.spinner-border {
+  animation-duration: 1s;
+}

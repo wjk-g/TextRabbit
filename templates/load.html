@@ -9,7 +9,7 @@
         <div class="card-body">
             <h3 class="card-title">Wczytaj dane z LimeSurvey</h3>
             <p class="card-text">Wczytaj dane bezpośrednio z serwera LimeSurvey Stoczni. Pobranie danych może zająć od kilku do kilkunastu sekund.</p>
-            <p class="card-text fst-italic">Aplikacja komunikuje się z serwerem LS przy pomocy jednego konta. Jeżeli wiele osób naraz będzie próbowało pobrać dane z LS, serwer może odrzucić rządanie. W takiej sytuacji poczekaj chwilę i spróbuj ponownie lub wczytaj dane z pliku (opcja poniżej).</p>
+            <p class="card-text fst-italic">Aplikacja komunikuje się z serwerem LS przy pomocy jednego konta. Jeżeli wiele osób naraz będzie próbowało pobrać dane z LS, serwer może odrzucić żądanie. W takiej sytuacji poczekaj chwilę i spróbuj ponownie lub wczytaj dane z pliku (opcja poniżej).</p>
             <form method="POST" id="load_ls">
                 {{ data_selection_form.hidden_tag() }}
                 <div class="mb-3">
