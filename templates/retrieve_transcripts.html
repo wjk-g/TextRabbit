@@ -8,15 +8,19 @@
         Informacje o Twoich transkrypcjach są przechowywane w pamięci aplikacji tylko przez kilkanaście godzin. Nie zwlekaj z ich pobraniem.
     </div>
     {% if transcripts_being_processed %}
-        <div class="alert alert-info" role="alert">
-            AssemblyAI przetwarza Twój plik audio... Strona zostanie automatycznie odświeżona, gdy transkrypcja będzie gotowa.
+        <div class="alert alert-info" role="alert" style="display: flex; align-items: center;">
+            <div class="spinner-grow" role="status" style="flex-shrink: 0;">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <span style="margin-left: 20px;">
+                AssemblyAI przetwarza Twój plik audio... Strona zostanie automatycznie odświeżona po zakończeniu transkrypcji.
+            </span>
         </div>
     {% endif %}
     <br>
     <div>
         <table>
             <th>Stan realizacji</th>
-            <th>Dostępność</th>
             <th>ID</th>
             <th>Rozpoczęto transk.</th>
             <th>Zakończono transk.</th>
@@ -24,13 +28,6 @@
             {% for transcript in transcripts %}
                 <tr>
                     <td>{{ transcript.status }}</td>
-                    {% if transcript.audio_url == 'http://deleted_by_user' %}
-                        <td>USUNIĘTO</td>
-                    {% elif transcript.status == 'processing' %}
-                        <td>TRWA TRANSKRYPCJA</td>
-                    {% else %}
-                        <td>DOSTĘPNY</td>
-                    {% endif %}
                     <td>{{ transcript.id }}</td>
                     <td>{{ transcript.created }}</td>
                     <td>{{ transcript.completed }}</td>
