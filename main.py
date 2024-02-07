@@ -16,8 +16,18 @@ from werkzeug.utils import secure_filename
 # Flask imports
 from flask import Flask, render_template, session, redirect, url_for, request, jsonify, send_file
 from flask_session import Session
-from flask_sqlalchemy import SQLAlchemy
+
 from sqlalchemy.orm import DeclarativeBase
+from models import (
+    db,
+    Project,
+    User,
+    Transcript,
+    TranscriptJSON,
+    TranscriptTextFormatted,
+    project_users,
+    project_coordinators,
+)
 
 # Load forms
 from forms import (
@@ -69,14 +79,9 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 300 * 1000 * 1000 # max file size = 300 MB
 
 # DATABASE CONFIGURATION
-class Base(DeclarativeBase):
-    pass
-
-# The db object gives access to the db.Model class to define models, and the db.session to execute queries.
-db = SQLAlchemy(model_class=Base)
-
 # configure the SQLite database, relative to the app instance folder
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # initialize the app with the extension
 db.init_app(app)
 
