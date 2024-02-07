@@ -34,6 +34,11 @@ class User(db.Model):
     projects: Mapped[list['Project']] = relationship('Project', secondary=project_users, back_populates='users')
     coordinated_projects: Mapped[list['Project']] = relationship('Project', secondary=project_coordinators, back_populates='coordinators')
 
+    def __init__(self, email, projects=None, coordinated_projects=None):
+        self.email = email
+        self.projects = projects if projects is not None else []
+        self.coordinated_projects = coordinated_projects if coordinated_projects is not None else []
+
 class Transcript(db.Model):
     __tablename__ = 'transcript'
     assemblyai_id: Mapped[str] = mapped_column(db.String, primary_key=True)  # ID assigned by AssemblyAI
@@ -57,5 +62,5 @@ class TranscriptTextFormatted(db.Model):
     text_processed: Mapped[str] = mapped_column(db.Text, nullable=False)
     transcript: Mapped['Transcript'] = relationship('Transcript', backref=db.backref('text_processed', uselist=False))
 
-# Jsonized transcript processed (coded, tagged, whatever) by OpenAI 
+# Jsonized transcript processed (coded, tagged, whatever) by OpenAI
 # class ...

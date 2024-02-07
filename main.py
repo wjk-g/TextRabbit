@@ -80,11 +80,13 @@ app.config['MAX_CONTENT_LENGTH'] = 300 * 1000 * 1000 # max file size = 300 MB
 
 # DATABASE CONFIGURATION
 # configure the SQLite database, relative to the app instance folder
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///szkutnik.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # initialize the app with the extension
 db.init_app(app)
 
+with app.app_context():
+    db.create_all()
 
 # OAuth CONFIGURATION
 
@@ -127,6 +129,7 @@ def login():
         redirect_uri=request.base_url + "/callback",
         scope=["openid", "email", "profile"],
     )
+
     return redirect(request_uri)
 
 @app.route("/login/callback")
@@ -162,8 +165,26 @@ def callback():
     uri, headers, body = client.add_token(userinfo_endpoint)
 
     userinfo_response = requests.get(uri, headers=headers, data=body)
+    
     session["logged_in"] = True
     
+    # Decoding and extracting user information
+    user_info_byte = userinfo_response.content
+    user_info_decoded = user_info_byte.decode('utf-8')
+    user_info = json.loads(user_info_decoded)
+    user_email = user_info['email']
+    
+    # Add the
+    user = User.query.filter_by(email=user_email).first()
+    
+    if user is None:
+        new_user = User(email=user_email)
+        db.session.add(new_user)
+        db.session.commit()
+        print(f"User {user_email} added to the database")
+    else:
+        print(f"User {user_email} already exists in the database!")
+
     return redirect(url_for("home"))
 
 # === UTILITY FUNCTIONS ===
@@ -816,4 +837,4 @@ def check_transcripts_status():
     return jsonify({"reload": completed}), 200
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5050)#, ssl_context="adhoc")
+    app.run(debug=True, port=5050, ssl_context="adhoc")
