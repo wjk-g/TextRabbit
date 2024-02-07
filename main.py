@@ -4,27 +4,20 @@ import json
 import pickle
 import pandas as pd
 
+# API's
+import assemblyai as aai
+
 from oauthlib.oauth2 import WebApplicationClient
 from dotenv import load_dotenv
 from functools import wraps
-
-# API's
-# OpenAI
-from openai import OpenAI
-#from pydub import AudioSegment
-import whisper
-import time
-# Google cloud
-from google.cloud import speech_v1p1beta1 as speech
-from google.cloud import storage
-# AssemblyAI
-import assemblyai as aai
 
 from werkzeug.utils import secure_filename
 
 # Flask imports
 from flask import Flask, render_template, session, redirect, url_for, request, jsonify, send_file
 from flask_session import Session
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import DeclarativeBase
 
 # Load forms
 from forms import (
@@ -47,7 +40,7 @@ from forms import (
 
 # Load classes
 from data import Data
-from models import LDA, NNMF, W2V #LSI
+from language_models import LDA, NNMF, W2V #LSI
 from storage import Storage
 from transcripts import TranscriptsHandler
 #from modules.audio_module import convert_to_mp3_and_split
@@ -74,6 +67,19 @@ Session(app)
 UPLOAD_FOLDER = "/uploads"
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 300 * 1000 * 1000 # max file size = 300 MB
+
+# DATABASE CONFIGURATION
+class Base(DeclarativeBase):
+    pass
+
+# The db object gives access to the db.Model class to define models, and the db.session to execute queries.
+db = SQLAlchemy(model_class=Base)
+
+# configure the SQLite database, relative to the app instance folder
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
+# initialize the app with the extension
+db.init_app(app)
+
 
 # OAuth CONFIGURATION
 
@@ -188,7 +194,7 @@ def load_w2v_gensim_model():
 # === HOME ===
 
 @app.route("/home", methods=["GET", "POST"])
-@protect_access
+#@protect_access
 def home():
     d = session.get("d", Data({}))
     
@@ -659,7 +665,7 @@ def show_storage():
     )
 
 @app.route("/transcribe", methods = ["GET", "POST"])
-@protect_access
+#@protect_access
 def transcribe():
     
     d = session.get('d')
@@ -740,7 +746,7 @@ def transcribe():
             )
 
 @app.route("/retrieve_transcripts", methods = ["GET", "POST"])
-@protect_access
+#@protect_access
 def retrieve_transcripts():
     
     d = session.get("d")
@@ -805,4 +811,4 @@ def check_transcripts_status():
     return jsonify({"reload": completed}), 200
 
 if __name__ == "__main__":
-    app.run(debug=False, port=5050)#, ssl_context="adhoc")
+    app.run(debug=True, port=5050)#, ssl_context="adhoc")
