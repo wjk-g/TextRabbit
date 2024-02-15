@@ -20,13 +20,10 @@ from flask_session import Session
 from sqlalchemy.orm import DeclarativeBase
 from models import (
     db,
-    Project,
     User,
+    Project,
     Transcript,
     TranscriptJSON,
-    TranscriptTextFormatted,
-    project_users,
-    project_coordinators,
 )
 
 # Load forms
@@ -78,8 +75,9 @@ UPLOAD_FOLDER = "/uploads"
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 300 * 1000 * 1000 # max file size = 300 MB
 
+
 # DATABASE CONFIGURATION
-# configure the SQLite database, relative to the app instance folder
+# configuring the SQLite database, relative to the app instance folder
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///szkutnik.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # initialize the app with the extension
@@ -141,7 +139,7 @@ def callback():
     google_provider_cfg = get_google_provider_cfg()
     token_endpoint = google_provider_cfg["token_endpoint"]
 
-    # Prepare and send a request to get tokens! Yay tokens!
+    # Prepare and send a request to get tokens
     token_url, headers, body = client.prepare_token_request(
         token_endpoint,
         authorization_response=request.url,
@@ -174,7 +172,6 @@ def callback():
     user_info = json.loads(user_info_decoded)
     user_email = user_info['email']
     
-    # Add the
     user = User.query.filter_by(email=user_email).first()
     
     if user is None:
@@ -817,7 +814,6 @@ def retrieve_transcripts():
         user_transcripts = session.get("transcripts_in_session_ids"),
     )
 
-
 @app.route('/check_transcripts_status', methods=['GET'])
 def check_transcripts_status():
 
@@ -835,6 +831,41 @@ def check_transcripts_status():
         completed = False
 
     return jsonify({"reload": completed}), 200
+
+@app.route('/create_project', methods=['GET', 'POST'])
+def create_project():
+    
+    d = initiate_storage()
+
+    return render_template(
+        "harbour.html", 
+        d=d,
+        storage=initiate_storage(),
+    )
+
+@app.route('/create_user', methods=['GET', 'POST'])
+def create_user():
+    
+    d = initiate_storage()
+
+    email="wjk.gasior@gmail.com"
+    
+    user = User.query.filter_by(email=email).first()
+
+    if user is None:
+        new_user = User(email=email)
+
+        db.session.add(new_user)
+        db.session.commit()
+        print(f"User {email} added to the database")
+    else:
+        print(f"User {email} already exists in the database!")
+
+    return jsonify(f"{email}"), 200
+
+
+
+
 
 if __name__ == "__main__":
     app.run(debug=True, port=5050, ssl_context="adhoc")
