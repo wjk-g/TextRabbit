@@ -51,6 +51,7 @@ class Transcript(db.Model):
     transcript_json: so.Mapped['TranscriptJSON'] = so.relationship(back_populates="transcript_info")
 
     # Args with default values
+    #submitted_on: so.Mapped[datetime] = so.mapped_column(db.DateTime, nullable=True, default=lambda: datetime.now(timezone.utc))
     created_on: so.Mapped[datetime] = so.mapped_column(db.DateTime, nullable=True, default=lambda: datetime.now(timezone.utc))
     
     # Methods

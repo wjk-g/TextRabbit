@@ -1,7 +1,7 @@
 import pandas as pd
 import spacy
 import string
-from static.stopwords import stopwords
+from app.static.stopwords import stopwords
 import nltk
 
 class Data:
@@ -11,7 +11,7 @@ class Data:
         self._is_tokenized_and_preprocessed = False
         self._is_processed = False
         self._is_selected = False
-        self._is_example = False
+        self._source = None
         self.stopwords = stopwords # imported from static # should be private
         self.replacements = {"starytoken": "nowytoken"} # should be private
         self.top_words = None
@@ -31,8 +31,8 @@ class Data:
     def select(self):
         self._is_selected = True
 
-    def mark_as_example_data(self):
-        self._is_example = True
+    #def mark_as_example_data(self):
+    #    self._is_example = True
 
     @property
     def is_selected(self):
@@ -46,9 +46,16 @@ class Data:
     def is_processed(self):
         return self._is_processed
 
+    #@property
+    #def is_example(self):
+    #    return self._is_example
+    
     @property
-    def is_example(self):
-        return self._is_example
+    def source(self):
+        return self._source
+
+    def set_source(self, source):
+        self._source = source
 
     # ERROR HANDLING
     def display_error_message(self):

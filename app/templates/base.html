@@ -20,67 +20,67 @@
                 <div class="position-sticky pt-3">
                     <ul class="nav flex-column">
 
-                        <span href="{{ url_for('home') }}" style="margin-bottom: 20px; margin-top: 12px; margin-left: 18px;">
-                            <a href="{{ url_for('home') }}" style="text-decoration: none; font-family: 'Lugrasimo', cursive; color: white; font-size: 36px ">
+                        <span href="{{ url_for('nlp.home') }}" style="margin-bottom: 20px; margin-top: 12px; margin-left: 18px;">
+                            <a href="{{ url_for('nlp.home') }}" style="text-decoration: none; font-family: 'Lugrasimo', cursive; color: white; font-size: 36px ">
                                 Szkutnik
                             </a>
                         </span>
 
                         <li class="nav-item">
-                            <a class="nav-link" aria-current="page" href="{{ url_for('home') }}">
+                            <a class="nav-link" aria-current="page" href="{{ url_for('nlp.home') }}">
                                 <i class="fa-solid fa-house"></i>
                                 Home
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" aria-current="page" href="{{ url_for('load_data') }}">
+                            <a class="nav-link" aria-current="page" href="{{ url_for('nlp.load_data') }}">
                                 <i class="fa-solid fa-file-arrow-up"></i>
                                 Wczytaj dane
                             </a>
                         </li>
                         {% if d.is_processed %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('preprocess') }}">
+                            <a class="nav-link" href="{{ url_for('nlp.preprocess') }}">
                                 <i class="fa-solid fa-broom"></i>
                                 Przygotuj i wyczyść
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('explore') }}">
+                            <a class="nav-link" href="{{ url_for('nlp.explore') }}">
                                 <i class="fa-solid fa-eye"></i>
                                 Eksploruj
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link ps-5" href="{{ url_for('explore_ngrams') }}">
+                            <a class="nav-link ps-5" href="{{ url_for('nlp.explore_ngrams') }}">
                                 <i class="fa-solid fa-chart-simple"></i>
                                 Ngramy
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link ps-5" href="{{ url_for('explore_network') }}">
+                            <a class="nav-link ps-5" href="{{ url_for('nlp.explore_network') }}">
                                 <i class="fa-solid fa-circle-nodes"></i>
                                 Analiza sieciowa
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('select_model') }}">
+                            <a class="nav-link" href="{{ url_for('nlp.select_model') }}">
                                 <i class="fa-solid fa-paper-plane"></i>
                                 Modeluj
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link ps-5" href="{{ url_for('model_w2v') }}">word2vec</a>
+                            <a class="nav-link ps-5" href="{{ url_for('nlp.model_w2v') }}">word2vec</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link ps-5" href="{{ url_for('model_lda') }}">lda</a>
+                            <a class="nav-link ps-5" href="{{ url_for('nlp.model_lda') }}">lda</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link ps-5" href="{{ url_for('model_nnmf') }}">nnmf</a>
+                            <a class="nav-link ps-5" href="{{ url_for('nlp.model_nnmf') }}">nnmf</a>
                         </li>
                         {% elif d.is_selected %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('preprocess') }}">
+                            <a class="nav-link" href="{{ url_for('nlp.preprocess') }}">
                                 <i class="fa-solid fa-broom"></i>
                                 Przygotuj i wyczyść
                             </a>
@@ -119,14 +119,14 @@
                         {% endif %}
                         {% if storage %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('show_storage') }}">
+                            <a class="nav-link" href="{{ url_for('nlp.show_storage') }}">
                                 <i class="fa-solid fa-box-open"></i>
                                 Ładownia <span class="badge rounded-pill">{{storage.n_of_models}}</span>
                             </a>
                         </li>
                         {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('show_storage') }}">
+                            <a class="nav-link" href="{{ url_for('nlp.show_storage') }}">
                                 <i class="fa-solid fa-box-open"></i>
                                 Ładownia
                             </a>
@@ -136,14 +136,14 @@
                         <div class="border-top my-3"></div>
 
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('transcribe') }}">
+                            <a class="nav-link" href="{{ url_for('transcribe.transcribe') }}">
                                 <i class="fa-solid fa-pen-nib"></i>
                                 Transkrybuj
                             </a>
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('retrieve_transcripts') }}">
+                            <a class="nav-link" href="{{ url_for('transcribe.retrieve_transcripts') }}">
                                 <i class="fa-solid fa-database"></i>
                                 Moje transkrypcje
                             </a>

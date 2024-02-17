@@ -1,13 +1,18 @@
 # Manually added
-static/word2vec
-static/example_data.csv
-static/pyvis_graph.html
-static/__pycache__/
-uploads/*
+app/static/word2vec
+app/static/example_data.csv
+app/static/pyvis_graph.html
+app/static/__pycache__/
+app/nlp/uploads/*
+app/transcribe/uploads/*
 downloads/*
+app/nlp/downloads/*
 flask_session/
-modules/__pycache__/
+app/nlp/auxiliary_modules/__pycache__/
 .idea/
+.pytest_cache/
+.vscode/
+.VSCodeCounter/
 .DS_Store
 google_credentials/*
 google_credentials/szkutnik-405809-25e2a3ab66cd.json

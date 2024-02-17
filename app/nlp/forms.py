@@ -9,7 +9,6 @@ from wtforms import (
     DecimalField,
 )
 from wtforms.validators import DataRequired, InputRequired, NumberRange
-from flask_wtf.file import FileField, FileAllowed
 
 
 # LOAD
@@ -49,11 +48,12 @@ class SelectedWordsForm(FlaskForm):
 # MODEL
 class ModelSelection(FlaskForm):
     select_model = SelectField("Wybierz model",
-                        choices = [("word2vec", "word2vec"), 
-                                   ("lda", "Latent Dirichlet Allocation"), 
-                                   ("nnmf", "Non-Negative Matrix Factorization"),
-                                   #("lsi", "Latent Semantic Indexing")
-                                   ])
+                        choices = [
+                            ("word2vec", "word2vec"),
+                            ("lda", "Latent Dirichlet Allocation"), 
+                            ("nnmf", "Non-Negative Matrix Factorization"),
+                            #("lsi", "Latent Semantic Indexing")
+                        ])
     submit_select_model = SubmitField("Zatwierdź wybór")
 
 class ModelingForm(FlaskForm):
@@ -63,7 +63,9 @@ class ModelingForm(FlaskForm):
                             )
     n_of_pcs_int = IntegerField("Wybierz liczbę głównych składowych", default=2, validators=[NumberRange(min=2, max=100, message="sdgsdgs")])
     standardize_pcs = RadioField("Czy chcesz zestandaryzdować główne składowe?",
-                                 choices = [('yes', 'Tak'), ('no', 'Nie')], default='no', validators=[DataRequired()])
+                                choices = [('yes', 'Tak'), ('no', 'Nie')], 
+                                default='no', 
+                                validators=[DataRequired()])
     n_of_ks_int = IntegerField("Wybierz liczbę skupień", validators=[NumberRange(min=2, max=100, message="sdgsdgs")])
     submit_clustering = SubmitField("Zatwierdzam")
 
@@ -77,8 +79,7 @@ class LDAModel(FlaskForm):
                             validators=[NumberRange(min=0, max=500, 
                                                     message="Podaj liczbę całkowitę z przedziału od 0 do 500")])
     no_above = DecimalField("Częstość występowania nie większa niż (od 0 do 1):",
-                          validators=[NumberRange(min=0.0, max=1.0,
-                                                  message="Podaj wartość z przedziału od 0 do 1")])
+                        validators=[NumberRange(min=0.0, max=1.0, message="Podaj wartość z przedziału od 0 do 1")])
     n_iterations = IntegerField("Liczba iteracji:", default=1000, 
                                 validators=[NumberRange(min=250, max=1000,
                                                         message="Podaj liczbę całkowitę z przedziału od 250 do 1000")])
@@ -99,8 +100,7 @@ class LDACoherence(FlaskForm):
                             validators=[NumberRange(min=0, max=500, 
                                                     message="Podaj liczbę całkowitę z przedziału od 0 do 500")])
     no_above = DecimalField("Częstość występowania nie większa niż (od 0 do 1):", 
-                          validators=[NumberRange(min=0.0, max=1.0,
-                                                  message="Podaj wartość z przedziału od 0 do 1")])
+                            validators=[NumberRange(min=0.0, max=1.0, message="Podaj wartość z przedziału od 0 do 1")])
     submit = SubmitField("Zatwierdź")
 
 # Creating exact copies of the LDA form and coherence
@@ -110,25 +110,3 @@ class NNMFModel(LDAModel):
 
 class NNMFCoherence(LDACoherence):
     pass
-
-# TRANSCRIBE
-
-class TranscribeForm(FlaskForm):
-    select_language = SelectField('Wybierz język nagrania', choices=[
-        ('pl', 'polski'), 
-        ('en', 'angielski globalny'),
-        ('en_uk', 'angielski brytyjski'),
-        ('en_us', 'angielski amerykański'),
-        ('uk', 'ukraiński'),
-        ('ru', 'rosyjski'),
-        ('auto', 'wykryj automatycznie')],
-        validators=[DataRequired()]
-        )
-    file_upload = FileField(
-        'Załaduj plik audio',
-        validators=[
-            FileAllowed(["mp3", "mp4", "mpeg", "mpga", "m4a", "wav", "webm"], 'Tylko pliki audio!'),
-            InputRequired(),
-        ]
-    )
-    submit = SubmitField('Zleć transkrypcję')

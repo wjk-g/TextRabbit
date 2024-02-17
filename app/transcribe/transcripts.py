@@ -10,7 +10,6 @@ class TranscriptsHandler():
         self.response = {}
         self.headers = {}
 
-
     def get_response_from_api(self, api_key, limit=50):
         url = "https://api.assemblyai.com/v2/transcript"
         
@@ -84,10 +83,10 @@ class TranscriptsHandler():
             transcript_text += f"[{start_time_formatted}-{end_time_formatted}] SPEAKER {speaker}: {utterance_text}\n\n"
         
         # Writing to the file
-        with open('uploads/transcript.txt', 'w') as file:
+        with open('app/transcribe/uploads/transcript.txt', 'w') as file:
             file.write(transcript_text)
 
-        return send_file('uploads/transcript.txt', as_attachment=True)
+        return send_file('transcribe/uploads/transcript.txt', as_attachment=True)
 
     def delete_transcript(self, transcript_id):
         endpoint = f"https://api.assemblyai.com/v2/transcript/{transcript_id}"

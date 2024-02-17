@@ -7,9 +7,9 @@
         <h2>Niestety, gdy Szkutnik ruszył, nasz serwer stanął. ¯\_(ツ)_/¯</h2>
         <h2>Problem stanowią moduły do analizy tekstu, które wymagają dużych mocy obliczeniowych.</h2>
         <h2>Na razie proszę Was zatem o korzystanie wyłącznie z modułu do sporządzania transkrypcji automatycznych i niedotykanie się do pozostałych.</h2>
-        <h2><a href="{{ url_for('transcribe') }}">DO TRANSKRYPCJI</a></h2>
+        <h2><a href="{{ url_for('transcribe.transcribe') }}">DO TRANSKRYPCJI</a></h2>
         <h3>Zużycie mocy maszyny wirtualnej, na której działa Szkutnik przy próbie modelowania tekstu (1=100%)</h3>
-        <img src="static/server_usage.png" alt="server usage" width="800px">
+        <img src="{{ url_for('static', filename='server_usage.png') }}" alt="server usage" width="800px">
         <br>
         <br>
 
@@ -19,7 +19,7 @@
         <h4 class="mb-3 pt-3">
             Aplikacja udostępnia interfejs dla całego cyklu analizy danych tekstowych: od załadowania i czyszczenia danych, przez prostą analizę eksploracyjną po analizę skupień, która pozwoli wyróżnić „naturalne“ kategorie lub tematy zawarte w danych.
         </h4>
-        <a href="{{ url_for('load_data') }}">
+        <a href="{{ url_for('nlp.load_data') }}">
             <button type="submit" class="btn btn-secondary" style="font-size: 20px;">Załaduj dane i zacznij analizę</button>
         </a>
         <br>

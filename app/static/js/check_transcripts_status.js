@@ -1,6 +1,6 @@
 
 function checkTranscriptsAndReload() {
-    fetch(`/check_transcripts_status`)
+    fetch(`/transcribe/check_transcripts_status`)
         .then(response => {
             return response.json()
         })

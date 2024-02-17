@@ -32,6 +32,14 @@
         </div>
     </div>
 
+    {% if d.is_selected and d.source=='lime' %}
+    <div>
+        <table class="table">
+            {{ d.display_original_text_as_html_table()|safe }}
+        </table>
+    </div>
+    {% endif %}
+
     <div class="card">
         <div class="card-body">
             <h3 class="card-title">Wczytaj dane z pliku</h3>
@@ -66,6 +74,14 @@
 
     <script type="text/javascript" src="{{ url_for('static', filename='js/display_file_info.js') }}"></script>
 
+    {% if d.is_selected and d.source=='file' %}
+    <div>
+        <table class="table">
+            {{ d.display_original_text_as_html_table()|safe }}
+        </table>
+    </div>
+    {% endif %}
+
     {% if d.errors %}
         <div class="alert alert-danger" role="alert">
             {{ d.display_error_message() }}
@@ -83,7 +99,7 @@
         </div>
     </div>
 
-    {% if d.is_selected and d.is_example %}
+    {% if d.is_selected and d.source=='example' %}
         <div>
             <table class="table">
                 {{ d.display_original_text_as_html_table()|safe }}

@@ -1,5 +1,5 @@
 import pandas as pd
-from flask import request, session
+from flask import request, session, current_app
 from werkzeug.utils import secure_filename
 import citric
 from io import StringIO
@@ -91,7 +91,7 @@ def prep_loaded_data(df, data_column, id_column=None):
             
 # TODO
 # Also add id_column
-def load_data_from_file(app):
+def load_data_from_file():
 
     ALLOWED_EXTENSIONS = {'txt', 'xlsx', 'xls', 'csv'}
     file = request.files['upload_form_file']
@@ -99,7 +99,7 @@ def load_data_from_file(app):
     extension = filename.rsplit('.', 1)[1].lower()
 
     if extension in ALLOWED_EXTENSIONS:
-        file_path = os.path.join(app.root_path, 'uploads', filename)
+        file_path = current_app.config['NLP_UPLOAD_FOLDER'] + '/' + filename
         file.save(file_path)
         column = request.form.get("file_column")
         id = request.form.get("id_column", None)
@@ -109,7 +109,7 @@ def load_data_from_file(app):
         return "extension_error"
 
     if extension in ['xls', 'xlsx']:
-        df = pd.read_excel('uploads/' + filename)
+        df = pd.read_excel(file_path)
         return prep_loaded_data(df, column, id)
     elif extension in ['csv', 'txt']:
         df = pd.read_csv('uploads/' + filename)
@@ -120,10 +120,8 @@ def load_data_from_file(app):
 # TODO
 # Example data may also need extra column
 def load_example_data():
-    df = pd.read_csv("static/example_data.csv")
+    df = pd.read_csv(current_app.static_folder + '/example_data.csv')
     df = df.dropna()
-    print(df)
     df = df.to_dict()
-    print(df)
     return df
     

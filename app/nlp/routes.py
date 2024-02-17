@@ -1,33 +1,12 @@
-import os
-import requests
-import json
 import pickle
 import pandas as pd
-
-# API's
-import assemblyai as aai
-
-from oauthlib.oauth2 import WebApplicationClient
-from dotenv import load_dotenv
-from functools import wraps
-
-from werkzeug.utils import secure_filename
+import json
 
 # Flask imports
-from flask import Flask, render_template, session, redirect, url_for, request, jsonify, send_file
-from flask_session import Session
-
-from sqlalchemy.orm import DeclarativeBase
-from models import (
-    db,
-    User,
-    Project,
-    Transcript,
-    TranscriptJSON,
-)
+from flask import render_template, session, redirect, url_for, request, current_app
 
 # Load forms
-from forms import (
+from app.nlp.forms import (
     DataSelection, 
     ExampleData, 
     StopwordsForm, 
@@ -42,157 +21,25 @@ from forms import (
     LDAModel,
     NNMFModel,
     NNMFCoherence,
-    TranscribeForm,
 )
 
 # Load classes
-from data import Data
-from language_models import LDA, NNMF, W2V #LSI
-from storage import Storage
-from transcripts import TranscriptsHandler
-#from modules.audio_module import convert_to_mp3_and_split
+from app.nlp.data import Data
+from app.nlp.nlp_models import LDA, NNMF, W2V #LSI
+from app.nlp.storage import Storage
 
 # Load functions
-from modules.support_module import clear_cached_data
-import modules.import_module as imp
-import modules.network_module as net
-import modules.model_module as mdl
+from app.nlp.auxiliary_modules.support_module import clear_cached_data
+import app.nlp.auxiliary_modules.import_module as imp
+import app.nlp.auxiliary_modules.network_module as net
 
-# Detailed information on implementing Oauth in Flask
-# can be found here:
-# https://realpython.com/flask-google-login/
-# from oauthlib.oauth2 import WebApplicationClient
+from app.auth.routes import protect_access
 
-
-app = Flask(__name__)
-
-# APP CONFIGURATION
-app.secret_key = os.urandom(24)
-app.config['SESSION_TYPE'] = 'filesystem'
-Session(app)
-
-UPLOAD_FOLDER = "/uploads"
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['MAX_CONTENT_LENGTH'] = 300 * 1000 * 1000 # max file size = 300 MB
-
-
-# DATABASE CONFIGURATION
-# configuring the SQLite database, relative to the app instance folder
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///szkutnik.db"
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-# initialize the app with the extension
-db.init_app(app)
-
-with app.app_context():
-    db.create_all()
-
-# OAuth CONFIGURATION
-
-load_dotenv()
-
-GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", None) # Oauth
-GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET", None) # Oauth
-GOOGLE_DISCOVERY_URL = ("https://accounts.google.com/.well-known/openid-configuration") # Oauth
-client = WebApplicationClient(GOOGLE_CLIENT_ID) # Oauth
-
-@app.route("/")
-def index():
-    # do not redirect if already authenticated
-    return redirect("login")
-
-def get_google_provider_cfg():
-    # Tip: To make this more robust, you should add error handling to the Google API call, 
-    # just in case Google’s API returns a failure and not the valid provider configuration document.
-    return requests.get(GOOGLE_DISCOVERY_URL).json()
-
-@app.route("/login")
-def login():
-    # Find out what URL to hit for Google login
-    google_provider_cfg = get_google_provider_cfg()
-    
-    # The field from the provider configuration document you need is called authorization_endpoint. 
-    # This will contain the URL you need to use to initiate the OAuth 2 flow with Google from your client application.
-    authorization_endpoint = google_provider_cfg["authorization_endpoint"]
-
-    # Use library to construct the request for Google login and provide
-    # scopes that let you retrieve user's profile from Google
-    # We use our pre-configured client that we already gave our Google Client ID to.
-    # Next, we provide the redirect we want Google to use. Finally, we ask Google for a number of OAuth 2 scopes.
-
-    # We can think of each scope as a separate piece of user information. 
-    # We’re asking for the user’s email and basic profile information from Google. 
-    # The user will, of course, have to consent to give us this information.
-    request_uri = client.prepare_request_uri(
-        authorization_endpoint,
-        redirect_uri=request.base_url + "/callback",
-        scope=["openid", "email", "profile"],
-    )
-
-    return redirect(request_uri)
-
-@app.route("/login/callback")
-def callback():
-    # Get authorization code Google sent back to you
-    code = request.args.get("code")
-    # Find out what URL to hit to get tokens that allow you to ask for
-    # things on behalf of a user
-    google_provider_cfg = get_google_provider_cfg()
-    token_endpoint = google_provider_cfg["token_endpoint"]
-
-    # Prepare and send a request to get tokens
-    token_url, headers, body = client.prepare_token_request(
-        token_endpoint,
-        authorization_response=request.url,
-        redirect_url=request.base_url,
-        code=code
-        )
-    token_response = requests.post(
-        token_url,
-        headers=headers,
-        data=body,
-        auth=(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET),
-        )
-    
-    # Parse the tokens!
-    client.parse_request_body_response(json.dumps(token_response.json()))
-
-    # Now that you have tokens (yay) let's find and hit the URL
-    # from Google that gives you the user's profile information,
-    # including their Google profile image and email
-    userinfo_endpoint = google_provider_cfg["userinfo_endpoint"]
-    uri, headers, body = client.add_token(userinfo_endpoint)
-
-    userinfo_response = requests.get(uri, headers=headers, data=body)
-    
-    session["logged_in"] = True
-    
-    # Decoding and extracting user information
-    user_info_byte = userinfo_response.content
-    user_info_decoded = user_info_byte.decode('utf-8')
-    user_info = json.loads(user_info_decoded)
-    user_email = user_info['email']
-    
-    user = User.query.filter_by(email=user_email).first()
-    
-    if user is None:
-        new_user = User(email=user_email)
-        db.session.add(new_user)
-        db.session.commit()
-        print(f"User {user_email} added to the database")
-    else:
-        print(f"User {user_email} already exists in the database!")
-
-    return redirect(url_for("home"))
+import sqlalchemy as sa
+from app import db
+from app.nlp import bp
 
 # === UTILITY FUNCTIONS ===
-def protect_access(f):
-    @wraps(f)
-    def decorated_func(*args, **kwargs):
-        if session.get("logged_in"):
-            return f(*args, **kwargs)
-        else:
-            return redirect("login")
-    return decorated_func
 
 # Check for errors in data
 def errors_in_data(d):
@@ -208,27 +55,30 @@ def initiate_storage():
     return storage
 
 def load_w2v_gensim_model():
-    path_to_gensim_model = "static/word2vec/word2vec_gensim_nkjp_wiki_lemmas_all_300_cbow_hs.pickle"
+    path_to_gensim_model = current_app.static_folder + "/word2vec/word2vec_gensim_nkjp_wiki_lemmas_all_300_cbow_hs.pickle"
     with open(path_to_gensim_model, 'rb') as gensim_model:
         word2vec = pickle.load(gensim_model)
     return word2vec
 
-
 # === HOME ===
 
-@app.route("/home", methods=["GET", "POST"])
+@bp.route("/home", methods=["GET", "POST"])
 #@protect_access
 def home():
     d = session.get("d", Data({}))
     
+    print("nlp/home")
+    print(d)
+    print(d.is_selected)
+    
     return render_template(
-        "home.html",
+        "nlp/home.html",
         d=d,
     )
 
 # === DATA IMPORT ===
-@app.route("/load_data", methods=["GET", "POST"])
-@protect_access
+@bp.route("/load_data", methods=["GET", "POST"])
+#@protect_access
 def load_data():
 
     # If d doesn't exist yet, create empty data with default (negative) data states
@@ -239,7 +89,7 @@ def load_data():
     data_selection_form = DataSelection()
     example_data_form = ExampleData()
 
-    ### (METHOD 1) DOWNLOAD DATA FROM LIMESURVEY
+    #### (METHOD 1) DOWNLOAD DATA FROM LIMESURVEY
     if data_selection_form.submit.data and data_selection_form.validate():
         
         # Loading new data clears previosly stored data
@@ -259,15 +109,17 @@ def load_data():
             d.errors = True
         
         d.select() # select indicates that this is the currently active dataset
+        d.set_source("lime")
 
     ### (METHOD 2) DOWNLOAD DATA FROM FILE
     # Uploading files in Flask: https://flask.palletsprojects.com/en/2.3.x/patterns/fileuploads/ 
     if "upload_form_file" in request.files:
         clear_cached_data()
 
-        data = imp.load_data_from_file(app=app)
+        data = imp.load_data_from_file()
         d = Data(data)
         d.select()
+        d.set_source("file")
             
     ### (METHOD 3) LOAD EXAMPLE DATA
     if example_data_form.submit_example.data and example_data_form.validate():
@@ -278,13 +130,13 @@ def load_data():
 
         d = Data(data)
         d.select()
-        d.mark_as_example_data()
+        d.set_source("example")
     
     # Saving the d object to cache
     session["d"] = d
 
     return render_template(
-        "load.html",
+        "nlp/load_and_preprocess/load.html",
         d=d,
         data_selection_form=data_selection_form,
         example_data_form=example_data_form,
@@ -292,12 +144,12 @@ def load_data():
     )
 
 # DATA PREPROCESSING
-@app.route("/preprocess", methods=["GET", "POST"])
-@protect_access
+@bp.route("/preprocess", methods=["GET", "POST"])
+#@protect_access
 def preprocess():
 
     # Load data from session and tokenize and clean it
-    d = session.get("d", redirect("load_data"))
+    d = session.get("d", redirect("load_data")) # if d is not in session, redirect to load_data
     d.tokenize_and_clean()
 
     # Initializing forms
@@ -316,7 +168,7 @@ def preprocess():
         d.tokenize_and_clean()
 
     return render_template(
-        "preprocess.html", 
+        "nlp/load_and_preprocess/preprocess.html", 
         d=d,
         stopwords_form=stopwords_form,
         replacements_form=replacements_form,
@@ -324,13 +176,13 @@ def preprocess():
     )
 
 # DATA EXPLORATION
-@app.route("/explore", methods = ["GET", "POST"])
-@protect_access
+@bp.route("/explore", methods = ["GET", "POST"])
+#@protect_access
 def explore():
-    return redirect(url_for("explore_ngrams"))
+    return redirect(url_for("nlp.explore_ngrams"))
 
-@app.route("/explore_ngrams", methods = ["GET", "POST"])
-@protect_access
+@bp.route("/explore_ngrams", methods = ["GET", "POST"])
+#@protect_access
 def explore_ngrams():
     
     d = session.get("d")
@@ -345,7 +197,7 @@ def explore_ngrams():
     top_trigrams = d.generate_top_tokens("trigrams")
 
     return render_template(
-        "explore_ngrams.html",
+        "nlp/explore/explore_ngrams.html",
         d=d,
         top_words=top_words,
         top_bigrams=top_bigrams,
@@ -354,8 +206,8 @@ def explore_ngrams():
         storage=initiate_storage()
     )
 
-@app.route("/explore_network", methods = ["GET", "POST"])
-@protect_access
+@bp.route("/explore_network", methods = ["GET", "POST"])
+#@protect_access
 def explore_network():
     
     d = session.get("d")
@@ -376,7 +228,7 @@ def explore_network():
         net.visualize_network_for_selected_words(selected_words_network_data, selected_words_form.choose_words.data)
 
     return render_template(
-        "explore_network.html",
+        "nlp/explore/explore_network.html",
         d=d,
         network_form=network_form,
         selected_words_form=selected_words_form,
@@ -385,13 +237,13 @@ def explore_network():
 
 # DATA MODELING
 
-@app.route("/model", methods = ["GET", "POST"])
-@protect_access
+@bp.route("/model", methods = ["GET", "POST"])
+#@protect_access
 def model():
     return redirect(url_for("select_model"))
 
-@app.route("/select_model", methods = ["GET", "POST"])
-@protect_access
+@bp.route("/select_model", methods = ["GET", "POST"])
+#@protect_access
 def select_model():
 
     d = session.get("d")
@@ -403,15 +255,15 @@ def select_model():
         return redirect(f"model/{model_selection_form.select_model.data}")
 
     return render_template(
-        "model/select_model.html",
+        "nlp/model/select_model.html",
         d=d,
         model_selection_form=model_selection_form,
         storage=initiate_storage()
     )
 
 # DATA MODELING
-@app.route("/model/word2vec", methods = ["GET", "POST"])
-@protect_access
+@bp.route("/model/word2vec", methods = ["GET", "POST"])
+#@protect_access
 def model_w2v():
 
     d = session.get("d")
@@ -459,7 +311,7 @@ def model_w2v():
             session["storage"] = storage
 
     return render_template(
-        "model/model_w2v.html",
+        "nlp/model/model_w2v.html",
         d=d,
         w2v=w2v,
         most_representative_terms=most_representative_terms,
@@ -471,8 +323,8 @@ def model_w2v():
         storage=storage,
     )
 
-@app.route("/model/lda", methods = ["GET", "POST"])
-@protect_access
+@bp.route("/model/lda", methods = ["GET", "POST"])
+#@protect_access
 def model_lda():
 
     # Loading data
@@ -491,9 +343,9 @@ def model_lda():
     # Calculate coherence scores which are then passed to chart.js inside a template
     # Having no coherence scores will generate an error in template
     # Currently compare_coherence also triggers self.create_corpus
-    # If the user enters the page with a get request default values
+    # If the user enters the page with a get request
     # compare_coherence runs with default values.
-    # By default the comparison is performed with low (before recommended) number of iterations
+    # By default the comparison is performed with low (below recommended) number of iterations
     if request.method == "GET":
         lda.compare_coherence(2,40,4)
 
@@ -540,7 +392,7 @@ def model_lda():
         session["storage"] = storage
 
     return render_template(
-        "model/model_lda.html", 
+        "nlp/model/model_lda.html", 
         d=d,
         model=lda, # might not be necessary
         lda_coherence_form=lda_coherence_form,
@@ -550,8 +402,8 @@ def model_lda():
         storage=storage,
     )
 
-@app.route("/model/nnmf", methods = ["GET", "POST"])
-@protect_access
+@bp.route("/model/nnmf", methods = ["GET", "POST"])
+#@protect_access
 def model_nnmf():
 
     # Loading data
@@ -618,7 +470,7 @@ def model_nnmf():
         session["storage"] = storage
 
     return render_template(
-        "model/model_nnmf.html", 
+        "nlp/model/model_nnmf.html", 
         d=d, 
         model=nnmf,
         nnmf_coherence_form=nnmf_coherence_form,
@@ -648,8 +500,8 @@ def model_nnmf():
 #
 #    return render_template("model/model_lsi.html", d=d, model=lsi, storage=storage)
 
-@app.route("/storage", methods = ["GET", "POST"])
-@protect_access
+@bp.route("/storage", methods = ["GET", "POST"])
+#@protect_access
 def show_storage():
 
     d = session.get("d")
@@ -681,191 +533,8 @@ def show_storage():
         models_numbered = storage.get_models_numbered()
 
     return render_template(
-        "storage.html", 
+        "nlp/storage.html", 
         d=d, 
         models_numbered=models_numbered, 
         storage=storage,
     )
-
-@app.route("/transcribe", methods = ["GET", "POST"])
-#@protect_access
-def transcribe():
-    
-    d = session.get('d')
-    transcribe_form = TranscribeForm()
-    
-    if request.method == "GET":
-        return render_template(
-            "transcribe.html", 
-            d=d,
-            storage=initiate_storage(),
-            transcribe_form=transcribe_form,
-            user_transcripts = session.get("user_transcripts", ""),
-            request_method=request.method,
-            form_valid=True,
-        )
-
-    if transcribe_form.validate_on_submit():
-
-        form_valid = True
-        transcription_submitted = False
-        
-        audio_file = request.files['file_upload']
-        #print(audio_file)
-        #TODO change the name of the folder
-        #TODO automatically delete files after they're submitted for transcritption
-        audio_file.save(f"./test_audio/{audio_file.filename}")
-        
-        if audio_file:
-            aai.settings.api_key = os.getenv('ASSEMBLYAI_API_KEY')
-            config = aai.TranscriptionConfig(
-                language_code=transcribe_form.select_language.data,
-                speaker_labels=True,
-                punctuate=True, 
-                format_text=True,
-            )
-
-            transcriber = aai.Transcriber()
-
-            transcript = transcriber.submit(
-                f"./test_audio/{audio_file.filename}",
-                config=config,
-            )
-
-            transcript_id = transcript.id
-
-            if session.get("transcripts_in_session_ids"):
-                session["transcripts_in_session_ids"].append(transcript_id)
-            else:
-                session["transcripts_in_session_ids"] = [transcript_id]
-
-            transcription_submitted = True
-        
-            return render_template(
-                "transcribe.html", 
-                d=d,
-                storage=initiate_storage(),
-                transcribe_form=transcribe_form,
-                #user_transcripts = session.get("user_transcripts", ""),
-                transcription_submitted=transcription_submitted,
-                form_valid=form_valid,
-                request_method=request.method,
-            )
-        
-    if request.method == 'POST' and not transcribe_form.validate_on_submit():
-        
-        form_valid = False
-        transcription_submitted = False
-
-        return render_template(
-                "transcribe.html", 
-                d=d,
-                storage=initiate_storage(),
-                transcribe_form=transcribe_form,
-                #user_transcripts = session.get("user_transcripts", ""),
-                transcription_submitted=transcription_submitted,
-                form_valid=form_valid,
-                request_method=request.method,
-            )
-
-@app.route("/retrieve_transcripts", methods = ["GET", "POST"])
-#@protect_access
-def retrieve_transcripts():
-    
-    d = session.get("d")
-
-    transcripts_handler = TranscriptsHandler()
-
-    api_key = os.getenv('ASSEMBLYAI_API_KEY')
-    
-    transcripts_in_session_ids = session.get("transcripts_in_session_ids")
-
-    transcripts_in_session = []
-
-    transcripts_being_processed = []
-    session["transcripts_being_processed"] = transcripts_being_processed
-
-    # TODO duplicated, put it in a function
-    if transcripts_in_session_ids:
-        transcripts_handler.get_response_from_api(api_key=api_key, limit=100)
-        transcripts_handler.get_transcripts_in_session(transcripts_in_session_ids)
-        
-        # All transcripts in session
-        transcripts_in_session = transcripts_handler.transcripts_in_session
-
-        # All transcripts being processed
-        transcripts_being_processed = [t["id"] for t in transcripts_in_session if t["status"] == "processing"]
-
-        session["transcripts_being_processed"] = transcripts_being_processed
-        # example: {"status": "processing", "id": 123}, {"status": "processing", "id": 456}
-
-    if request.method == "POST":
-        for key in request.form:
-            if key.startswith('download_'):
-                transcript_id = key.split('_')[1]
-                return transcripts_handler.download_transcript(transcript_id)
-
-    return render_template(
-        "retrieve_transcripts.html", 
-        d=d,
-        storage=initiate_storage(),
-        transcripts=transcripts_in_session,
-        transcripts_being_processed=transcripts_being_processed,
-        user_transcripts = session.get("transcripts_in_session_ids"),
-    )
-
-@app.route('/check_transcripts_status', methods=['GET'])
-def check_transcripts_status():
-
-    transcripts_handler = TranscriptsHandler()
-    api_key = os.getenv('ASSEMBLYAI_API_KEY')
-    transcripts_being_processed = session.get("transcripts_being_processed")
-
-    transcripts_handler.get_response_from_api(api_key=api_key, limit=100)
-
-    transcripts_statuses = [ transcripts_handler.get_transcript_status(t) for t in transcripts_being_processed ]
-
-    if transcripts_statuses:
-        completed = any(status != 'processing' for status in transcripts_statuses)
-    else:
-        completed = False
-
-    return jsonify({"reload": completed}), 200
-
-@app.route('/create_project', methods=['GET', 'POST'])
-def create_project():
-    
-    d = initiate_storage()
-
-    return render_template(
-        "harbour.html", 
-        d=d,
-        storage=initiate_storage(),
-    )
-
-@app.route('/create_user', methods=['GET', 'POST'])
-def create_user():
-    
-    d = initiate_storage()
-
-    email="wjk.gasior@gmail.com"
-    
-    user = User.query.filter_by(email=email).first()
-
-    if user is None:
-        new_user = User(email=email)
-
-        db.session.add(new_user)
-        db.session.commit()
-        print(f"User {email} added to the database")
-    else:
-        print(f"User {email} already exists in the database!")
-
-    return jsonify(f"{email}"), 200
-
-
-
-
-
-if __name__ == "__main__":
-    app.run(debug=True, port=5050, ssl_context="adhoc")

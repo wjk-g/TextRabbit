@@ -3,6 +3,7 @@ import pandas as pd
 import networkx as nx
 from pyvis import network as net
 import community as community_louvain
+from flask import current_app
 
 def prepare_network_data(df):
 
@@ -50,15 +51,10 @@ def visualize_network(df, network_size):
     create_html_network(word_net)
 
 def create_html_network(word_net):
-        try:
-            path = 'tmp'
-            word_net.save_graph(f'{path}/pyvis_graph.html')
-            HtmlFile = open(f'{path}/pyvis_graph.html','r',encoding='utf-8')
-        except:
-            path = 'static'
-            word_net.save_graph(f'{path}/pyvis_graph.html')
-            HtmlFile = open(f'{path}/pyvis_graph.html','r',encoding='utf-8')
-
+        path = current_app.static_folder
+        word_net.save_graph(f'{path}/pyvis_graph.html')
+        HtmlFile = open(f'{path}/pyvis_graph.html','r',encoding='utf-8')
+        
         return HtmlFile
 
 def visualize_network_for_selected_words(df, selected_words):
