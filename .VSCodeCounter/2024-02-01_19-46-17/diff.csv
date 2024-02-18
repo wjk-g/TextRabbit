@@ -1,8 +1,0 @@
-"filename", "language", "Python", "HTML", "CSS", "JavaScript", "comment", "blank", "total"
-"/Users/wojtek/Library/Mobile Documents/com~apple~CloudDocs/Python/TextRabbit/main.py", "Python", 16, 0, 0, 0, -9, 10, 17
-"/Users/wojtek/Library/Mobile Documents/com~apple~CloudDocs/Python/TextRabbit/static/css/main.css", "CSS", 0, 0, 16, 0, -242, -6, -232
-"/Users/wojtek/Library/Mobile Documents/com~apple~CloudDocs/Python/TextRabbit/static/js/check_transcripts_status.js", "JavaScript", 0, 0, 0, 15, 0, 3, 18
-"/Users/wojtek/Library/Mobile Documents/com~apple~CloudDocs/Python/TextRabbit/templates/base.html", "HTML", 0, -3, 0, 0, 0, 3, 0
-"/Users/wojtek/Library/Mobile Documents/com~apple~CloudDocs/Python/TextRabbit/templates/retrieve_transcripts.html", "HTML", 0, 4, 0, 0, 0, 0, 4
-"/Users/wojtek/Library/Mobile Documents/com~apple~CloudDocs/Python/TextRabbit/transcripts.py", "Python", 4, 0, 0, 0, 0, 2, 6
-"Total", "-", 20, 1, 16, 15, -251, 12, -187
