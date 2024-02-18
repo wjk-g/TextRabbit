@@ -24,11 +24,9 @@ from app.models import User
 load_dotenv()
 
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", None) # Oauth
-print(GOOGLE_CLIENT_ID)
 GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET", None) # Oauth
 GOOGLE_DISCOVERY_URL = ("https://accounts.google.com/.well-known/openid-configuration") # Oauth
 client = WebApplicationClient(GOOGLE_CLIENT_ID) # Oauth
-print(client)
 
 @bp.route("/")
 def index():

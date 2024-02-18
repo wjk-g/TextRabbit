@@ -480,26 +480,6 @@ def model_nnmf():
         storage=storage,
     )
 
-#@app.route("/model/lsi", methods = ["GET", "POST"])
-#@protect_access
-#def model_lsi():
-#
-#    # Form
-#        # no_below
-#        # no_above
-#        # n_of_ks
-#        # iterations
-#
-#    d = session.get("d")
-#    storage = initiate_storage()
-#
-#    lsi = LSI("LSI", d.data) # initializing lda
-#    lsi.compare_coherence(2,40,4) # initial comp performed at low iter (250)
-#    lsi.create_model()
-#    lsi.show_topics()
-#
-#    return render_template("model/model_lsi.html", d=d, model=lsi, storage=storage)
-
 @bp.route("/storage", methods = ["GET", "POST"])
 #@protect_access
 def show_storage():

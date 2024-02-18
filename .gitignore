@@ -11,8 +11,6 @@ flask_session/
 app/nlp/auxiliary_modules/__pycache__/
 .idea/
 .pytest_cache/
-.vscode/
-.VSCodeCounter/
 .DS_Store
 google_credentials/*
 google_credentials/szkutnik-405809-25e2a3ab66cd.json
