@@ -12,8 +12,8 @@ app/nlp/auxiliary_modules/__pycache__/
 .idea/
 .pytest_cache/
 .DS_Store
-#.vscode/
-#.VSCodeCounter/
+.vscode/
+.VSCodeCounter/
 google_credentials/*
 google_credentials/szkutnik-405809-25e2a3ab66cd.json
 test_audio/*
