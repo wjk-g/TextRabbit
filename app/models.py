@@ -4,15 +4,17 @@ from datetime import datetime, timezone
 import sqlalchemy as sa
 import sqlalchemy.orm as so 
 from typing import Optional
+from app import db
 
 class Base(DeclarativeBase):
     pass
 
-db = SQLAlchemy(model_class=Base)
-
 class User(db.Model):
     __tablename__ = 'user'
-    email: so.Mapped[str] = mapped_column(db.String(100), primary_key=True, unique=True, nullable=False)
+    id: so.Mapped[int] = mapped_column(db.Integer, primary_key=True, autoincrement=True, nullable=False, unique=True, index=True)
+    name: so.Mapped[str] = mapped_column(db.String(100), nullable=False)
+    surname: so.Mapped[str] = mapped_column(db.String(100), nullable=False)
+    email: so.Mapped[str] = mapped_column(db.String(100), unique=True, nullable=False)
     
     # Relationships
     created_transcripts: so.WriteOnlyMapped['Transcript'] = so.relationship(back_populates='created_by')
@@ -21,11 +23,15 @@ class User(db.Model):
     # Methods
     def __repr__(self):
         return f'<User: {self.email}>'
+    
+    def get_full_name(self):
+        return f'{self.name} {self.surname}'
 
 class Project(db.Model):
     __tablename__ = 'project'
-    name: so.Mapped[str] = so.mapped_column(db.String(100), primary_key=True, nullable=False, unique=True)
-    user_email: so.Mapped[str] = so.mapped_column(sa.ForeignKey(User.email), nullable=False, index=True)
+    id: so.Mapped[int] = mapped_column(db.Integer, primary_key=True, autoincrement=True, nullable=False, unique=True, index=True)
+    name: so.Mapped[str] = so.mapped_column(db.String(100), nullable=False, unique=True)
+    user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), nullable=False, index=True)
 
     # Relationships
     transcripts: so.WriteOnlyMapped['Transcript'] = so.relationship(back_populates='project')
@@ -35,12 +41,11 @@ class Project(db.Model):
     def __repr__(self):
         return f'<Project: {self.name}>'
 
-# add index=True to datetime columns to be able to easily retrieve data in chronological order
 class Transcript(db.Model):
     __tablename__ = 'transcript'
     assemblyai_id: so.Mapped[str] = so.mapped_column(sa.String, primary_key=True, nullable=False, unique=True)
     audio_file_name: so.Mapped[str] = so.mapped_column(sa.String, nullable=False)
-    user_email: so.Mapped[str] = so.mapped_column(sa.ForeignKey(User.email), nullable=False, index=True)
+    user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), nullable=False, index=True)
     error_message: so.Mapped[Optional[str]] = so.mapped_column(db.String, nullable=True)
     transcription_status: so.Mapped[str] = so.mapped_column(db.String, nullable=False)
     project_name: so.Mapped[str] = so.mapped_column(sa.ForeignKey(Project.name), nullable=False, index=True)

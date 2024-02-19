@@ -103,12 +103,15 @@ def callback():
     user_info_byte = userinfo_response.content
     user_info_decoded = user_info_byte.decode('utf-8')
     user_info = json.loads(user_info_decoded)
+    
     user_email = user_info['email']
+    user_name = user_info['given_name']
+    user_surname = user_info['family_name']
     
     user = User.query.filter_by(email=user_email).first()
     
     if user is None:
-        new_user = User(email=user_email)
+        new_user = User(name=user_name, surname=user_surname, email=user_email)
         db.session.add(new_user)
         db.session.commit()
         print(f"User {user_email} added to the database")

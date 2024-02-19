@@ -62,14 +62,11 @@ def load_w2v_gensim_model():
 
 # === HOME ===
 
+
 @bp.route("/home", methods=["GET", "POST"])
-#@protect_access
+@protect_access
 def home():
     d = session.get("d", Data({}))
-    
-    print("nlp/home")
-    print(d)
-    print(d.is_selected)
     
     return render_template(
         "nlp/home.html",

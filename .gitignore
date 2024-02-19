@@ -18,6 +18,7 @@ google_credentials/*
 google_credentials/szkutnik-405809-25e2a3ab66cd.json
 test_audio/*
 output_chunks/*
+profiler_output.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

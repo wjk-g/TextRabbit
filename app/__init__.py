@@ -7,13 +7,17 @@ from flask_migrate import Migrate
 
 from config import Config
 
+from werkzeug.middleware.profiler import ProfilerMiddleware
+
+import functools
+
 def get_locale():
     return request.accept_languages.best_match(current_app.config['LANGUAGES'])
 
 db = SQLAlchemy()
 migrate = Migrate()
 
-# The create_app function is application factory
+# The create_app function is an application factory
 def create_app(config_class=Config):
     
     app = Flask(__name__) # initialize app instance
@@ -23,6 +27,10 @@ def create_app(config_class=Config):
     migrate.init_app(app, db)
 
     Session(app)
+
+    # The profiler should be enabled before defining the blueprints if we want all the routes to be visible to it
+    if app.config['PROFILER_ENABLED']:
+        app.wsgi_app = ProfilerMiddleware(app.wsgi_app, restrictions=[100], sort_by=('cumtime', 'calls'))
 
     from app.auth import bp as auth_bp # import auth blueprint
     app.register_blueprint(auth_bp, url_prefix='/auth') # register auth blueprint
@@ -34,10 +42,9 @@ def create_app(config_class=Config):
     app.register_blueprint(transcribe_bp, url_prefix='/transcribe') # register transcribe blueprint
 
     if not app.debug and not app.testing:
-        app.logger.info('Microblog startup')
+        app.logger.info('Application startup')
 
     return app
 
 
 from app import models
-
