@@ -63,6 +63,7 @@ def load_w2v_gensim_model():
 # === ROUTES ===
 
 @bp.route("/sim_get_data", methods=["GET"])
+#@protect_access
 def sim_get_data_and_w2v():
 
     data = imp.load_example_data()
@@ -75,6 +76,7 @@ def sim_get_data_and_w2v():
     return redirect(url_for("nlp.sim_w2v"))
 
 @bp.route("/sim_w2v", methods=["GET"])
+#@protect_access
 def sim_w2v():
 
     d = session.get("d", redirect("nlp.sim_prepare_data"))
@@ -106,6 +108,7 @@ def sim_w2v():
     """
 
 @bp.route("/sim_get_data", methods=["GET"])
+#@protect_access
 def sim_get_data_and_lda():
 
     data = imp.load_example_data()

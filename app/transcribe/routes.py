@@ -15,10 +15,11 @@ from app.nlp.routes import initiate_storage
 from app.transcribe.transcripts import TranscriptsHandler
 
 from app.transcribe import bp
+from app.auth.routes import protect_access
 
 
 @bp.route("/transcribe", methods = ["GET", "POST"])
-#@protect_access
+@protect_access
 def transcribe():
     
     d = session.get('d')
@@ -99,7 +100,7 @@ def transcribe():
             )
 
 @bp.route("/retrieve_transcripts", methods = ["GET", "POST"])
-#@protect_access
+@protect_access
 def retrieve_transcripts():
     
     d = session.get("d")

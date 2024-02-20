@@ -75,7 +75,7 @@ def home():
 
 # === DATA IMPORT ===
 @bp.route("/load_data", methods=["GET", "POST"])
-#@protect_access
+@protect_access
 def load_data():
 
     # If d doesn't exist yet, create empty data with default (negative) data states
@@ -142,7 +142,7 @@ def load_data():
 
 # DATA PREPROCESSING
 @bp.route("/preprocess", methods=["GET", "POST"])
-#@protect_access
+@protect_access
 def preprocess():
 
     # Load data from session and tokenize and clean it
@@ -174,12 +174,12 @@ def preprocess():
 
 # DATA EXPLORATION
 @bp.route("/explore", methods = ["GET", "POST"])
-#@protect_access
+@protect_access
 def explore():
     return redirect(url_for("nlp.explore_ngrams"))
 
 @bp.route("/explore_ngrams", methods = ["GET", "POST"])
-#@protect_access
+@protect_access
 def explore_ngrams():
     
     d = session.get("d")
@@ -204,7 +204,7 @@ def explore_ngrams():
     )
 
 @bp.route("/explore_network", methods = ["GET", "POST"])
-#@protect_access
+@protect_access
 def explore_network():
     
     d = session.get("d")
@@ -235,12 +235,12 @@ def explore_network():
 # DATA MODELING
 
 @bp.route("/model", methods = ["GET", "POST"])
-#@protect_access
+@protect_access
 def model():
     return redirect(url_for("select_model"))
 
 @bp.route("/select_model", methods = ["GET", "POST"])
-#@protect_access
+@protect_access
 def select_model():
 
     d = session.get("d")
@@ -260,7 +260,7 @@ def select_model():
 
 # DATA MODELING
 @bp.route("/model/word2vec", methods = ["GET", "POST"])
-#@protect_access
+@protect_access
 def model_w2v():
 
     d = session.get("d")
@@ -321,7 +321,7 @@ def model_w2v():
     )
 
 @bp.route("/model/lda", methods = ["GET", "POST"])
-#@protect_access
+@protect_access
 def model_lda():
 
     # Loading data
@@ -400,7 +400,7 @@ def model_lda():
     )
 
 @bp.route("/model/nnmf", methods = ["GET", "POST"])
-#@protect_access
+@protect_access
 def model_nnmf():
 
     # Loading data
@@ -478,7 +478,7 @@ def model_nnmf():
     )
 
 @bp.route("/storage", methods = ["GET", "POST"])
-#@protect_access
+@protect_access
 def show_storage():
 
     d = session.get("d")
