@@ -64,7 +64,7 @@ def load_w2v_gensim_model():
 
 
 @bp.route("/home", methods=["GET", "POST"])
-#@protect_access
+@protect_access
 def home():
     d = session.get("d", Data({}))
     
