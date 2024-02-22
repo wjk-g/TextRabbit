@@ -41,6 +41,9 @@ def create_app(config_class=Config):
     from app.transcribe import bp as transcribe_bp # import transcription blueprint
     app.register_blueprint(transcribe_bp, url_prefix='/transcribe') # register transcribe blueprint
 
+    from app.redirects import bp as redirects_bp # import auth blueprint
+    app.register_blueprint(redirects_bp, url_prefix='') # register auth blueprint
+
     if not app.debug and not app.testing:
         app.logger.info('Application startup')
 

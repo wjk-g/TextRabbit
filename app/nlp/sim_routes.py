@@ -62,7 +62,7 @@ def load_w2v_gensim_model():
 
 # === ROUTES ===
 
-@bp.route("/sim_get_data", methods=["GET"])
+@bp.route("/sim_get_data_and_w2v", methods=["GET"])
 #@protect_access
 def sim_get_data_and_w2v():
 
@@ -107,7 +107,7 @@ def sim_w2v():
     </html>
     """
 
-@bp.route("/sim_get_data", methods=["GET"])
+@bp.route("/sim_get_data_and_lda", methods=["GET"])
 #@protect_access
 def sim_get_data_and_lda():
 
@@ -120,7 +120,7 @@ def sim_get_data_and_lda():
 
     return redirect(url_for("nlp.sim_lda"))
 
-@bp.route("/model/lda", methods = ["GET", "POST"])
+@bp.route("/sim_lda", methods = ["GET", "POST"])
 #@protect_access
 def sim_lda():
 
