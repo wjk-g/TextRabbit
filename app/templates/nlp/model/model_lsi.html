@@ -1,0 +1,9 @@
+{% extends 'nlp/model/base_model.html' %}
+
+{% block model_type_and_params %}
+    <h1>Modeluj: LSI</h1>
+{% endblock %}
+
+{% block summary %}
+    {{ model.create_model()|safe }}
+{% endblock %}

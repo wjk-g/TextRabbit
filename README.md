@@ -29,7 +29,7 @@ The app by default performs standard tokenization and lemmatization of your data
 
 + Basic ngrams plots (single words, bigrams and trigrams).
 
-<img src="static/images/ngrams.png" width="75%">
+<img src="app/static/images/ngrams.png" width="75%">
 
 ### Network analysis
 
@@ -38,7 +38,7 @@ The app by default performs standard tokenization and lemmatization of your data
 + Network visualization using networkX.
 + Neighborhoods are highlighted using the Louvain algorithm. It allows for the identification of groups of vertices that are more interconnected with each other than with the rest of the network.
 
-<img src="static/images/network.png" width="75%">
+<img src="app/static/images/network.png" width="75%">
 
 ### Topic modelling
 

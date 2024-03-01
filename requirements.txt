@@ -1,3 +1,4 @@
+alembic==1.13.1
 annotated-types==0.6.0
 anyio==3.7.1
 appnope==0.1.3
@@ -24,7 +25,11 @@ executing==2.0.1
 ffmpeg-python==0.2.0
 filelock==3.13.1
 Flask==3.0.0
+Flask-HTTPAuth==4.8.0
+Flask-Migrate==4.0.5
+flask-profiler==1.8.1
 Flask-Session==0.5.0
+Flask-SQLAlchemy==3.1.1
 Flask-WTF==1.2.1
 fsspec==2023.10.0
 future==0.18.3
@@ -43,6 +48,7 @@ h11==0.14.0
 httpcore==1.0.2
 httpx==0.25.1
 idna==3.4
+iniconfig==2.0.0
 ipython==8.17.1
 itsdangerous==2.1.2
 jedi==0.19.1
@@ -51,6 +57,7 @@ joblib==1.3.2
 jsonpickle==3.0.2
 langcodes==3.3.0
 llvmlite==0.41.1
+Mako==1.3.2
 MarkupSafe==2.1.3
 matplotlib-inline==0.1.6
 more-itertools==10.1.0
@@ -58,7 +65,7 @@ mpmath==1.3.0
 murmurhash==1.0.10
 networkx==3.2.1
 nltk==3.8.1
-numba==0.58.1
+#numba==0.58.1
 numpy==1.26.1
 oauthlib==3.2.2
 openai==1.3.3
@@ -69,6 +76,7 @@ pandas==2.1.2
 parso==0.8.3
 pexpect==4.8.0
 pl-core-news-lg @ https://github.com/explosion/spacy-models/releases/download/pl_core_news_lg-3.7.0/pl_core_news_lg-3.7.0-py3-none-any.whl#sha256=5f6d38d8baa40b0df6127aeec6070e7f5e241b5e1a3e83e1f53edfa64b3dbc0d
+pluggy==1.4.0
 preshed==3.0.9
 prompt-toolkit==3.0.39
 proto-plus==1.22.3
@@ -80,8 +88,8 @@ pyasn1-modules==0.3.0
 pycparser==2.21
 pydantic==2.4.2
 pydantic_core==2.10.1
-pydub==0.25.1
 Pygments==2.16.1
+pytest==8.0.0
 python-dateutil==2.8.2
 python-dotenv==1.0.0
 python-louvain==0.16
@@ -92,19 +100,21 @@ requests==2.31.0
 rsa==4.9
 scikit-learn==1.3.2
 scipy==1.11.3
+simplejson==3.19.2
 six==1.16.0
 smart-open==6.4.0
 sniffio==1.3.0
 spacy==3.7.2
 spacy-legacy==3.0.12
 spacy-loggers==1.0.5
+SQLAlchemy==2.0.25
 srsly==2.4.8
 stack-data==0.6.3
 sympy==1.12
 thinc==8.2.1
 threadpoolctl==3.2.0
 tiktoken==0.5.1
-torch==2.1.1
+#torch==2.1.1
 tqdm==4.66.1
 traitlets==5.13.0
 typer==0.9.0
