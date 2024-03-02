@@ -12,7 +12,7 @@ from app.transcribe.forms import TranscribeForm
 from app.nlp.data import Data
 from app.nlp.routes import initiate_storage
 
-from app.transcribe.transcripts import TranscriptsHandler
+from app.transcribe.transcripts_handler import TranscriptsHandler
 
 from app.transcribe import bp
 from app.auth.routes import protect_access
@@ -148,29 +148,6 @@ def retrieve_transcripts():
         user_transcripts = session.get("transcripts_in_session_ids"),
     )
 
-@bp.route('/check_transcripts_status', methods=['GET'])
-def check_transcripts_status():
-
-    transcripts_handler = TranscriptsHandler()
-    api_key = os.getenv('ASSEMBLYAI_API_KEY')
-    # TODO Get transcripts being processed from the db
-    # So with a different status than "submitted" or "error"
-    # Przy każdym wejściu na stronę z transkrypcjami musimy sprawdzić wszystkie
-    # "processing..." i uaktualnić statusy. A 
-    transcripts_being_processed = session.get("transcripts_being_processed")
-
-    transcripts_handler.get_response_from_api(api_key=api_key, limit=100)
-
-    transcripts_statuses = [ transcripts_handler.get_transcript_status(t) for t in transcripts_being_processed ]
-
-    if transcripts_statuses:
-        is_completed = any(status != 'processing' for status in transcripts_statuses)
-    else:
-        is_completed = False
-
-    return jsonify({"reload": is_completed}), 200
-
-
 @bp.route("/transcribe2", methods = ["GET", "POST"])
 @protect_access
 def transcribe2():
@@ -272,10 +249,6 @@ def transcribe2():
                 form_valid=form_valid,
                 request_method=request.method,
             )
-    
-def check_statuses_of_transcripts_in_db(transcripts):
-    transcripts_being_processed = [t.assemblyai_id for t in transcripts if t.transcription_status == "processing"]
-    return transcripts_being_processed
 
 @bp.route("/transcripts", methods = ["GET", "POST"])
 @protect_access
@@ -284,9 +257,10 @@ def transcripts():
     d = session.get("d", Data({}))
 
     transcripts = Transcript.query.all()
-    
-    transcripts_being_processed = check_statuses_of_transcripts_in_db(transcripts)
 
+    transcripts_handler = TranscriptsHandler()
+    transcripts_being_processed = transcripts_handler.get_transcripts_with_processing_status_in_db()
+    
     return render_template(
                 "transcribe/transcripts.html", 
                 d=d,
@@ -294,3 +268,16 @@ def transcripts():
                 transcripts=transcripts,
                 transcripts_being_processed=transcripts_being_processed,
             )
+
+@bp.route('/check_transcripts_status', methods=['GET'])
+def check_transcripts_status():
+
+    transcripts_handler = TranscriptsHandler()
+    api_key = os.getenv('ASSEMBLYAI_API_KEY')
+    transcripts_handler.get_response_from_api(api_key=api_key, limit=100)
+    
+    transcripts_handler.get_transcripts_with_processing_status_in_db()
+    changes_detected = transcripts_handler.check_and_update_current_status_of_transcripts()
+    print(changes_detected)
+
+    return jsonify({"reload": changes_detected}), 200

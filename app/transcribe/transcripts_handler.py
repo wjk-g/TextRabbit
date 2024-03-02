@@ -7,10 +7,8 @@ from app.models import User, Project, Transcript, TranscriptJSON
 
 class TranscriptsHandler():
     def __init__(self):
-        self.transcripts_in_session = []
-        #self.transcripts_details = []
-        #self.transcript_count = 0
-        #self.last_transcript_created_on = ""
+        self.transcripts_in_session = [] # TODO REMOVE
+        self.transcripts_being_processed = []
         self.response = {}
         self.headers = {}
 
@@ -28,41 +26,40 @@ class TranscriptsHandler():
         self.headers = headers
         self.response = requests.get(url, headers=headers, params=params)
 
-    # TODO REMOVE
-    def get_transcripts_in_session(self, transcripts_in_session_ids):
-
-        if self.response.status_code == 200:
-            all_transcripts = self.response.json()["transcripts"]
-        else:
-            return f"Error: {self.response.status_code}"
-        
-        self.transcripts_in_session = [transcript for transcript in all_transcripts if transcript["id"] in transcripts_in_session_ids]
-    
     def get_transcript_status(self, transcript_id):
 
         polling_endpoint = f"https://api.assemblyai.com/v2/transcript/{transcript_id}"
         response = requests.get(polling_endpoint, headers=self.headers).json()
         return response['status']
+    
+    def get_transcripts_with_processing_status_in_db(self):
+        transcripts_being_processed = db.session.query(Transcript).filter(Transcript.transcription_status == "processing").all()
+        self.transcripts_being_processed = transcripts_being_processed
+        return transcripts_being_processed
+    
+    def check_and_update_current_status_of_transcripts(self):
 
-    #def create_detailed_transcripts_list(self):
+        # Set flag for changes in status
+        changes_in_status = False
 
-    #    for transcript in self.transcripts_list:
-    #        transcript_id = transcript["id"]
-    #        #print(transcript_id)
-    #        #print(transcript)
-    #        endpoint = f"https://api.assemblyai.com/v2/transcript/{transcript_id}"
-    #        response = requests.get(endpoint, headers=self.headers)
-    #        full_response = response.json()
-    #        full_response["created"] = transcript["created"]
-    #        full_response["completed"] = transcript["completed"]
-    #        full_response["audio_duration_in_minutes"] = round(full_response["audio_duration"] / 60, 2) 
-    #        self.transcripts_details.append(full_response)
-    #        #print(self.transcripts_details)
-            #print(type(self.transcripts_details))
+        for transcript in self.transcripts_being_processed:
+            print("Transcript")
+            print(transcript)
+            print(transcript.assemblyai_id)
+            # Get current status from AssemblyAI
+            current_status = self.get_transcript_status(transcript.assemblyai_id)
+            print("Current status")
+            print(current_status)
+            # Update status in db if status does not equal "processing"
+            if current_status != "processing":
+                self.update_transcript_status(transcript, new_status=current_status)
+                changes_in_status = True
+        
+        return changes_in_status
 
-    #def get_detailed_transcripts_list(self):
-    #    for transcript in self.transcripts_details:
-    #        print(transcript)
+    def update_transcript_status(self, transcript, new_status):
+        transcript.transcription_status = new_status
+        db.session.commit()
 
     def download_transcript(self, transcript_id):
 
