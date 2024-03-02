@@ -31,7 +31,9 @@ class Project(db.Model):
     __tablename__ = 'project'
     id: so.Mapped[int] = mapped_column(db.Integer, primary_key=True, autoincrement=True, nullable=False, unique=True, index=True)
     name: so.Mapped[str] = so.mapped_column(db.String(100), nullable=False, unique=True)
+    description: so.Mapped[str] = so.mapped_column(db.String(300), nullable=False)
     user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), nullable=False, index=True)
+    date_created: so.Mapped[datetime] = so.mapped_column(db.DateTime, default=datetime.utcnow)
 
     # Relationships
     transcripts: so.WriteOnlyMapped['Transcript'] = so.relationship(back_populates='project')
@@ -48,7 +50,7 @@ class Transcript(db.Model):
     user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), nullable=False, index=True)
     error_message: so.Mapped[Optional[str]] = so.mapped_column(db.String, nullable=True)
     transcription_status: so.Mapped[str] = so.mapped_column(db.String, nullable=False)
-    project_name: so.Mapped[str] = so.mapped_column(sa.ForeignKey(Project.name), nullable=False, index=True)
+    project_id: so.Mapped[str] = so.mapped_column(sa.ForeignKey(Project.id), nullable=False, index=True)
     
     # Relationships
     project: so.Mapped[Project] = so.relationship(back_populates='transcripts')
@@ -56,12 +58,11 @@ class Transcript(db.Model):
     transcript_json: so.Mapped['TranscriptJSON'] = so.relationship(back_populates="transcript_info")
 
     # Args with default values
-    #submitted_on: so.Mapped[datetime] = so.mapped_column(db.DateTime, nullable=True, default=lambda: datetime.now(timezone.utc))
-    created_on: so.Mapped[datetime] = so.mapped_column(db.DateTime, nullable=True, default=lambda: datetime.now(timezone.utc))
+    date_created: so.Mapped[datetime] = so.mapped_column(db.DateTime, default=datetime.utcnow)
     
     # Methods
     def __repr__(self):
-        return f'<Transcript: {self.audio_file_name}; Project: {self.project_name}; Status: {self.transcription_status}>'
+        return f'<Transcript: {self.audio_file_name}; Status: {self.transcription_status}>'
 
 class TranscriptJSON(db.Model):
     __tablename__ = 'transcript_json'

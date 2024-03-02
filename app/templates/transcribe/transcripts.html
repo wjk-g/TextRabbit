@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1>Transkrypcje</h1>
+    {% if transcripts_being_processed %}
+        <div class="alert alert-info" role="alert" style="display: flex; align-items: center;">
+            <div class="spinner-grow" role="status" style="flex-shrink: 0;">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <span style="margin-left: 20px;">
+                AssemblyAI przetwarza plik lub pliki audio... Strona zostanie automatycznie odświeżona po zakończeniu transkrypcji.
+            </span>
+        </div>
+    {% endif %}
+    <div class="d-flex justify-content-end">
+        <a href="{{ url_for('transcribe.transcribe') }}" class="btn btn-secondary">Utwórz nową transkrypcję</a>
+    </div>
+    <br>
+    <br>
+    <div>
+        <table>
+            <th>Utworzony przez</th>
+            <th>Nazwa pliku</th>
+            <th>Data utworzenia</th>
+            <th>Status</th>
+
+            {% for transcript in transcripts %}
+                <tr>
+                    <td>{{ transcript.created_by.name }} {{ transcript.created_by.surname }}</td>
+                    <td>{{ transcript.audio_file_name }}</td>
+                    <td>{{ transcript.date_created }}</td>
+                    <td>{{ transcript.transcription_status }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+{% endblock %}

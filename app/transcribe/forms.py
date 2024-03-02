@@ -17,6 +17,11 @@ class TranscribeForm(FlaskForm):
         ('auto', 'wykryj automatycznie')],
         validators=[DataRequired()]
         )
+    
+    select_project = SelectField('Wybierz projekt', choices=[],
+        validators=[DataRequired()]
+        )
+    
     file_upload = FileField(
         'Załaduj plik audio',
         validators=[

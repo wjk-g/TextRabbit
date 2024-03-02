@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1>Projekty</h1>
+    <div class="d-flex justify-content-end">
+        <a href="{{ url_for('projects.create_project') }}" class="btn btn-secondary">Dodaj nowy projekt</a>
+    </div>
+    <br>
+    <br>
+    <div>
+        <table>
+            <th>Nazwa projektu</th>
+            <th>Opis</th>
+            <th>Data utworzenia</th>
+            <th>Utworzony przez</th>
+            <th></th>
+            <th></th>
+
+            {% for project in projects %}
+                <tr>
+                    <td>{{ project.name }}</td>
+                    <td>{{ project.description }}</td>
+                    <td>{{ project.date_created }}</td>
+                    <td>{{ project.created_by.name }} {{ project.created_by.surname }}</td>
+                    <td><a href="{{ url_for('projects.project_transcripts', project_id=project.id)}}">Transkrypcje</a></td>
+                    <td><a href="{{ url_for('projects.edit_project', project_id=project.id) }}">Edytuj</a></td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+{% endblock %}

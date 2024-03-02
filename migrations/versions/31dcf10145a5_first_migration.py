@@ -1,8 +1,8 @@
-"""empty message
+"""first migration
 
-Revision ID: 85b342dfed1f
+Revision ID: 31dcf10145a5
 Revises: 
-Create Date: 2024-02-19 16:30:12.079957
+Create Date: 2024-03-01 12:47:47.196816
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '85b342dfed1f'
+revision = '31dcf10145a5'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -32,7 +32,9 @@ def upgrade():
     op.create_table('project',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('name', sa.String(length=100), nullable=False),
+    sa.Column('description', sa.String(length=300), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('date_created', sa.DateTime(), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('name')
@@ -47,15 +49,15 @@ def upgrade():
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('error_message', sa.String(), nullable=True),
     sa.Column('transcription_status', sa.String(), nullable=False),
-    sa.Column('project_name', sa.String(length=100), nullable=False),
-    sa.Column('created_on', sa.DateTime(), nullable=True),
-    sa.ForeignKeyConstraint(['project_name'], ['project.name'], ),
+    sa.Column('project_id', sa.Integer(), nullable=False),
+    sa.Column('date_created', sa.DateTime(), nullable=False),
+    sa.ForeignKeyConstraint(['project_id'], ['project.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('assemblyai_id'),
     sa.UniqueConstraint('assemblyai_id')
     )
     with op.batch_alter_table('transcript', schema=None) as batch_op:
-        batch_op.create_index(batch_op.f('ix_transcript_project_name'), ['project_name'], unique=False)
+        batch_op.create_index(batch_op.f('ix_transcript_project_id'), ['project_id'], unique=False)
         batch_op.create_index(batch_op.f('ix_transcript_user_id'), ['user_id'], unique=False)
 
     op.create_table('transcript_json',
@@ -73,7 +75,7 @@ def downgrade():
     op.drop_table('transcript_json')
     with op.batch_alter_table('transcript', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('ix_transcript_user_id'))
-        batch_op.drop_index(batch_op.f('ix_transcript_project_name'))
+        batch_op.drop_index(batch_op.f('ix_transcript_project_id'))
 
     op.drop_table('transcript')
     with op.batch_alter_table('project', schema=None) as batch_op:

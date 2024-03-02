@@ -30,7 +30,7 @@ def create_app(config_class=Config):
 
     # The profiler should be enabled before defining the blueprints if we want all the routes to be visible to it
     if app.config['PROFILER_ENABLED']:
-        app.wsgi_app = ProfilerMiddleware(app.wsgi_app, restrictions=[100], sort_by=('cumtime', 'calls'))
+        app.wsgi_app = ProfilerMiddleware(app.wsgi_app, restrictions=[30], sort_by=('tottime', 'calls'))
 
     from app.auth import bp as auth_bp # import auth blueprint
     app.register_blueprint(auth_bp, url_prefix='/auth') # register auth blueprint
@@ -40,6 +40,9 @@ def create_app(config_class=Config):
 
     from app.transcribe import bp as transcribe_bp # import transcription blueprint
     app.register_blueprint(transcribe_bp, url_prefix='/transcribe') # register transcribe blueprint
+
+    from app.projects import bp as projects_bp # import projects blueprint
+    app.register_blueprint(projects_bp, url_prefix='/projects') # register projects blueprint
 
     from app.redirects import bp as redirects_bp # import auth blueprint
     app.register_blueprint(redirects_bp, url_prefix='') # register auth blueprint

@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2>Nazwa projektu: {{ project.name }}</h2>
+    <p>Opis projektu: {{project.description}}</p>
+    <div>
+        <table>
+            <th>Utworzony przez</th>
+            <th>Nazwa pliku</th>
+            <th>Data utworzenia</th>
+            <th>Status</th>
+
+            {% for transcript in transcripts %}
+                <tr>
+                    <td>{{ transcript.created_by.name }} {{ transcript.created_by.surname }}</td>
+                    <td>{{ transcript.audio_file_name }}</td>
+                    <td>{{ transcript.date_created }}</td>
+                    <td>{{ transcript.transcription_status }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+{% endblock %}

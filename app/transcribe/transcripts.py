@@ -1,6 +1,10 @@
 import requests
 from flask import send_file
 
+from app import db
+from app.models import User, Project, Transcript, TranscriptJSON
+
+
 class TranscriptsHandler():
     def __init__(self):
         self.transcripts_in_session = []
@@ -24,6 +28,7 @@ class TranscriptsHandler():
         self.headers = headers
         self.response = requests.get(url, headers=headers, params=params)
 
+    # TODO REMOVE
     def get_transcripts_in_session(self, transcripts_in_session_ids):
 
         if self.response.status_code == 200:

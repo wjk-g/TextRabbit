@@ -114,9 +114,14 @@ def callback():
         new_user = User(name=user_name, surname=user_surname, email=user_email)
         db.session.add(new_user)
         db.session.commit()
+        session["user_id"] = new_user.id
         print(f"User {user_email} added to the database")
     else:
         print(f"User {user_email} already exists in the database!")
+        session["user_id"] = user.id
+
+     # saving current user id in session
+    print(session["user_id"])
 
     return redirect(url_for("nlp.home"))
 
