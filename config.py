@@ -21,3 +21,6 @@ class Config:
 
     # Profiler configuration
     PROFILER_ENABLED = bool(int(os.environ.get('PROFILER_ENABLED', '0')))
+
+    # Redis configuration
+    REDIS_URL = os.environ.get('REDIS_URL') or 'redis://'

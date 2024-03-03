@@ -66,3 +66,29 @@ Clustering is performed by averaging word-vectors comprising each text and ident
 The application stores data (text being processed, clustering and modeling results) in session on the server and, thus, has limited scalability and is intended for use by small teams. By default, a single user session lasts 12 hours.
 
 The application does not require a data base connection.
+
+## Automatic transcriptions
+
+### Background Task Setup
+
+The application integrates Redis and RQ to manage background tasks:
+
+- **Redis**: Initialized with `Redis.from_url`, connecting to a Redis server using a URL specified in the app's configuration.
+- **Task Queue**: An RQ queue named 'szkutnik-tasks' is created, linked to the Redis connection.
+- **Background Task**: A task, `update_and_download_transcripts`, is enqueued to run in the background. This task is designed to check for new transcripts in the cloud every hour, download them as needed and update their `transcription_status` in the data base.
+
+### Background Task Execution: Worker Requirement
+
+To enable the execution of background tasks, the Flask application requires a dedicated worker to be started manually. This worker is responsible for monitoring the task queue and executing tasks as they are enqueued.
+
+The worker can be started using the RQ command-line tool, typically with a command like:
+
+```bash
+rq worker szkutnik-tasks
+```
+
+> When running the worker locally on MacOS it might be necessary to set the `OBJC_DISABLE_INITIALIZE_FORK_SAFETY` to `YES`. This is probably related to a known issue with Python's multiprocessing module on macOS. When a Python script creates a new process (like when a task is enqueued in RQ), the new process is created using the fork system call. However, fork can cause issues with multithreaded programs, which is what the error message is warning about.
+
+This command starts a worker that listens to the 'szkutnik-tasks' queue, which is the queue used by the application for enqueuing background tasks - specifically: `update_and_download_transcripts`.
+
+When deploying the application, it's crucial to ensure that the worker is running in the production environment. The absence of a running worker will result in the background tasks being enqueued but not executed, leading to a backlog of unprocessed tasks.
