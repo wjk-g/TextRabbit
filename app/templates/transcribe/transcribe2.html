@@ -45,12 +45,12 @@
                 </div>
 
                 <div>
-                    {% if transcription_submitted %}
+                    {% if transcription_successfully_submitted %}
                         <div class="alert alert-success" role="alert">
                             Zlecono transkrypcję! Będzie dostępna w zakładce 
-                            <a href="{{ url_for('transcribe.retrieve_transcripts') }}">
+                            <a href="{{ url_for('transcribe.transcripts') }}">
                                 <i class="fa-solid fa-database"></i>
-                                Moje transkrypcje
+                                Transkrypcje
                             </a>
                         </div>
                     {% endif %}
