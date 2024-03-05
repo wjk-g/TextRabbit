@@ -136,8 +136,15 @@
                         <div class="border-top my-3"></div>
 
                         <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('transcribe.transcribe') }}">
+                                <i class="fa-solid fa-pen-nib"></i>
+                                Transkrybuj
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
                             <a class="nav-link" href="{{ url_for('projects.projects') }}">
-                                <i class="fa-solid fa-database"></i>
+                                <i class="fa-solid fa-diagram-project"></i>
                                 Projekty
                             </a>
                         </li>
@@ -146,20 +153,6 @@
                             <a class="nav-link" href="{{ url_for('transcribe.transcripts') }}">
                                 <i class="fa-solid fa-database"></i>
                                 Transkrypcje
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('transcribe.transcribe') }}">
-                                <i class="fa-solid fa-pen-nib"></i>
-                                Transkrybuj
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('transcribe.retrieve_transcripts') }}">
-                                <i class="fa-solid fa-database"></i>
-                                Moje transkrypcje
                             </a>
                         </li>
 

@@ -14,15 +14,11 @@ def update_and_download_transcripts():
     transcripts_handler = TranscriptsHandler()
     api_key = os.getenv('ASSEMBLYAI_API_KEY')
 
-    transcripts_handler.get_response_from_api(api_key=api_key, limit=100)
-    transcripts_handler.get_transcripts_with_processing_status_in_db()
-
-    if transcripts_handler.transcripts_being_processed:
-        print("Detected new transcripts")
-        print("Applying changes to the database...")
-        transcripts_handler.check_and_update_current_status_of_transcripts()
-        print("Changed transcripts status")
+    changes_detected = transcripts_handler.connect_check_update_and_save_transcripts(api_key)
     
-    print("Nothing to update at the moment")
+    if changes_detected:
+        print("Updating the database...")
+    else:    
+        print("Nothing to update at the moment")
 
     time.sleep(60*60) # 1 hour

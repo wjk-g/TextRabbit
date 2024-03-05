@@ -13,10 +13,20 @@
                 <p><b>Obsługiwane formaty audio:</b> mp3, mp4, mpeg, mpga, m4a, wav, webm.</p>
                 <p><b>Minimalny czas transkrypcji:</b> ~ 0,008 czasu trwania nagrania.</p>
                 <p><em>Rzeczywisty czas transkrypcji zależy od wielu czynników i może być dłuższy.</em></p>
+                
                 <div class="mb-3">
                     {{ transcribe_form.select_language.label(class="form-label") }}
                     {{ transcribe_form.select_language(class="form-select") }}
                 </div>
+
+                <div class="mb-3">
+                    {{ transcribe_form.select_project.label(class="form-label") }}
+                    {{ transcribe_form.select_project(class="form-select") }}
+                    <p>
+                        <a href="{{ url_for('projects.create_project') }}">Chcę utworzyć nowy projekt.</a>
+                    </p>
+                </div>
+
                 <div class="mb-3">
                     {{ transcribe_form.file_upload.label(class="form-label") }}
                     {{ transcribe_form.file_upload(class="form-control") }}
@@ -35,12 +45,12 @@
                 </div>
 
                 <div>
-                    {% if transcription_submitted %}
+                    {% if transcription_successfully_submitted %}
                         <div class="alert alert-success" role="alert">
                             Zlecono transkrypcję! Będzie dostępna w zakładce 
-                            <a href="{{ url_for('transcribe.retrieve_transcripts') }}">
+                            <a href="{{ url_for('transcribe.transcripts') }}">
                                 <i class="fa-solid fa-database"></i>
-                                Moje transkrypcje
+                                Transkrypcje
                             </a>
                         </div>
                     {% endif %}
