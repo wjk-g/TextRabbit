@@ -35,7 +35,7 @@ def transcribe():
     # GET requests
     if request.method == "GET":
         return render_template(
-            "transcribe/transcribe2.html", 
+            "transcribe/transcribe.html", 
             d=d,
             storage=initiate_storage(),
             transcribe_form=transcribe_form,
@@ -92,7 +92,7 @@ def transcribe():
             db.session.commit()
 
             return render_template(
-                "transcribe/transcribe2.html", 
+                "transcribe/transcribe.html", 
                 d=d,
                 storage=initiate_storage(),
                 transcribe_form=transcribe_form,
@@ -130,13 +130,11 @@ def transcripts():
     api_key = os.getenv('ASSEMBLYAI_API_KEY')
     transcripts_handler.connect_check_update_and_save_transcripts(api_key)
 
-    # POST requests
+    # POST requests only
     if request.method == "POST":
-        for key in request.form:
-            if key.startswith('download_'):
-                transcript_id = key.split('_')[1]
-                return transcripts_handler.write_transcript_to_file(transcript_id)
-
+        transcript_id = transcripts_handler.get_transcript_id_from_multiple_forms()
+        return transcripts_handler.write_transcript_to_file(transcript_id)
+        
     return render_template(
                 "transcribe/transcripts.html", 
                 d=d,

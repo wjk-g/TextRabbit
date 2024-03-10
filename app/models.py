@@ -1,6 +1,6 @@
 from sqlalchemy.orm import DeclarativeBase, Mapped, MappedAsDataclass, mapped_column, relationship
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import sqlalchemy as sa
 import sqlalchemy.orm as so 
 from typing import Optional
@@ -27,14 +27,17 @@ class User(db.Model):
     def get_full_name(self):
         return f'{self.name} {self.surname}'
 
+CET = timezone(timedelta(hours=1))
+
 class Project(db.Model):
     __tablename__ = 'project'
     id: so.Mapped[int] = mapped_column(db.Integer, primary_key=True, autoincrement=True, nullable=False, unique=True, index=True)
     name: so.Mapped[str] = so.mapped_column(db.String(100), nullable=False, unique=True)
     description: so.Mapped[str] = so.mapped_column(db.String(300), nullable=False)
     user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), nullable=False, index=True)
-    date_created: so.Mapped[datetime] = so.mapped_column(db.DateTime, default=datetime.utcnow)
+    date_created: so.Mapped[datetime] = so.mapped_column(db.DateTime, default=lambda: datetime.now(CET))
 
+    
     # Relationships
     transcripts: so.WriteOnlyMapped['Transcript'] = so.relationship(back_populates='project')
     created_by: so.Mapped[User] = so.relationship(back_populates='created_projects')
@@ -58,7 +61,7 @@ class Transcript(db.Model):
     transcript_json: so.Mapped['TranscriptJSON'] = so.relationship(back_populates="transcript_info")
 
     # Args with default values
-    date_created: so.Mapped[datetime] = so.mapped_column(db.DateTime, default=datetime.utcnow)
+    date_created: so.Mapped[datetime] = so.mapped_column(db.DateTime, default=lambda: datetime.now(CET))
     
     # Methods
     def __repr__(self):

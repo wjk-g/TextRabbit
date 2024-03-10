@@ -54,7 +54,7 @@ def create_app(config_class=Config):
     app.redis = Redis.from_url(app.config['REDIS_URL'])
     app.task_queue = rq.Queue('szkutnik-tasks', connection=app.redis)
     # This task will check every hour if there are new transcripts in the cloud
-    app.task_queue.enqueue('app.transcribe.tasks.update_and_download_transcripts')
+    app.task_queue.enqueue('app.transcribe.tasks.update_and_download_transcripts', job_timeout=60*60*2) # Default maximum timeout = 3 minutes
 
     if not app.debug and not app.testing:
         app.logger.info('Application startup')

@@ -1,5 +1,5 @@
 import requests
-from flask import send_file
+from flask import send_file, request
 
 from app import db
 from app.models import User, Project, Transcript, TranscriptJSON
@@ -118,6 +118,12 @@ class TranscriptsHandler():
         
         return changes_detected
 
+    @staticmethod
+    def get_transcript_id_from_multiple_forms():
+            for key in request.form:
+                if key.startswith('download_'):
+                    transcript_id = key.split('_')[1]
+                    return transcript_id
 
     def write_transcript_to_file(self, transcript_id):
 

@@ -1,3 +1,5 @@
+import os
+
 # Flask imports
 from flask import Flask, render_template, session, request, jsonify, redirect, url_for
 from sqlalchemy import select
@@ -9,7 +11,8 @@ from app.nlp.data import Data
 
 from app import db
 from app.projects import bp
-
+from app.transcribe.transcripts_handler import TranscriptsHandler
+from app.nlp.routes import initiate_storage
 
 # Display projects
 @bp.route("/projects", methods=["GET"])
@@ -25,12 +28,13 @@ def projects():
     return render_template(
         "projects/projects.html",
         projects=projects,
+        storage=initiate_storage(),
         d=d,
         #users_projects=users_projects,
     )
 
 # Display projects
-@bp.route("/project_transcripts/<int:project_id>", methods=["GET"])
+@bp.route("/project_transcripts/<int:project_id>", methods=["GET", "POST"])
 #@protect_access
 def project_transcripts(project_id):
 
@@ -39,18 +43,23 @@ def project_transcripts(project_id):
     project = Project.query.get(project_id)
     sql_stmt = select(Transcript).where(Transcript.project_id == project_id)
     transcripts = db.session.execute(sql_stmt).scalars().all()
-    print(transcripts)
 
-    for transcript in transcripts:
-        print(transcript.assemblyai_id)
-        print(transcript.audio_file_name)
+    # Update the status of transcripts in the db and save the updated transcripts
+    transcripts_handler = TranscriptsHandler()
+    api_key = os.getenv('ASSEMBLYAI_API_KEY')
+    transcripts_handler.connect_check_update_and_save_transcripts(api_key)
+    
+    # POST requests only
+    if request.method == "POST":
+        transcript_id = transcripts_handler.get_transcript_id_from_multiple_forms()
+        return transcripts_handler.write_transcript_to_file(transcript_id)
 
     return render_template(
         "projects/project_transcripts.html",
         project=project,
         transcripts=transcripts,
         d=d,
-        #users_projects=users_projects,
+        transcripts_being_processed=transcripts_handler.transcripts_being_processed,
     )
 
 # Create project
