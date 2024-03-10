@@ -1,4 +1,5 @@
 import os
+from sqlalchemy import asc, desc
 
 # Flask imports
 from flask import Flask, render_template, session, request, jsonify, redirect, url_for
@@ -6,43 +7,32 @@ from sqlalchemy import select
 
 from app.models import User, Project, Transcript
 from app.projects.forms import CreateProjectForm, ModifyProjectForm
-from app.nlp.data import Data
-
 
 from app import db
 from app.projects import bp
 from app.transcribe.transcripts_handler import TranscriptsHandler
-from app.nlp.routes import initiate_storage
+
+from app.auth.routes import protect_access
 
 # Display projects
 @bp.route("/projects", methods=["GET"])
-#@protect_access
+@protect_access
 def projects():
 
-    d = session.get("d", Data({}))
-
-    projects = Project.query.all()
+    projects = Project.query.order_by(desc(Project.date_created)).all()
     
-    #users_projects = Project.query.filter_by(user_id=session["user_id"]).all()
-
     return render_template(
         "projects/projects.html",
         projects=projects,
-        storage=initiate_storage(),
-        d=d,
-        #users_projects=users_projects,
     )
 
 # Display projects
 @bp.route("/project_transcripts/<int:project_id>", methods=["GET", "POST"])
-#@protect_access
+@protect_access
 def project_transcripts(project_id):
 
-    d = session.get("d", Data({}))
-
     project = Project.query.get(project_id)
-    sql_stmt = select(Transcript).where(Transcript.project_id == project_id)
-    transcripts = db.session.execute(sql_stmt).scalars().all()
+    transcripts = Transcript.query.filter(project_id == project_id).order_by(desc(Transcript.date_created)).all()
 
     # Update the status of transcripts in the db and save the updated transcripts
     transcripts_handler = TranscriptsHandler()
@@ -58,18 +48,13 @@ def project_transcripts(project_id):
         "projects/project_transcripts.html",
         project=project,
         transcripts=transcripts,
-        d=d,
         transcripts_being_processed=transcripts_handler.transcripts_being_processed,
     )
 
 # Create project
 @bp.route("/create_project", methods=["GET", "POST"])
-#@protect_access
+@protect_access
 def create_project():
-    
-    print(session["user_id"])
-
-    d = session.get("d", Data({}))
 
     form = CreateProjectForm()
 
@@ -87,15 +72,12 @@ def create_project():
     return render_template(
         "projects/create_project.html",
         create_project_form=form,
-        d=d,
     )
 
 # Modify project
 @bp.route("/edit_project/<int:project_id>", methods=["GET", "POST"])
-#@protect_access
+@protect_access
 def edit_project(project_id):
-
-    d = session.get("d", Data({}))
 
     project = Project.query.get(project_id)
     form = ModifyProjectForm(obj=project)
@@ -108,5 +90,4 @@ def edit_project(project_id):
     return render_template(
         "projects/edit_project.html",
         edit_project_form=form,
-        d=d,
     )

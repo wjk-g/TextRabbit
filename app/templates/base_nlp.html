@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pl">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -20,11 +20,17 @@
                 <div class="position-sticky pt-3">
                     <ul class="nav flex-column">
 
-                        <span href="{{ url_for('nlp.home') }}" style="margin-bottom: 20px; margin-top: 12px; margin-left: 18px;">
-                            <a href="{{ url_for('nlp.home') }}" style="text-decoration: none; font-family: 'Lugrasimo', cursive; color: white; font-size: 36px ">
+                        <span href="{{ url_for('redirects.welcome') }}" style="margin-bottom: 20px; margin-top: 12px; margin-left: 18px;">
+                            <a href="{{ url_for('redirects.welcome') }}" class="fancy-title">
                                 Szkutnik
                             </a>
                         </span>
+
+                        <li class="nav-item nav-link">
+                            <h5>Analiza tekstu</h4>
+                            <a href="{{ url_for('transcribe.transcribe') }}" class="nlp-link">Idź do transkrypcji →</a>
+                        </li>
+                        <br>
 
                         <li class="nav-item">
                             <a class="nav-link" aria-current="page" href="{{ url_for('nlp.home') }}">
@@ -132,29 +138,6 @@
                             </a>
                         </li>
                         {% endif %}
-                        
-                        <div class="border-top my-3"></div>
-
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('transcribe.transcribe') }}">
-                                <i class="fa-solid fa-pen-nib"></i>
-                                Transkrybuj
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('projects.projects') }}">
-                                <i class="fa-solid fa-diagram-project"></i>
-                                Projekty
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('transcribe.transcripts') }}">
-                                <i class="fa-solid fa-database"></i>
-                                Transkrypcje
-                            </a>
-                        </li>
 
                     </ul>
                 </div>

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body>
+
+    
+<div class="container">
+    <h1 class="fancy-title">Szkutnik</h1>
+
+    <div style="display: flex;">
+        <div class="box-container">
+            <a href="{{ url_for('transcribe.transcribe') }}" class="box">Transkrypcje automatyczne</a>
+            <p class="description">Transkrybuj pliki audio</p>
+        </div>
+
+        <div class="box-container">
+            <a href="{{ url_for('nlp.home') }}" class="box">
+            NLP<br> Analiza tekstu
+            </a>
+            <p class="description">Analizuj nieustrukturyzowane dane tekstowe: odpowiedzi na otwarte pytania w sondażu, dokumenty, nieuporządkowane listy słów i inne</p>
+        </div>
+    </div>
+    <!-- Disclaimer at the bottom of the page -->
+    <div class="disclaimer">
+        <span>Aplikacja jest wciąż rozwijana i może zawierać błędy.</span>
+        <br>
+        <span>Jeżeli natkniesz się na błąd, zgłoś go <a href="https://docs.google.com/spreadsheets/d/1R7x9otB2He3LM4FAr3ios4GdNmuDeY-6xbzSgmbNnus/edit#gid=0">tutaj</a>.</span>
+    </div>
+</div>
+
+</body>
+</html>

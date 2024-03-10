@@ -9,23 +9,20 @@ from flask import Flask, render_template, session, request, jsonify
 from app.transcribe.forms import TranscribeForm
 
 # Load classes
-from app.nlp.data import Data
-from app.nlp.routes import initiate_storage
-
 from app.transcribe.transcripts_handler import TranscriptsHandler
 
 from app.transcribe import bp
-from app.auth.routes import protect_access
 
 from app.models import Project, User, Transcript, TranscriptJSON
 from app import db
+
+from sqlalchemy import asc, desc
+from app.auth.routes import protect_access
 
 
 @bp.route("/transcribe", methods = ["GET", "POST"])
 @protect_access
 def transcribe():
-    
-    d = session.get('d')
 
     # Initiate the form, query the database for projects and update form choices
     transcribe_form = TranscribeForm()
@@ -36,8 +33,6 @@ def transcribe():
     if request.method == "GET":
         return render_template(
             "transcribe/transcribe.html", 
-            d=d,
-            storage=initiate_storage(),
             transcribe_form=transcribe_form,
             request_method=request.method,
             form_valid=True, # form_valid variable is required by the template when handling POST requests
@@ -92,9 +87,7 @@ def transcribe():
             db.session.commit()
 
             return render_template(
-                "transcribe/transcribe.html", 
-                d=d,
-                storage=initiate_storage(),
+                "transcribe/transcribe.html",
                 transcribe_form=transcribe_form,
                 form_valid=form_valid,
                 request_method=request.method,
@@ -108,9 +101,7 @@ def transcribe():
         transcription_successfully_submitted = False
 
         return render_template(
-                "transcribe/transcribe.html", 
-                d=d,
-                storage=initiate_storage(),
+                "transcribe/transcribe.html",
                 transcribe_form=transcribe_form,
                 form_valid=form_valid,
                 request_method=request.method,
@@ -121,9 +112,7 @@ def transcribe():
 @protect_access
 def transcripts():
 
-    d = session.get("d", Data({}))
-
-    transcripts = Transcript.query.all()
+    transcripts = Transcript.query.order_by(desc(Transcript.date_created)).all()
 
     # Update the status of transcripts in the db and save the updated transcripts
     transcripts_handler = TranscriptsHandler()
@@ -136,9 +125,7 @@ def transcripts():
         return transcripts_handler.write_transcript_to_file(transcript_id)
         
     return render_template(
-                "transcribe/transcripts.html", 
-                d=d,
-                storage=initiate_storage(),
+                "transcribe/transcripts.html",
                 transcripts=transcripts,
                 transcripts_being_processed=transcripts_handler.transcripts_being_processed,
             )

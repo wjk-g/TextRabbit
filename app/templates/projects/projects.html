@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'base_transcribe.html' %}
 
 {% block content %}
 <div class="container-fluid">
@@ -21,7 +21,7 @@
                 <tr>
                     <td>{{ project.name }}</td>
                     <td>{{ project.description }}</td>
-                    <td>{{ project.date_created }}</td>
+                    <td>{{ project.date_created.strftime('%d.%m.%Y | %H:%M') }}</td>
                     <td>{{ project.created_by.name }} {{ project.created_by.surname }}</td>
                     <td><a href="{{ url_for('projects.project_transcripts', project_id=project.id)}}">Transkrypcje</a></td>
                     <td><a href="{{ url_for('projects.edit_project', project_id=project.id) }}">Edytuj</a></td>

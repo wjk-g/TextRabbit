@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'base_nlp.html' %}
 
 {% block content %}
 <div class="container-fluid">
@@ -7,7 +7,7 @@
         <div class="card-body">
             <div class="mb-3">
                 <p>
-                    TR wykorzystuje pretrenowane embeddingsy stworzone przez Polską Akademię Nauk w oparciu o Narodowy Korpus Języka Polskiego oraz polską Wikipedię.
+                    Szkutnik wykorzystuje pretrenowane embeddingsy stworzone przez Polską Akademię Nauk w oparciu o Narodowy Korpus Języka Polskiego oraz polską Wikipedię.
                 </p>
                 <p>
                     W przeciwieństwie do dwóch pozostałych modeli obsługiwanych przez TR (LDA, NNMF) embeddingsy nie modelują analizowanego korpusu, ale <span class="fst-italic">język polski</span>. Mówiąc precyzyjniej: wersję języka polskiego z NKJP i Wikipedii. Pamiętaj o tym, jeżeli analizujesz teksty syntaktycznie i semantycznie odległe od standardowej polszczyzny (np. napisane w środowiskowym slangu).
