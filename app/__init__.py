@@ -6,6 +6,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
 from redis import Redis
+from redis.exceptions import ConnectionError
+
 import rq
 
 from config import Config
@@ -54,7 +56,10 @@ def create_app(config_class=Config):
     app.redis = Redis.from_url(app.config['REDIS_URL'])
     app.task_queue = rq.Queue('szkutnik-tasks', connection=app.redis)
     # This task will check every hour if there are new transcripts in the cloud
-    app.task_queue.enqueue('app.transcribe.tasks.update_and_download_transcripts', job_timeout=60*60*2) # Default maximum timeout = 3 minutes
+    try:
+        app.task_queue.enqueue('app.transcribe.tasks.update_and_download_transcripts', job_timeout=60*60*2) # Default maximum timeout = 3 minutes
+    except ConnectionError:
+        print("Failed to connect to the Redis server or the server is not running!")
 
     if not app.debug and not app.testing:
         app.logger.info('Application startup')

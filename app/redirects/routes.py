@@ -10,7 +10,7 @@ def welcome():
 
 @bp.route("/home", methods = ["GET"])
 def redirect_home():
-    return redirect(url_for("nlp.home"), code=301)
+    return redirect(url_for("redirects.welcome"), code=301)
 
 @bp.route("/transcribe", methods = ["GET"])
 def redirect_transcribe():
