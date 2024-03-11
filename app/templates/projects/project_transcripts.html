@@ -38,7 +38,7 @@
                 <tr>
                     <td>{{ transcript.created_by.name }} {{ transcript.created_by.surname }}</td>
                     <td>{{ transcript.audio_file_name }}</td>
-                    <td>{{ transcript.date_created.strftime('%m.%d.%Y | %H:%M') }}</td>
+                    <td>{{ transcript.date_created.strftime('%d.%m.%Y | %H:%M') }}</td>
                     <td>{{ transcript.transcription_status }}</td>
                     <td>
                         <form method="post" name="download">

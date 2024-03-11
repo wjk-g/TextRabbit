@@ -223,6 +223,14 @@ iframe {
   font-size: 36px;
 }
 
+.fancy-title:hover {
+  color: black;
+}
+
+.fancy-title:active {
+  color: black;
+}
+
 /* Welcome screen */
 
 .container {
