@@ -5,7 +5,7 @@
     <h1>Transkrybuj</h1>
     <div class="card my-3">
         <div class="card-body">
-            <form action="" method="post" enctype="multipart/form-data">
+            <form action="" id="upload-form" method="post" enctype="multipart/form-data">
                 {{ transcribe_form.hidden_tag() }}
                 
                 <p>Transkrypcja jest <em>płatną</em> usługą wykupioną przez Stocznię. Korzystaj z niej odpowiedzialnie.</em>
@@ -59,15 +59,18 @@
                 <div style="display: flex; gap: 30px;">
                     
                     <div class="mb-3">
-                        {{ transcribe_form.submit(id="submit", class="btn btn-primary") }}
+                        {{ transcribe_form.submit_upload_form(class="btn btn-primary") }}
                     </div>
                     
-                    {% if form_valid %}
-                    <div id="spinner" name="spinner" class="visually-hidden" role="status" style="display: flex; align-items: center;">
-                        <div class="spinner-border" aria-hidden="true"></div>
-                        <span style="margin-left: 10px;">Trwa przesyłanie pliku do transkrypcji. To może chwilę potrwać...</span>
+                    <div class="alert alert-info visually-hidden" id="upload-spinner" role="alert" style="display: flex; align-items: center;">
+                        <div class="spinner-grow" role="status" style="flex-shrink: 0;">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <span style="margin-left: 20px;">
+                            Twój plik jest przesyłany do AssemblyAI. To może chwilę potrwać...<br>
+                            Pozostań na stronie, aż proces się zakończy.
+                        </span>
                     </div>
-                    {% endif %}
 
                 </div>
             </form>
@@ -83,35 +86,17 @@
 {% block scripts %}
 <script>
 
-    const formValid={{ form_valid|tojson }}
-    const requestMethod={{ request_method|tojson }}
+const uploadForm = document.getElementById('upload-form');
+const spinner = document.getElementById('upload-spinner');
 
-    const submitButton = document.getElementById('submit');
-    const spinner = document.getElementById('spinner');
-    
-    console.log("starting...");
-    console.log("submitButton:", submitButton);
-    console.log("spinner:", spinner);
+console.log(uploadForm);
+console.log(spinner);
 
-    if (formValid) {
-        console.log('formValid:', formValid);
-    }
+uploadForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    spinner.classList.remove('visually-hidden');
+    uploadForm.submit();
+});
 
-    if (requestMethod === "GET") {
-        console.log('requestMethod:', requestMethod);
-    }
-
-    if (requestMethod === "POST") {
-        console.log('requestMethod:', requestMethod);
-    }
-
-    if (formValid && requestMethod === "POST") {
-        console.log('formValid:', formValid);
-        console.log('requestMethod:', requestMethod);
-        submitButton.addEventListener('click', function() {
-            spinner.classList.remove('visually-hidden');
-        });
-    }
-    
 </script>
 {% endblock %}

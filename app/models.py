@@ -39,7 +39,7 @@ class Project(db.Model):
 
     
     # Relationships
-    transcripts: so.WriteOnlyMapped['Transcript'] = so.relationship(back_populates='project', passive_deletes=True, cascade="all,delete")
+    transcripts: so.WriteOnlyMapped['Transcript'] = so.relationship(back_populates='project', passive_deletes=True, cascade="all,delete-orphan")
     created_by: so.Mapped[User] = so.relationship(back_populates='created_projects')
 
     # Methods

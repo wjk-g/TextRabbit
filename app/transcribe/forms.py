@@ -29,4 +29,4 @@ class TranscribeForm(FlaskForm):
             InputRequired(),
         ]
     )
-    submit = SubmitField('Zleć transkrypcję')
+    submit_upload_form = SubmitField('Zleć transkrypcję')

@@ -9,12 +9,13 @@
                 <span class="visually-hidden">Loading...</span>
             </div>
             <span style="margin-left: 20px;">
-                AssemblyAI przetwarza następujące pliki audio... Strona zostanie automatycznie odświeżona po zakończeniu transkrypcji.
+                AssemblyAI przetwarza następujące pliki audio...
                 <ul>
                 {% for transcript in transcripts_being_processed %}                    
                     <li>{{ transcript.audio_file_name }}</li>
                 {% endfor %}
                 </ul>
+                Strona zostanie automatycznie odświeżona po zakończeniu transkrypcji.
             </span>
         </div>
     {% endif %}

@@ -34,8 +34,6 @@ def transcribe():
         return render_template(
             "transcribe/transcribe.html", 
             transcribe_form=transcribe_form,
-            request_method=request.method,
-            form_valid=True, # form_valid variable is required by the template when handling POST requests
         )
 
     # POST requests
@@ -43,7 +41,8 @@ def transcribe():
     if transcribe_form.validate_on_submit():
         
         audio_file = request.files['file_upload']
-        audio_file.save(f"./audio_files/{audio_file.filename}") # TODO delete files after they're submitted for transcritption
+        audio_file_path = f"./audio_files/{audio_file.filename}"
+        audio_file.save(audio_file_path)
         
         if audio_file:
 
@@ -80,24 +79,21 @@ def transcribe():
             db.session.add(transcript_in_db)
             db.session.commit()
 
+            # Remove the audio file from the server
+            os.remove(audio_file_path)
+
             return render_template(
                 "transcribe/transcribe.html",
                 transcribe_form=transcribe_form,
-                form_valid=True,
-                request_method="POST",
                 transcription_successfully_submitted=True,
             )
     
     # Scenario when the form is not successfully submitted
     if request.method == 'POST' and not transcribe_form.validate_on_submit():
 
-        print("Scenario 2")
-
         return render_template(
                 "transcribe/transcribe.html",
                 transcribe_form=transcribe_form,
-                form_valid=False,
-                request_method="POST",
                 transcription_successfully_submitted=False,
             )
 
