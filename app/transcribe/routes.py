@@ -3,7 +3,7 @@ import os
 import assemblyai as aai
 
 # Flask imports
-from flask import Flask, render_template, session, request, jsonify
+from flask import Flask, render_template, session, request, jsonify, redirect, url_for
 
 # Load forms
 from app.transcribe.forms import TranscribeForm
@@ -41,9 +41,6 @@ def transcribe():
     # POST requests
     # Scenario when the form is successfully submitted
     if transcribe_form.validate_on_submit():
-
-        form_valid = True
-        transcription_successfully_submitted = False
         
         audio_file = request.files['file_upload']
         audio_file.save(f"./audio_files/{audio_file.filename}") # TODO delete files after they're submitted for transcritption
@@ -69,9 +66,6 @@ def transcribe():
                 f"./audio_files/{audio_file.filename}",
                 config=config,
             )
-
-            # Changing the value of the `transcription_successfully_submitted` flag to True
-            transcription_successfully_submitted = True
             
             # Create a new transcript object and add it to the database
             transcript_in_db = Transcript(
@@ -89,23 +83,22 @@ def transcribe():
             return render_template(
                 "transcribe/transcribe.html",
                 transcribe_form=transcribe_form,
-                form_valid=form_valid,
-                request_method=request.method,
-                transcription_successfully_submitted=transcription_successfully_submitted,
+                form_valid=True,
+                request_method="POST",
+                transcription_successfully_submitted=True,
             )
     
     # Scenario when the form is not successfully submitted
     if request.method == 'POST' and not transcribe_form.validate_on_submit():
-        
-        form_valid = False
-        transcription_successfully_submitted = False
+
+        print("Scenario 2")
 
         return render_template(
                 "transcribe/transcribe.html",
                 transcribe_form=transcribe_form,
-                form_valid=form_valid,
-                request_method=request.method,
-                transcription_successfully_submitted=transcription_successfully_submitted,
+                form_valid=False,
+                request_method="POST",
+                transcription_successfully_submitted=False,
             )
 
 @bp.route("/transcripts", methods = ["GET", "POST"])
@@ -121,8 +114,16 @@ def transcripts():
 
     # POST requests only
     if request.method == "POST":
-        transcript_id = transcripts_handler.get_transcript_id_from_multiple_forms()
-        return transcripts_handler.write_transcript_to_file(transcript_id)
+        # Printing transcripts to file
+        transcript_id_download = transcripts_handler.get_transcript_id_from_multiple_forms(prefix='download_')
+        if transcript_id_download:
+            return transcripts_handler.write_transcript_to_file(transcript_id_download)
+        
+        # Deleting transcripts from db
+        transcript_id_delete = transcripts_handler.get_transcript_id_from_multiple_forms(prefix='delete_')
+        if transcript_id_delete:
+            transcripts_handler.delete_transcript_from_db(transcript_id_delete)
+            return redirect(url_for("transcribe.transcripts"))
         
     return render_template(
                 "transcribe/transcripts.html",
@@ -131,14 +132,20 @@ def transcripts():
             )
 
 @bp.route('/_poll_transcripts_status', methods=['GET'])
-def _poll_transcripts_status():
+@bp.route('/_poll_transcripts_status/<project_id>', methods=['GET'])
+def _poll_transcripts_status(project_id=None):
     '''
     This route is used to poll the status of the transcripts in the AssemblyAI cloud
     when the user visits the /transcripts route.
+    Project_id is an optional parameter that is used to filter 
+    the transcripts based on the project_id. If no project_id is provided,
+    the project_id is set to None and the route will return all transcripts.
     '''
+    
+    project_id = request.view_args.get('project_id')
 
     transcripts_handler = TranscriptsHandler()
     api_key = os.getenv('ASSEMBLYAI_API_KEY')
-    changes_detected = transcripts_handler.connect_check_update_and_save_transcripts(api_key)
+    changes_detected = transcripts_handler.connect_check_update_and_save_transcripts(api_key, project_id=project_id)
 
     return jsonify({"reload": changes_detected}), 200

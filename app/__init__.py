@@ -57,7 +57,8 @@ def create_app(config_class=Config):
     app.task_queue = rq.Queue('szkutnik-tasks', connection=app.redis)
     # This task will check every hour if there are new transcripts in the cloud
     try:
-        app.task_queue.enqueue('app.transcribe.tasks.update_and_download_transcripts', job_timeout=60*60*2) # Default maximum timeout = 3 minutes
+        app.task_queue.enqueue('app.transcribe.tasks.update_and_download_transcripts', job_timeout=60*60*2) # 2h timeout
+        print("Succesfully enqueued the update_and_download_transcripts task.")
     except ConnectionError:
         print("Failed to connect to the Redis server or the server is not running!")
 

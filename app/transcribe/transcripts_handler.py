@@ -37,10 +37,24 @@ class TranscriptsHandler():
         response = requests.get(polling_endpoint, headers=self.headers).json()
         return response['status']
     
-    def get_transcripts_with_submitted_status_in_db(self):
+    def get_transcripts_with_submitted_status_in_db(self, project_id=None):
         '''
         Get transcripts with status "submitted" or "processing" from the db
         '''
+
+        # if project_id is provided, get all transcripts with status "submitted" or "processing" for that project 
+        if project_id:
+            transcripts_being_processed = db.session.query(
+                Transcript).filter(
+                Transcript.transcription_status.in_(["submitted", "processing"]),
+                Transcript.project_id == project_id
+            ).all()
+            print("if project_id: get_transcripts_with_submitted_status_in_db", self.transcripts_being_processed) # Debug
+            self.transcripts_being_processed = transcripts_being_processed
+            return transcripts_being_processed
+        
+        # if project_id not provided, get all transcripts with status "submitted" or "processing"     
+        print("else: get_transcripts_with_submitted_status_in_db", self.transcripts_being_processed) # Debug
         transcripts_being_processed = db.session.query(Transcript).filter(Transcript.transcription_status.in_(["submitted", "processing"])).all()
         self.transcripts_being_processed = transcripts_being_processed
         return transcripts_being_processed
@@ -102,7 +116,7 @@ class TranscriptsHandler():
                 db.session.commit()
                 print(f"JSON payload for {transcript.assemblyai_id} has been added to the database.")
 
-    def connect_check_update_and_save_transcripts(self, api_key):
+    def connect_check_update_and_save_transcripts(self, api_key, project_id=None):
         '''
         This method brings together the methods for: 
         - checking the status of transcripts
@@ -111,7 +125,7 @@ class TranscriptsHandler():
         Returns True if changes in status are detected, otherwise False
         '''
         self.get_response_from_api(api_key=api_key, limit=100)
-        self.get_transcripts_with_submitted_status_in_db()
+        self.get_transcripts_with_submitted_status_in_db(project_id=project_id)
         changes_detected = self.check_and_update_current_status_of_transcripts()
         if changes_detected:
             self.add_updated_transcripts_to_db()
@@ -119,11 +133,12 @@ class TranscriptsHandler():
         return changes_detected
 
     @staticmethod
-    def get_transcript_id_from_multiple_forms():
+    def get_transcript_id_from_multiple_forms(prefix):
             for key in request.form:
-                if key.startswith('download_'):
+                if key.startswith(prefix):
                     transcript_id = key.split('_')[1]
                     return transcript_id
+            return None
 
     def write_transcript_to_file(self, transcript_id):
 
@@ -157,3 +172,12 @@ class TranscriptsHandler():
         endpoint = f"https://api.assemblyai.com/v2/transcript/{transcript_id}"
 
         response = requests.delete(endpoint, headers=self.headers)
+
+    @staticmethod
+    def delete_transcript_from_db(transcript_id):
+        transcript = db.session.query(
+            Transcript
+        ).filter(Transcript.assemblyai_id == transcript_id).first()
+        
+        db.session.delete(transcript)
+        db.session.commit()

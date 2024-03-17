@@ -39,7 +39,7 @@ class Project(db.Model):
 
     
     # Relationships
-    transcripts: so.WriteOnlyMapped['Transcript'] = so.relationship(back_populates='project')
+    transcripts: so.WriteOnlyMapped['Transcript'] = so.relationship(back_populates='project', passive_deletes=True, cascade="all,delete")
     created_by: so.Mapped[User] = so.relationship(back_populates='created_projects')
 
     # Methods
@@ -58,7 +58,7 @@ class Transcript(db.Model):
     # Relationships
     project: so.Mapped[Project] = so.relationship(back_populates='transcripts')
     created_by: so.Mapped[User] = so.relationship(back_populates='created_transcripts')
-    transcript_json: so.Mapped['TranscriptJSON'] = so.relationship(back_populates="transcript_info")
+    transcript_json: so.Mapped['TranscriptJSON'] = so.relationship(back_populates="transcript_info", cascade="all,delete")
 
     # Args with default values
     date_created: so.Mapped[datetime] = so.mapped_column(db.DateTime, default=lambda: datetime.now(CET))

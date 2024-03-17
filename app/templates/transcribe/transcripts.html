@@ -50,7 +50,36 @@
                                 >
                         </form>
                     </td>
-                    <td>Usuń</td>
+                    <td>
+                        <form method="post" name="delete">
+                            <input type="button" value="usuń" data-bs-toggle="modal" data-bs-target="#deleteModal{{ transcript.assemblyai_id }}"
+                                {% if transcript.transcription_status != 'completed' %}
+                                class="btn btn-secondary"
+                                disabled 
+                                {% else %}
+                                class="btn btn-secondary"
+                                {% endif %}
+                                >
+                            <!-- Delete Modal -->
+                            <div class="modal fade" id="deleteModal{{ transcript.assemblyai_id }}" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                    <h5 class="modal-title" id="deleteModalLabel">Potwierdź usunięcie transkrypcji</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                    Czy jesteś pewien, że chcesz usunąć transkrypcję <strong>{{ transcript.audio_file_name }}</strong>? Tej operacji nie można cofnąć.
+                                    </div>
+                                    <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
+                                    <button type="submit" class="btn btn-danger" name="delete_{{ transcript.assemblyai_id }}" name="delete_{{ transcript.assemblyai_id }}">Usuń</button>
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
+                        </form>
+                    </td>
                 </tr>
             {% endfor %}
         </table>

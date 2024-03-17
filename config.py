@@ -7,9 +7,11 @@ load_dotenv(os.path.join(basedir, '.flaskenv'))
 class Config:
     SECRET_KEY = os.urandom(24)
     SQLALCHEMY_DATABASE_URI = "sqlite:///szkutnik.db"
-    #os.environ.get('DATABASE_URL', '').replace(
-    #    'postgres://', 'postgresql://') or \
-    #    'sqlite:///' + os.path.join(basedir, 'app.db')
+    #SQLALCHEMY_DATABASE_URI = (
+    #    f"postgresql://{os.getenv('DB_USER')}:{os.getenv('DB_PASS')}@"
+    #    f"{os.getenv('DB_HOST')}/{os.getenv('DB_NAME')}"
+    #)
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
     #ADMINS = ['your-email@example.com']
     #LANGUAGES = ['pl', 'en']
     SESSION_TYPE = 'filesystem'

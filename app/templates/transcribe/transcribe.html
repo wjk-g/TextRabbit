@@ -59,10 +59,10 @@
                 <div style="display: flex; gap: 30px;">
                     
                     <div class="mb-3">
-                        {{ transcribe_form.submit(class="btn btn-primary") }}
+                        {{ transcribe_form.submit(id="submit", class="btn btn-primary") }}
                     </div>
                     
-                    {% if form_valid and request_method == "POST" %}
+                    {% if form_valid %}
                     <div id="spinner" name="spinner" class="visually-hidden" role="status" style="display: flex; align-items: center;">
                         <div class="spinner-border" aria-hidden="true"></div>
                         <span style="margin-left: 10px;">Trwa przesyłanie pliku do transkrypcji. To może chwilę potrwać...</span>
@@ -87,9 +87,27 @@
     const requestMethod={{ request_method|tojson }}
 
     const submitButton = document.getElementById('submit');
-    const spinner = document.getElementById('spinner');        
+    const spinner = document.getElementById('spinner');
     
-    if (formValid && requestMethod === "GET") {
+    console.log("starting...");
+    console.log("submitButton:", submitButton);
+    console.log("spinner:", spinner);
+
+    if (formValid) {
+        console.log('formValid:', formValid);
+    }
+
+    if (requestMethod === "GET") {
+        console.log('requestMethod:', requestMethod);
+    }
+
+    if (requestMethod === "POST") {
+        console.log('requestMethod:', requestMethod);
+    }
+
+    if (formValid && requestMethod === "POST") {
+        console.log('formValid:', formValid);
+        console.log('requestMethod:', requestMethod);
         submitButton.addEventListener('click', function() {
             spinner.classList.remove('visually-hidden');
         });

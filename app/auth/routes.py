@@ -120,10 +120,7 @@ def callback():
         print(f"User {user_email} already exists in the database!")
         session["user_id"] = user.id
 
-     # saving current user id in session
-    print(session["user_id"])
-
-    return redirect(url_for("nlp.home"))
+    return redirect(url_for("redirects.welcome"))
 
 # === UTILITY FUNCTIONS ===
 def protect_access(f):
