@@ -37,14 +37,19 @@ class Project(db.Model):
     user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), nullable=False, index=True)
     date_created: so.Mapped[datetime] = so.mapped_column(db.DateTime, default=lambda: datetime.now(CET))
 
-    
     # Relationships
-    transcripts: so.WriteOnlyMapped['Transcript'] = so.relationship(back_populates='project', passive_deletes=True, cascade="all,delete-orphan")
+    transcripts: so.WriteOnlyMapped['Transcript'] = so.relationship(
+        'Transcript', 
+        back_populates='project',
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
     created_by: so.Mapped[User] = so.relationship(back_populates='created_projects')
 
     # Methods
     def __repr__(self):
         return f'<Project: {self.name}>'
+
 
 class Transcript(db.Model):
     __tablename__ = 'transcript'
@@ -53,7 +58,11 @@ class Transcript(db.Model):
     user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), nullable=False, index=True)
     error_message: so.Mapped[Optional[str]] = so.mapped_column(db.String, nullable=True)
     transcription_status: so.Mapped[str] = so.mapped_column(db.String, nullable=False)
-    project_id: so.Mapped[str] = so.mapped_column(sa.ForeignKey(Project.id), nullable=False, index=True)
+    project_id: so.Mapped[str] = so.mapped_column(
+        sa.ForeignKey('project.id', ondelete='CASCADE'),
+        nullable=False,
+        index=True
+    )
     
     # Relationships
     project: so.Mapped[Project] = so.relationship(back_populates='transcripts')
@@ -70,7 +79,10 @@ class Transcript(db.Model):
 class TranscriptJSON(db.Model):
     __tablename__ = 'transcript_json'
     json_content: so.Mapped[sa.JSON] = so.mapped_column(db.JSON, nullable=False)
-    assemblyai_id: so.Mapped[str] = so.mapped_column(db.String, db.ForeignKey('transcript.assemblyai_id'), primary_key=True)
+    assemblyai_id: so.Mapped[str] = so.mapped_column(
+        db.String,
+        db.ForeignKey('transcript.assemblyai_id', ondelete='CASCADE'), 
+        primary_key=True)
     
     # Relationships
     transcript_info: so.Mapped[Transcript] = so.relationship(back_populates="transcript_json", uselist=False, single_parent=True)

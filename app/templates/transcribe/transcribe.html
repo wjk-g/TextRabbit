@@ -85,18 +85,13 @@
 
 {% block scripts %}
 <script>
-
 const uploadForm = document.getElementById('upload-form');
 const spinner = document.getElementById('upload-spinner');
-
-console.log(uploadForm);
-console.log(spinner);
 
 uploadForm.addEventListener('submit', function(e) {
     e.preventDefault();
     spinner.classList.remove('visually-hidden');
     uploadForm.submit();
 });
-
 </script>
 {% endblock %}

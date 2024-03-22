@@ -27,7 +27,7 @@ def projects():
                 if key.startswith("delete_"):
                     project_id = key.split('_')[1]
                     project = Project.query.get(project_id)
-                    print(project.name)
+                    
                     db.session.delete(project)
                     db.session.commit()
                     return redirect(url_for("projects.projects"))
@@ -80,6 +80,7 @@ def project_transcripts(project_id):
 @bp.route("/create_project", methods=["GET", "POST"])
 @protect_access
 def create_project():
+    print(session["user_id"])
 
     form = CreateProjectForm()
 
@@ -88,7 +89,7 @@ def create_project():
         project = Project(
             name=form.name.data,
             description=form.description.data,
-            user_id=session["user_id"]
+            user_id=session["user_id"],
         )
         db.session.add(project)
         db.session.commit()
