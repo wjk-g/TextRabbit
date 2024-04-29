@@ -41,6 +41,7 @@ def get_google_provider_cfg():
 @bp.route("/login")
 def login():
     # Find out what URL to hit for Google login
+    
     google_provider_cfg = get_google_provider_cfg()
     
     # The field from the provider configuration document you need is called authorization_endpoint. 
