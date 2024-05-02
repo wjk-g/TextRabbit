@@ -1,0 +1,102 @@
+{% extends 'base_transcribe.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2>Nazwa projektu: {{ project.name }}</h2>
+    <p>Opis projektu: {{project.description}}</p>
+    
+    {% if transcripts_being_processed %}
+        <div class="alert alert-info" role="alert" style="display: flex; align-items: center;">
+            <div class="spinner-grow" role="status" style="flex-shrink: 0;">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <span style="margin-left: 20px;">
+                AssemblyAI przetwarza następujące pliki audio...
+                <ul>
+                {% for transcript in transcripts_being_processed %}                    
+                    <li>{{ transcript.audio_file_name }}</li>
+                {% endfor %}
+                </ul>
+                Możesz pozostać na stronie (odświeży się automatycznie) lub ją opuścić i wrócić później.
+            </span>
+        </div>
+    {% endif %}
+    <div class="d-flex justify-content-end">
+        <a href="{{ url_for('transcribe.transcribe') }}" class="btn btn-secondary">Utwórz nową transkrypcję</a>
+    </div>
+    <br>
+    <br>
+    <div>
+        <table>
+            <th>Utworzony przez</th>
+            <th>Nazwa pliku</th>
+            <th>Data utworzenia</th>
+            <th>Status</th>
+            <th></th>
+            <th></th>
+
+            {% for transcript in transcripts %}
+                <tr>
+                    <td>{{ transcript.created_by.name }} {{ transcript.created_by.surname }}</td>
+                    <td>{{ transcript.audio_file_name }}</td>
+                    <td>{{ transcript.date_created.strftime('%d.%m.%Y | %H:%M') }}</td>
+                    <td>{{ transcript.transcription_status }}</td>
+                    <td>
+                        <form method="post" name="download">
+                            <input type="submit" value="pobierz" name="download_{{ transcript.assemblyai_id }}" 
+                                {% if transcript.transcription_status != 'completed' %}
+                                class="btn btn-secondary" 
+                                disabled 
+                                {% else %}
+                                class="btn btn-primary"
+                                {% endif %}
+                                >
+                        </form>
+                    </td>
+                    <td>
+                        <form method="post" name="delete">
+                            <input type="button" value="usuń" data-bs-toggle="modal" data-bs-target="#deleteModal{{ transcript.assemblyai_id }}"
+                                {% if transcript.transcription_status != 'completed' %}
+                                class="btn btn-secondary"
+                                disabled 
+                                {% else %}
+                                class="btn btn-secondary"
+                                {% endif %}
+                                >
+                            <!-- Delete Modal -->
+                            <div class="modal fade" id="deleteModal{{ transcript.assemblyai_id }}" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                    <h5 class="modal-title" id="deleteModalLabel">Potwierdź usunięcie transkrypcji</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                    Czy jesteś pewien, że chcesz usunąć transkrypcję <strong>{{ transcript.audio_file_name }}</strong>? Tej operacji nie można cofnąć.
+                                    </div>
+                                    <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
+                                    <button type="submit" class="btn btn-danger" name="delete_{{ transcript.assemblyai_id }}" name="delete_{{ transcript.assemblyai_id }}">Usuń</button>
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const project_id = {{ project_id|tojson }};
+    console.log(project_id);
+</script>
+
+<script type="text/javascript" src="{{ url_for('static', filename='js/_poll_transcripts_status.js') }}"></script>
+{% endblock %}

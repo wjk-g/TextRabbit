@@ -1,0 +1,57 @@
+{% extends 'base_transcribe.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1>Projekty</h1>
+    <div class="d-flex justify-content-end">
+        <a href="{{ url_for('projects.create_project') }}" class="btn btn-secondary">Dodaj nowy projekt</a>
+    </div>
+    <br>
+    <br>
+    <div>
+        <table>
+            <th>Nazwa projektu</th>
+            <th>Opis</th>
+            <th>Data utworzenia</th>
+            <th>Utworzony przez</th>
+            <th></th>
+            <th></th>
+
+        {% for project in projects %}
+            <tr>
+                <td>{{ project.name }}</td>
+                <td>{{ project.description }}</td>
+                <td>{{ project.date_created.strftime('%d.%m.%Y | %H:%M') }}</td>
+                <td>{{ project.created_by.name }} {{ project.created_by.surname }}</td>
+                <td><a href="{{ url_for('projects.project_transcripts', project_id=project.id)}}">Transkrypcje</a></td>
+                <td><a href="{{ url_for('projects.edit_project', project_id=project.id) }}">Edytuj</a></td>
+                <td>
+                    <form method="post" name="delete">
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#deleteModal{{ project.id }}">Usuń</a>
+                        <!-- Delete Modal -->
+                        <div class="modal fade" id="deleteModal{{ project.id }}" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                <h5 class="modal-title" id="deleteModalLabel">Potwierdź usunięcie projektu</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>Czy jesteś pewien, że chcesz usunąć projekt <strong>{{ project.name }}</strong>? Tej operacji nie można cofnąć.</p>
+                                    <p>Zostaną usunięte <strong>wszystkie</strong> transkrypcje należące do projektu.</p>
+                                </div>
+                                <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Anuluj</button>
+                                <button type="submit" class="btn btn-danger" id="delete_{{ project.id }}" name="delete_{{ project.id }}">Usuń</button>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+        </table>
+    </div>
+</div>
+{% endblock %}

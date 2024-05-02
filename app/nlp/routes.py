@@ -98,7 +98,7 @@ def load_data():
             data_selection_form.input_survey_number.data,
             data_selection_form.input_survey_column.data,
             data_selection_form.input_id_column.data,
-        ) # and here we will add the ID column at some point
+        )
 
         d = Data(data)
         

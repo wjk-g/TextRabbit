@@ -1,6 +1,6 @@
 from sqlalchemy.orm import DeclarativeBase, Mapped, MappedAsDataclass, mapped_column, relationship
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import sqlalchemy as sa
 import sqlalchemy.orm as so 
 from typing import Optional
@@ -27,19 +27,29 @@ class User(db.Model):
     def get_full_name(self):
         return f'{self.name} {self.surname}'
 
+CET = timezone(timedelta(hours=1))
+
 class Project(db.Model):
     __tablename__ = 'project'
     id: so.Mapped[int] = mapped_column(db.Integer, primary_key=True, autoincrement=True, nullable=False, unique=True, index=True)
     name: so.Mapped[str] = so.mapped_column(db.String(100), nullable=False, unique=True)
+    description: so.Mapped[str] = so.mapped_column(db.String(300), nullable=False)
     user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), nullable=False, index=True)
+    date_created: so.Mapped[datetime] = so.mapped_column(db.DateTime, default=lambda: datetime.now(CET))
 
     # Relationships
-    transcripts: so.WriteOnlyMapped['Transcript'] = so.relationship(back_populates='project')
+    transcripts: so.WriteOnlyMapped['Transcript'] = so.relationship(
+        'Transcript', 
+        back_populates='project',
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
     created_by: so.Mapped[User] = so.relationship(back_populates='created_projects')
 
     # Methods
     def __repr__(self):
         return f'<Project: {self.name}>'
+
 
 class Transcript(db.Model):
     __tablename__ = 'transcript'
@@ -48,25 +58,31 @@ class Transcript(db.Model):
     user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id), nullable=False, index=True)
     error_message: so.Mapped[Optional[str]] = so.mapped_column(db.String, nullable=True)
     transcription_status: so.Mapped[str] = so.mapped_column(db.String, nullable=False)
-    project_name: so.Mapped[str] = so.mapped_column(sa.ForeignKey(Project.name), nullable=False, index=True)
+    project_id: so.Mapped[str] = so.mapped_column(
+        sa.ForeignKey('project.id', ondelete='CASCADE'),
+        nullable=False,
+        index=True
+    )
     
     # Relationships
     project: so.Mapped[Project] = so.relationship(back_populates='transcripts')
     created_by: so.Mapped[User] = so.relationship(back_populates='created_transcripts')
-    transcript_json: so.Mapped['TranscriptJSON'] = so.relationship(back_populates="transcript_info")
+    transcript_json: so.Mapped['TranscriptJSON'] = so.relationship(back_populates="transcript_info", cascade="all,delete")
 
     # Args with default values
-    #submitted_on: so.Mapped[datetime] = so.mapped_column(db.DateTime, nullable=True, default=lambda: datetime.now(timezone.utc))
-    created_on: so.Mapped[datetime] = so.mapped_column(db.DateTime, nullable=True, default=lambda: datetime.now(timezone.utc))
+    date_created: so.Mapped[datetime] = so.mapped_column(db.DateTime, default=lambda: datetime.now(CET))
     
     # Methods
     def __repr__(self):
-        return f'<Transcript: {self.audio_file_name}; Project: {self.project_name}; Status: {self.transcription_status}>'
+        return f'<Transcript: {self.audio_file_name}; Status: {self.transcription_status}>'
 
 class TranscriptJSON(db.Model):
     __tablename__ = 'transcript_json'
     json_content: so.Mapped[sa.JSON] = so.mapped_column(db.JSON, nullable=False)
-    assemblyai_id: so.Mapped[str] = so.mapped_column(db.String, db.ForeignKey('transcript.assemblyai_id'), primary_key=True)
+    assemblyai_id: so.Mapped[str] = so.mapped_column(
+        db.String,
+        db.ForeignKey('transcript.assemblyai_id', ondelete='CASCADE'), 
+        primary_key=True)
     
     # Relationships
     transcript_info: so.Mapped[Transcript] = so.relationship(back_populates="transcript_json", uselist=False, single_parent=True)

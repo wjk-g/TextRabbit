@@ -41,6 +41,7 @@ def get_google_provider_cfg():
 @bp.route("/login")
 def login():
     # Find out what URL to hit for Google login
+    
     google_provider_cfg = get_google_provider_cfg()
     
     # The field from the provider configuration document you need is called authorization_endpoint. 
@@ -114,11 +115,13 @@ def callback():
         new_user = User(name=user_name, surname=user_surname, email=user_email)
         db.session.add(new_user)
         db.session.commit()
+        session["user_id"] = new_user.id
         print(f"User {user_email} added to the database")
     else:
         print(f"User {user_email} already exists in the database!")
+        session["user_id"] = user.id
 
-    return redirect(url_for("nlp.home"))
+    return redirect(url_for("redirects.welcome"))
 
 # === UTILITY FUNCTIONS ===
 def protect_access(f):

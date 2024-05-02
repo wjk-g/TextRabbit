@@ -1,0 +1,32 @@
+{% extends 'base_transcribe.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1>Stwórz projekt</h1>
+    <div class="card my-3">
+        <div class="card-body">
+            <form action="" method="post" enctype="multipart/form-data">
+                {{ create_project_form.hidden_tag() }}
+                
+                <p>Utwórz projekt, do którego dodasz transkrypcje.</p>
+
+                <div class="mb-3">
+                    {{ create_project_form.name.label(class="form-label") }}
+                    {{ create_project_form.name(class="form-control") }}
+                </div>
+                <div class="mb-3">
+                    {{ create_project_form.description.label(class="form-label") }}
+                    {{ create_project_form.description(class="form-control") }}
+                </div>
+                    
+                <div class="mb-3">
+                    {{ create_project_form.submit(class="btn btn-primary") }}
+                </div>
+                    
+            </form>
+        </div>
+    </div>
+    
+</div>
+
+{% endblock %}

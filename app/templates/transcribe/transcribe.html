@@ -1,22 +1,33 @@
-{% extends 'base.html' %}
+{% extends 'base_transcribe.html' %}
 
 {% block content %}
 <div class="container-fluid">
     <h1>Transkrybuj</h1>
     <div class="card my-3">
         <div class="card-body">
-            <form action="" method="post" enctype="multipart/form-data">
+            <form action="" id="upload-form" method="post" enctype="multipart/form-data">
                 {{ transcribe_form.hidden_tag() }}
                 
                 <p>Transkrypcja jest <em>płatną</em> usługą wykupioną przez Stocznię. Korzystaj z niej odpowiedzialnie.</em>
                 <p><b>Koszt:</b> $0,37 za godzinę nagrania.</p>
-                <p><b>Obsługiwane formaty audio:</b> mp3, mp4, mpeg, mpga, m4a, wav, webm.</p>
-                <p><b>Minimalny czas transkrypcji:</b> ~ 0,008 czasu trwania nagrania.</p>
+                <p><b>Obsługiwane formaty audio:</b> mp3, mp4, mpeg, mpga, m4a, wav, webm</p>
+                <p><b>Maksymalny rozmiar pliku:</b> 100 MB</p>
+                <p><b>Minimalny czas transkrypcji:</b> ~ 0,008 czasu trwania nagrania</p>
                 <p><em>Rzeczywisty czas transkrypcji zależy od wielu czynników i może być dłuższy.</em></p>
+                
                 <div class="mb-3">
                     {{ transcribe_form.select_language.label(class="form-label") }}
                     {{ transcribe_form.select_language(class="form-select") }}
                 </div>
+
+                <div class="mb-3">
+                    {{ transcribe_form.select_project.label(class="form-label") }}
+                    {{ transcribe_form.select_project(class="form-select") }}
+                    <p>
+                        <a href="{{ url_for('projects.create_project') }}">Chcę utworzyć nowy projekt.</a>
+                    </p>
+                </div>
+
                 <div class="mb-3">
                     {{ transcribe_form.file_upload.label(class="form-label") }}
                     {{ transcribe_form.file_upload(class="form-control") }}
@@ -35,12 +46,12 @@
                 </div>
 
                 <div>
-                    {% if transcription_submitted %}
+                    {% if transcription_successfully_submitted %}
                         <div class="alert alert-success" role="alert">
                             Zlecono transkrypcję! Będzie dostępna w zakładce 
-                            <a href="{{ url_for('transcribe.retrieve_transcripts') }}">
+                            <a href="{{ url_for('transcribe.transcripts') }}">
                                 <i class="fa-solid fa-database"></i>
-                                Moje transkrypcje
+                                Transkrypcje
                             </a>
                         </div>
                     {% endif %}
@@ -49,15 +60,18 @@
                 <div style="display: flex; gap: 30px;">
                     
                     <div class="mb-3">
-                        {{ transcribe_form.submit(class="btn btn-primary") }}
+                        {{ transcribe_form.submit_upload_form(class="btn btn-primary") }}
                     </div>
                     
-                    {% if form_valid and request_method == "POST" %}
-                    <div id="spinner" name="spinner" class="visually-hidden" role="status" style="display: flex; align-items: center;">
-                        <div class="spinner-border" aria-hidden="true"></div>
-                        <span style="margin-left: 10px;">Trwa przesyłanie pliku do transkrypcji. To może chwilę potrwać...</span>
+                    <div class="alert alert-info visually-hidden" id="upload-spinner" role="alert" style="display: flex; align-items: center;">
+                        <div class="spinner-grow" role="status" style="flex-shrink: 0;">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <span style="margin-left: 20px;">
+                            Twój plik jest przesyłany do AssemblyAI. To może chwilę potrwać...<br>
+                            Pozostań na stronie, aż proces się zakończy.
+                        </span>
                     </div>
-                    {% endif %}
 
                 </div>
             </form>
@@ -72,18 +86,13 @@
 
 {% block scripts %}
 <script>
+const uploadForm = document.getElementById('upload-form');
+const spinner = document.getElementById('upload-spinner');
 
-    const formValid={{ form_valid|tojson }}
-    const requestMethod={{ request_method|tojson }}
-
-    const submitButton = document.getElementById('submit');
-    const spinner = document.getElementById('spinner');        
-    
-    if (formValid && requestMethod === "GET") {
-        submitButton.addEventListener('click', function() {
-            spinner.classList.remove('visually-hidden');
-        });
-    }
-    
+uploadForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    spinner.classList.remove('visually-hidden');
+    uploadForm.submit();
+});
 </script>
 {% endblock %}

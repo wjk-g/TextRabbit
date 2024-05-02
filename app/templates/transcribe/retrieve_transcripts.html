@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'base_transcribe.html' %}
 
 {% block content %}
 <div class="container-fluid">
@@ -52,5 +52,5 @@
 {% endblock %}
 
 {% block scripts %}
-<script type="text/javascript" src="{{ url_for('static', filename='js/check_transcripts_status.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/_poll_transcripts_status.js') }}"></script>
 {% endblock %}
