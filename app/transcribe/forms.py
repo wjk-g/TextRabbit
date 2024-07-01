@@ -14,6 +14,7 @@ class TranscribeForm(FlaskForm):
         ('en_us', 'angielski amerykański'),
         ('uk', 'ukraiński'),
         ('ru', 'rosyjski'),
+        ('de', 'niemiecki'),
         ('auto', 'wykryj automatycznie')],
         validators=[DataRequired()]
         )

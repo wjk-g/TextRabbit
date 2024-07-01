@@ -50,12 +50,25 @@ def transcribe():
             aai.settings.api_key = os.getenv('ASSEMBLYAI_API_KEY')
 
             # AssemblyAI transcription configuration
-            config = aai.TranscriptionConfig(
-                language_code=transcribe_form.select_language.data,
-                speaker_labels=True,
-                punctuate=True, 
-                format_text=True,
-            )
+            
+            if transcribe_form.select_language.data == "auto":
+                print("Detecting language automatically...")
+                config = aai.TranscriptionConfig(
+                    language_detection=True,
+                    speaker_labels=True,
+                    punctuate=True,
+                    format_text=True,
+                    #audio_end_at=120000, # 2 min
+                )
+            else:
+                print(f"Submitting audio with lang code {transcribe_form.select_language.data}...")
+                config = aai.TranscriptionConfig(
+                    language_code=transcribe_form.select_language.data,
+                    speaker_labels=True,
+                    punctuate=True, 
+                    format_text=True,
+                    #audio_end_at=120000, # 2 min
+                )
 
             # Initializing the transcriber
             transcriber = aai.Transcriber()
